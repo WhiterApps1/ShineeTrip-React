@@ -142,6 +142,8 @@ const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) =>
   }
 `}</style>
             </div>
+
+            
         </div>
     );
 };
