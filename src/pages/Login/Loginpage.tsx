@@ -39,21 +39,29 @@ const checkOrCreateCustomer = async (user: User, token: string): Promise<number>
             },
         });
 
-        if (searchResponse.ok) {
-            customerData = await searchResponse.json(); 
-            
-            if (customerData && customerData.id) {
-                console.log(`✅ Customer found in DB. ID: ${customerData.id}`);
-                return customerData.id; 
-            }
-            
-        } else if (searchResponse.status === 404) {
+        // Replace this part in your code:
+if (searchResponse.ok) {
+    const data = await searchResponse.json(); 
+    
+    // Agar data array hai toh pehla element le lo, nahi toh direct data use karo
+    const customer = Array.isArray(data) ? data[0] : data;
+
+    if (customer && customer.id) {
+        console.log(`✅ User mil gaya! ID: ${customer.id}`);
+        return customer.id; 
+    }
+}
+
+        
+         else if (searchResponse.status === 404) {
             console.log("Customer not found (404). Proceeding to create new one...");
         } else {
             console.warn(`Customer search failed with status: ${searchResponse.status}. Check API permissions/token.`);
         }
-    } catch (e) {
+    } catch (e :any) {
         console.error("Error during customer search API call:", e);
+        throw new Error("Search failed: " + e.message);
+        return 0;
     }
 
 

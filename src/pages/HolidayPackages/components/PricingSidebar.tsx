@@ -1,12 +1,23 @@
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
 interface PricingSidebarProps {
   priceData: any;
   calculatedSummary: any;
-  defaultOption?: 'withFlight' | 'withoutFlight';
+  defaultOption?: 'flight' | 'land'; // Modal se 'flight' ya 'land' aa raha hai
 }
 
-export const PricingSidebar = ({ priceData, calculatedSummary, defaultOption = 'withFlight' }: PricingSidebarProps) => {
-  
-  // 1. Agar priceData abhi fetch ho raha hai, toh loading state dikhao
+export const PricingSidebar = ({ priceData, calculatedSummary, defaultOption = 'flight' }: PricingSidebarProps) => {
+  // 1. Local state taaki user detail page par bhi toggle kar sake
+  const [selection, setSelection] = useState<'flight' | 'land'>(defaultOption);
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  // Sync with defaultOption if it changes
+  useEffect(() => {
+    setSelection(defaultOption);
+  }, [defaultOption]);
+
   if (!priceData) {
     return (
       <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sticky top-40 h-fit text-center">
@@ -19,49 +30,78 @@ export const PricingSidebar = ({ priceData, calculatedSummary, defaultOption = '
     );
   }
 
-  // 2. Logic: Pehle Summary API ka grandTotal check karenge, nahi toh fallback to priceData
-  // Isse 404 error ke waqt bhi pricing sahi dikhegi
-  const baseFare = calculatedSummary?.baseFarePerAdult || priceData?.base_fare || 0;
-  const flightPrice = priceData?.flight_price || 0;
-  const tax = calculatedSummary?.tax || priceData?.tax || 0;
-  
-  // Final Display Price logic based on user selection from Modal
-  const displayPrice = defaultOption === 'withFlight' 
-    ? (calculatedSummary?.grandTotal || priceData?.total_price_per_adult || (baseFare + flightPrice + tax))
-    : baseFare;
+  // 2. Data Mapping (Backend keys ke according)
+  const baseFare = Number(priceData?.base_fare || 0);
+  const flightPrice = Number(priceData?.flight_logistics || priceData?.flight_price || 0);
+  const tax = Number(priceData?.tax || 0);
+  const discount = Number(calculatedSummary?.discount || priceData?.discount || 0);
+
+  // 3. MAIN TOGGLE LOGIC
+  // Agar 'flight' selected hai toh sab add hoga, agar 'land' hai toh sirf base + tax
+  const totalAmount = selection === 'flight' 
+    ? (baseFare + flightPrice + tax - discount)
+    : (baseFare + tax - discount);
 
   const formatPrice = (val: any) => {
-    const num = typeof val === 'string' ? parseFloat(val) : val;
-    return (num || 0).toLocaleString('en-IN');
+    return Math.round(val).toLocaleString('en-IN');
   };
 
   return (
     <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 sticky top-40 h-fit">
-      <div className="mb-4 flex justify-between items-center">
-        <span className="text-[10px] font-bold text-[#C9A961] uppercase tracking-widest">
-          {defaultOption === 'withFlight' ? "With Flight Package" : "Land Only Package"}
-        </span>
-        {calculatedSummary && (
-          <span className="bg-green-50 text-green-600 text-[9px] font-black px-2 py-1 rounded-md uppercase">
-            Live Price
-          </span>
-        )}
+      
+      {/* Selection Toggle Design */}
+      <div className="flex p-1.5 bg-gray-50 rounded-2xl mb-6 border border-gray-100">
+        <button 
+          onClick={() => setSelection('flight')}
+          className={`flex-1 py-2.5 text-[10px] font-black rounded-xl transition-all tracking-tighter ${
+            selection === 'flight' ? 'bg-white shadow-sm text-[#C9A961]' : 'text-gray-400 hover:text-gray-600'
+          }`}
+        >
+          WITH FLIGHT
+        </button>
+        <button 
+          onClick={() => setSelection('land')}
+          className={`flex-1 py-2.5 text-[10px] font-black rounded-xl transition-all tracking-tighter ${
+            selection === 'land' ? 'bg-white shadow-sm text-[#C9A961]' : 'text-gray-400 hover:text-gray-600'
+          }`}
+        >
+          WITHOUT FLIGHT
+        </button>
       </div>
 
-      <button className="w-full bg-[#C9A961] text-white py-4 rounded-2xl font-bold text-lg hover:bg-[#b39552] shadow-lg shadow-yellow-100 transition-all mb-6 uppercase tracking-wide active:scale-95">
+      <div className="mb-4 flex justify-between items-center">
+        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+          {selection === 'flight' ? "Full Experience" : "Ground Services Only"}
+        </span>
+        <span className="bg-green-50 text-green-600 text-[9px] font-black px-2 py-1 rounded-md uppercase">
+          Live Price
+        </span>
+      </div>
+
+      <button 
+        onClick={() => {
+          // Navigating to the booking page with data
+          navigate(
+            `/package-booking?packageId=${id}&amount=${totalAmount}&adults=2`, 
+            { state: { type: selection } }
+          );
+        }}
+        className="w-full bg-[#C9A961] text-white py-4 rounded-2xl font-bold text-lg hover:bg-[#b39552] shadow-lg shadow-yellow-100 transition-all mb-6 uppercase tracking-wide active:scale-95"
+      >
         PAY & Book Now
       </button>
 
       <div className="space-y-4 mb-6">
         <div className="flex justify-between items-center text-sm">
-          <span className="text-gray-500 font-medium">Base Fare</span>
+          <span className="text-gray-500 font-medium">Base Fare (Land)</span>
           <span className="text-gray-900 font-bold">₹{formatPrice(baseFare)}</span>
         </div>
         
-        {defaultOption === 'withFlight' && (
-          <div className="flex justify-between items-center text-sm">
+        {/* Dynamic Flight Row */}
+        {selection === 'flight' && (
+          <div className="flex justify-between items-center text-sm animate-in slide-in-from-left-2 duration-300">
             <span className="text-gray-500 font-medium">Flight & Logistics</span>
-            <span className="text-gray-900 font-bold">₹{formatPrice(flightPrice)}</span>
+            <span className="text-gray-900 font-bold">+ ₹{formatPrice(flightPrice)}</span>
           </div>
         )}
 
@@ -70,21 +110,21 @@ export const PricingSidebar = ({ priceData, calculatedSummary, defaultOption = '
           <span className="text-gray-900 font-bold">₹{formatPrice(tax)}</span>
         </div>
 
-        {calculatedSummary?.discount > 0 && (
+        {discount > 0 && (
           <div className="flex justify-between items-center text-sm text-green-600">
             <span className="font-medium">Special Discount</span>
-            <span className="font-bold">- ₹{formatPrice(calculatedSummary.discount)}</span>
+            <span className="font-bold">- ₹{formatPrice(discount)}</span>
           </div>
         )}
       </div>
 
-      <div className="border-t pt-4 flex justify-between items-center">
+      <div className="border-t border-dashed pt-4 flex justify-between items-center">
         <div className="flex flex-col">
           <span className="font-bold text-gray-800">Total Amount</span>
-          <span className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">*Inclusive of all taxes</span>
+          <span className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">*Per adult on twin sharing</span>
         </div>
         <span className="text-2xl font-extrabold text-[#2C4A5E]">
-          ₹{formatPrice(displayPrice)}
+          ₹{formatPrice(totalAmount)}
         </span>
       </div>
     </div>

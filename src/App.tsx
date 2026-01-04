@@ -19,6 +19,7 @@ import CustomerProfilePage from "./pages/CustomerProfilePage";
 import MyBookingsPage from "./pages/MyBookingsPage";
 import HolidayPackages from "./pages/HolidayPackages/pages/HolidayPackages";
 import PackageDetailsPage from "./pages/HolidayPackages/pages/PackageDetailsPage";
+import PackageBookingPage from "./pages/HolidayPackages/pages/PackageBookingPage";
  
 
 
@@ -67,6 +68,7 @@ const App: React.FC = () => {
    
     <Route path="/holiday-packages" element={<HolidayPackages />} />
     <Route path="/package-detail/:id" element={<PackageDetailsPage/>}/>
+    <Route path="/package-booking" element={<PackageBookingPage />} />
   
     <Route path='/about' element={<AboutPage/>}/>
     <Route path='/privacy-policy' element={<PrivacyPolicy/>}/>

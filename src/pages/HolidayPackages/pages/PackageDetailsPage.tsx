@@ -15,15 +15,19 @@ const PackageDetailsPage = () => {
   
   const [itineraryData, setItineraryData] = useState<any>(null);
   const [summaryData, setSummaryData] = useState<any>(null);
+  const [priceData, setPriceData] = useState<any>(null);
+  const [galleryData, setGalleryData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
   const location = useLocation();
-  const userPreference = location.state?.selectedOption || 'withFlight';
+
+  // FIX: Modal se 'flight' ya 'land' aa raha hai (Variable name: type)
+  // Hum ise defaultOption banayenge jo PricingSidebar use karega
+  const userPreference = location.state?.type || 'flight';
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!id) return; // URL wali ID (e.g., 15)
-
+      if (!id) return;
       setLoading(true);
       try {
         const token = sessionStorage.getItem("shineetrip_token");
@@ -32,54 +36,60 @@ const PackageDetailsPage = () => {
           'Authorization': `Bearer ${token}` 
         };
 
-        // 1. Kadi Pehli: Holiday Package ID se Itinerary dhoondo
-        const resPkg = await fetch(`http://46.62.160.188:3000/itineraries?holidayPackageId=${id}`, { headers });
-        const pkgJson = await resPkg.json();
-        console.log("Full API Response:", pkgJson);
-        
-        if (Array.isArray(pkgJson) && pkgJson.length > 0) {
-          const mainItinerary = pkgJson[0]; 
-          setItineraryData(mainItinerary);
-          console.log("Fetched Itinerary Data:", mainItinerary.id);
+        const [resItinerary, resPrice, resGallery] = await Promise.all([
+          fetch(`http://46.62.160.188:3000/itineraries?holidayPackageId=${id}`, { headers }),
+          fetch(`http://46.62.160.188:3000/holiday-package-prices/package/${id}`, { headers }),
+          fetch(`http://46.62.160.188:3000/holiday-package-image-categories/package/${id}`, { headers })
+        ]);
 
-          // 2. Kadi Dusri: ASALI ID milne ke baad hi Summary call karein
-          // Hum mainItinerary.id (UUID) bhej rahe hain
-          if (mainItinerary.id) {
-            try {
-              const resSum = await fetch(`http://46.62.160.188:3000/itinerary-summaries/by-itinerary/${mainItinerary.id}`, { headers });
-              
-              if (resSum.ok) {
-                const sumJson = await resSum.json();
-                setSummaryData(sumJson);
-              } else {
-                console.warn("Summary table mein is ID ki entry nahi mili:", mainItinerary.id);
-                setSummaryData(null);
-              }
-            } catch (sumError) {
-              console.error("Summary API network error:", sumError);
-            }
-          }
+        const itiJson = await resItinerary.json();
+        const priceJson = resPrice.ok ? await resPrice.json() : null;
+        const galleryJson = await resGallery.json();
+
+        setPriceData(priceJson);
+        if (Array.isArray(galleryJson)) {
+          setGalleryData(galleryJson);
+        }
+
+        if (Array.isArray(itiJson) && itiJson.length > 0) {
+          const mainItinerary = itiJson[0]; 
+          setItineraryData(mainItinerary);
+
+          const calculatedSummary = {
+            id: mainItinerary.id,
+            totalDays: mainItinerary.days?.length || 0,
+            grandTotal: priceJson?.total_price_per_adult || mainItinerary.holidayPackage?.price?.total_price_per_adult || 0,
+            discount: priceJson?.discount || 0, // Discount add kiya yahan
+            days: mainItinerary.days?.map((day: any) => ({
+              id: day.id,
+              dayNumber: day.dayNumber,
+              flightsAndTransfers: day.items?.filter((i: any) => i.type === 'flight' || i.type === 'transfer').length || 0,
+              hotels: day.items?.filter((i: any) => i.type === 'hotel').length || 0,
+              activities: day.items?.filter((i: any) => i.type === 'sightseeing').length || 0,
+              meals: day.items?.filter((i: any) => i.type === 'meal').length || 0,
+            })) || []
+          };
+          setSummaryData(calculatedSummary);
         }
       } catch (error) {
-        console.error("Itinerary Fetch error:", error);
+        console.error("Fetch Error:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [id]);
 
   if (loading) return (
     <div className="h-screen w-full flex flex-col items-center justify-center gap-4 bg-white">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#C9A961]"></div>
-      <p className="text-[#5A5550] font-bold tracking-widest uppercase text-xs">Loading Luxury Experience...</p>
+      <p className="text-[#5A5550] font-bold tracking-widest uppercase text-[10px]">Syncing Luxury Experience...</p>
     </div>
   );
 
   if (!itineraryData) return (
     <div className="h-screen w-full flex items-center justify-center bg-white font-bold text-gray-400 text-center p-6">
-      Package details currently unavailable.<br/>Please check if the Itinerary is created in Swagger.
+      Package details currently unavailable.
     </div>
   );
 
@@ -95,14 +105,14 @@ const PackageDetailsPage = () => {
         heroImage={holiday?.hero_image}
         title={holiday?.title}
         onOpenGallery={() => setIsGalleryOpen(true)} 
-        imageCategories={holiday?.imageCategories || []} 
+        imageCategories={galleryData} 
       />
 
       <GalleryModal 
         isOpen={isGalleryOpen} 
         onClose={() => setIsGalleryOpen(false)} 
         title={holiday?.title} 
-        imageCategories={holiday?.imageCategories || []}
+        imageCategories={galleryData} 
       />
       
       <PackageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -137,8 +147,9 @@ const PackageDetailsPage = () => {
           </div>
 
           <div className="lg:col-span-4">
+            {/* FIX: Passing 'userPreference' which is now either 'flight' or 'land' */}
             <PricingSidebar 
-               priceData={holiday?.price} 
+               priceData={priceData || holiday?.price} 
                calculatedSummary={summaryData}
                defaultOption={userPreference} 
             />

@@ -1,4 +1,4 @@
-import { Plane, Car, Hotel, ChevronDown } from "lucide-react";
+import { Plane, Car, Hotel, ChevronDown, MapPin } from "lucide-react";
 import { useState } from "react";
 
 interface ItinerarySectionProps {
@@ -18,6 +18,14 @@ export const ItinerarySection = ({ days, holiday, summary }: ItinerarySectionPro
     activities: acc.activities + (curr.activities || 0),
     meals: acc.meals + (curr.meals || 0),
   }), { flights: 0, hotels: 0, activities: 0, meals: 0 }) || null;
+
+  const getValidImage = (imgUrl: string) => {
+  // Agar image null hai, khali hai, ya wo error wali base64 string hai
+  if (!imgUrl || imgUrl === "data:;base64,=" || imgUrl.trim() === "") {
+    return "https://images.unsplash.com/photo-1512100356956-c1227c331701?q=80&w=1000"; // Fallback Image
+  }
+  return imgUrl;
+};
 
   return (
     <div className="w-full font-opensans">
@@ -101,12 +109,11 @@ export const ItinerarySection = ({ days, holiday, summary }: ItinerarySectionPro
                             <div className="flex-grow">
                               <div className="flex items-center gap-2 mb-4">
                                 <p className="font-bold text-sm uppercase">Flight</p>
-                                <span className="text-gray-400 text-xs">• {meta.departureCity || 'TBA'} to {meta.arrivalCity || 'TBA'} • {meta.durationText || 'N/A'}</span>
+                                <span className="text-gray-400 text-xs">• {meta.departureCity} to {meta.arrivalCity} • {meta.durationText || 'N/A'}</span>
                               </div>
                               <div className="bg-[#F9F9F9] rounded-xl p-6 flex items-center justify-between border border-gray-50">
                                 <div className="flex items-center gap-6">
                                    <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center border shadow-sm p-1 overflow-hidden">
-                                     {/* Error handling for empty image strings */}
                                      {meta.airline_logo ? (
                                        <img src={meta.airline_logo} alt="Airline" className="w-8" />
                                      ) : (
@@ -138,31 +145,56 @@ export const ItinerarySection = ({ days, holiday, summary }: ItinerarySectionPro
                         );
                       }
 
+
                       // 2. HOTEL SECTION
                       if (item.type === 'hotel') {
                         return (
                           <div key={item.id} className="flex gap-6 border-t pt-8 border-gray-100">
                             <Hotel size={20} className="text-gray-800 mt-1" />
                             <div className="flex-grow">
-                              <p className="font-bold text-sm uppercase mb-4">Hotel <span className="text-gray-400 font-normal text-xs">• Stay in {meta.location || 'Dest'} • {meta.nights || '0'} Night</span></p>
+                              <p className="font-bold text-sm uppercase mb-4">
+                                Hotel <span className="text-gray-400 font-normal text-xs">• Stay in {meta.location || 'Dest'} • {meta.nights || '0'} Night</span>
+                              </p>
                               <div className="flex flex-col lg:flex-row gap-6">
-                                {/* Null safety for hotel images */}
-                                {item.image ? (
-                                  <img src={item.image} className="w-full lg:w-64 h-40 object-cover rounded-2xl" alt="Hotel" />
+                                {/* Image Logic Fixed */}
+                                {item.image || meta.hotel_image ? (
+                                  <img 
+                                    src={getValidImage(item.image || meta.hotel_image)} 
+                                    className="w-full lg:w-64 h-40 object-cover rounded-2xl" 
+                                    alt="Hotel" 
+                                    onError={(e) => {
+                                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600";
+                                    }}
+                                  />
                                 ) : (
-                                  <div className="w-full lg:w-64 h-40 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 text-xs">No Hotel Image</div>
+                                  <div className="w-full lg:w-64 h-40 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 text-xs text-center px-4">
+                                    No Hotel Image Provided
+                                  </div>
                                 )}
+                      
                                 <div className="flex-grow">
-                                  <h4 className="font-bold text-xl text-gray-800">{meta.name || 'Property Name'}</h4>
+                                  <h4 className="font-bold text-xl text-gray-800">{meta.name || meta.hotel_name || 'Property Name'}</h4>
                                   <div className="flex items-center gap-1 my-1">
-                                    {Array.from({ length: meta.starRating || 0 }).map((_, s) => <span key={s} className="text-green-500 text-xs">★</span>)}
+                                    {Array.from({ length: meta.starRating || 0 }).map((_, s) => (
+                                      <span key={s} className="text-green-500 text-xs">★</span>
+                                    ))}
                                     <span className="text-xs text-gray-400 ml-2">Verified Property</span>
                                   </div>
                                   <p className="font-bold text-[#2EB159] text-sm mt-3">{meta.roomType || 'Standard Room'}</p>
+                                  
+                                  {/* List Logic Fixed */}
                                   <ul className="mt-2 space-y-1">
-                                    {meta.mealInclusions?.map((inc: string, i: number) => (
-                                      <li key={i} className="text-[11px] text-gray-600 flex items-center gap-2">✔ {inc}</li>
-                                    ))}
+                                    {meta.mealInclusions ? (
+                                      meta.mealInclusions.map((inc: string, i: number) => (
+                                        <li key={i} className="text-[11px] text-gray-600 flex items-center gap-2">✔ {inc}</li>
+                                      ))
+                                    ) : meta.highlights ? (
+                                      meta.highlights.map((h: any, i: number) => (
+                                        <li key={i} className="text-[11px] text-gray-600 flex items-center gap-2">✔ {h}</li>
+                                      ))
+                                    ) : (
+                                      <li className="text-[11px] text-gray-400 italic">Confirmed as per booking</li>
+                                    )}
                                   </ul>
                                 </div>
                               </div>
@@ -170,8 +202,41 @@ export const ItinerarySection = ({ days, holiday, summary }: ItinerarySectionPro
                           </div>
                         );
                       }
+                      // 3. SIGHTSEEING SECTION (Adding this for Day 2 & 3)
+                      if (item.type === 'sightseeing') {
+                        return (
+                          <div key={item.id} className="flex gap-6 border-t pt-8 border-gray-100">
+                            <MapPin size={20} className="text-red-500 mt-1" />
+                            <div className="flex-grow">
+                              <p className="font-bold text-sm uppercase mb-4">Sightseeing <span className="text-gray-400 font-normal text-xs">• {meta.location} • {meta.durationText || 'Full Day'}</span></p>
+                              <div className="flex flex-col lg:flex-row gap-6">
+                                {item.image ? (
+                                  <img 
+                                    src={getValidImage(item.image)} 
+                                    className="w-full lg:w-64 h-40 object-cover rounded-2xl" 
+                                    alt="Sightseeing" 
+                                    onError={(e) => {
+                                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600";
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="w-full lg:w-64 h-40 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 text-xs">Sightseeing Image</div>
+                                )}
+                                <div className="flex-grow">
+                                  <h4 className="font-bold text-xl text-gray-800">{meta.title}</h4>
+                                  <div className="flex flex-wrap gap-2 mt-3">
+                                    {meta.highlights?.map((h: string, i: number) => (
+                                      <span key={i} className="text-[10px] bg-red-50 text-red-600 px-2 py-1 rounded-md font-bold border border-red-100 uppercase">✓ {h}</span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
 
-                      // 3. TRANSFER/CAR SECTION
+                      // 4. TRANSFER/CAR SECTION
                       if (item.type === 'transfer' || item.type === 'car') {
                         return (
                           <div key={item.id} className="flex gap-6 border-t pt-8 border-gray-100">
@@ -180,7 +245,14 @@ export const ItinerarySection = ({ days, holiday, summary }: ItinerarySectionPro
                               <p className="font-bold text-sm uppercase mb-4">Transfer <span className="text-gray-400 font-normal text-xs">• {meta.subtitle || 'Route'} • {meta.durationText || 'N/A'}</span></p>
                               <div className="flex gap-5 items-center">
                                 {item.image ? (
-                                  <img src={item.image} className="w-48 h-28 object-cover rounded-xl" alt="Transfer" />
+                                  <img 
+                                    src={getValidImage(item.image)} 
+                                    className="w-48 h-28 object-cover rounded-xl" 
+                                    alt="Transfer" 
+                                    onError={(e) => {
+                                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=600";
+                                    }}
+                                  />
                                 ) : (
                                   <div className="w-48 h-28 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 text-xs text-center px-4">Vehicle Visuals Not Provided</div>
                                 )}

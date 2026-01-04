@@ -7,50 +7,72 @@ import { Navbar } from "@/pages/Navbar";
 
 const HolidayPackages = () => {
   const [searchParams] = useSearchParams();
-  const [packages, setPackages] = useState([]);
+  const [packages, setPackages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchPackages = async () => {
-      setLoading(true);
-      try {
-        const city = searchParams.get("city") || "";
-        const date = searchParams.get("departureDate") || "";
-        
-        
-        const token = sessionStorage.getItem("shineetrip_token");
+useEffect(() => {
+  const fetchPackages = async () => {
+    setLoading(true);
+    try {
+      const city = searchParams.get("city");
+      const date = searchParams.get("departureDate");
+      const token = sessionStorage.getItem("shineetrip_token");
 
-        const url = `http://46.62.160.188:3000/holiday-package?city=${city}&departureDate=${date}`;
+      const queryParams = new URLSearchParams();
+      queryParams.append("page", "1");
+      queryParams.append("limit", "10");
+      
+      // Backend ko city bhej rahe hain query mein
+      if (city) queryParams.append("city", city); 
+      if (date) queryParams.append("departureDate", date);
+
+      const baseUrl = `http://46.62.160.188:3000/holiday-package?${queryParams.toString()}`;
+      
+      const response = await fetch(baseUrl, {
+        method: 'GET',
+        headers: {
+          'accept': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const result: any = await response.json();
+      
+      let finalData = result.data || result || [];
+
+      // --- SMART FILTER LOGIC FOR INCLUDED_CITIES ---
+      if (city) {
+        const searchCity = city.toLowerCase().trim();
         
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'accept': '*/*',
-            // 2. Token ko headers mein pass karna
-            'Authorization': `Bearer ${token}`
-          }
+        const filtered = finalData.filter((pkg: any) => {
+          // 1. Check title
+          const matchTitle = pkg.title?.toLowerCase().includes(searchCity);
+          
+          // 2. Check included_cities (ARRAY CHECK) - Ye sabse important hai
+          const matchIncludedCities = Array.isArray(pkg.included_cities) && 
+            pkg.included_cities.some((c: string) => c.toLowerCase().includes(searchCity));
+          
+          // 3. Check direct city field (Backup)
+          const matchCityField = pkg.city?.toLowerCase().includes(searchCity);
+
+          return matchTitle || matchIncludedCities || matchCityField;
         });
 
-        if (response.status === 403 || response.status === 401) {
-          console.error("Auth Error: Token missing or expired");
-          // Aap chahein toh yahan user ko login page par redirect kar sakte hain
-          return;
-        }
-
-        const result = await response.json();
-        
-        if (result.data) {
-          setPackages(result.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch packages:", error);
-      } finally {
-        setLoading(false);
+        console.log(`Search Results for ${city}:`, filtered);
+        setPackages(filtered);
+      } else {
+        setPackages(finalData);
       }
-    };
 
-    fetchPackages();
-  }, [searchParams]);
+    } catch (error) {
+      console.error("Failed to fetch packages:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchPackages();
+}, [searchParams]);
 
   return (
     <div className="min-h-screen bg-[#F5F7FA]">
