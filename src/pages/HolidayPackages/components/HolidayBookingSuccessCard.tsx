@@ -1,6 +1,6 @@
 import React from 'react';
 import { Check, MapPin, Calendar, Users, Mail, Phone, Home, Download, Plane, Hotel } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface SuccessCardProps {
     orderData: any; // Swagger GET /holiday-package-orders ka single object
@@ -8,7 +8,12 @@ interface SuccessCardProps {
 
 const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     
+    // Check kar rahe hain ki user ne flight ke saath book kiya tha ya land only
+    // Ye 'flight' ya 'land' PackageBookingPage ki navigation state se mil raha hai
+    const selectionType = location.state?.type || 'flight';
+
     if (!orderData) return null;
 
     const pkg = orderData.holidayPackage;
@@ -16,6 +21,7 @@ const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) =>
 
     // Date formatting helper
     const formatDate = (dateStr: string) => {
+        if (!dateStr) return "TBA";
         return new Date(dateStr).toLocaleDateString('en-GB', {
             day: 'numeric', month: 'short', year: 'numeric'
         });
@@ -32,7 +38,7 @@ const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) =>
                     </div>
                     <h1 className="text-2xl font-bold text-gray-900">Booking Confirmed!</h1>
                     <p className="text-gray-500 text-sm mt-1">
-                        Your trip to {pkg.included_cities?.[0] || 'your destination'} has been successfully booked
+                        Your trip to {pkg?.included_cities?.[0] || 'your destination'} has been successfully booked
                     </p>
                 </div>
 
@@ -53,7 +59,7 @@ const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) =>
                             <MapPin className="text-gray-400 shrink-0" size={20} />
                             <div>
                                 <p className="text-sm font-bold text-gray-800">Destination</p>
-                                <p className="text-sm text-gray-500">{pkg.included_cities?.join(", ")}</p>
+                                <p className="text-sm text-gray-500">{pkg?.included_cities?.join(", ") || "Package Location"}</p>
                             </div>
                         </div>
 
@@ -62,7 +68,7 @@ const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) =>
                             <div>
                                 <p className="text-sm font-bold text-gray-800">Travel Dates</p>
                                 <p className="text-sm text-gray-500">
-                                    {formatDate(orderData.startDate)} - {formatDate(orderData.endDate)} ({pkg.nights} Nights)
+                                    {formatDate(orderData.startDate)} - {formatDate(orderData.endDate)} ({pkg?.nights || 0} Nights)
                                 </p>
                             </div>
                         </div>
@@ -71,29 +77,35 @@ const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) =>
                             <Users className="text-gray-400 shrink-0" size={20} />
                             <div>
                                 <p className="text-sm font-bold text-gray-800">Guests</p>
-                                <p className="text-sm text-gray-500">{orderData.adults} Adults, {orderData.children} Children</p>
+                                <p className="text-sm text-gray-500">{orderData.adults || 2} Adults, {orderData.children || 0} Children</p>
                             </div>
                         </div>
 
-                        {/* Flight Detail Block (As per Image) */}
-                        <div className="bg-[#F9FAFB] rounded-xl p-4 flex items-center gap-4">
-                            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-100">
-                                <Plane className="text-orange-500" size={20} />
+                        {/* ✅ DYNAMIC FLIGHT: Chhup jayega agar 'land' package hai */}
+                        {selectionType === 'flight' && (
+                            <div className="bg-[#F9FAFB] rounded-xl p-4 flex items-center gap-4 animate-in slide-in-from-left-2">
+                                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-100">
+                                    <Plane className="text-orange-500" size={20} />
+                                </div>
+                                <div className="flex-grow">
+                                    <p className="text-sm font-bold text-gray-800">Confirmed Flight Included</p>
+                                    <p className="text-xs text-gray-500 uppercase tracking-tight">
+                                        {pkg?.included_cities?.[0] || 'Origin'} Arrival • {formatDate(orderData.startDate)}
+                                    </p>
+                                </div>
                             </div>
-                            <div className="flex-grow">
-                                <p className="text-sm font-bold text-gray-800">Confirmed Flight Included</p>
-                                <p className="text-xs text-gray-500">Delhi - Goa • {formatDate(orderData.startDate)}</p>
-                            </div>
-                        </div>
+                        )}
 
-                        {/* Hotel Detail Block (As per Image) */}
+                        {/* ✅ DYNAMIC HOTEL: Data Swagger se aa raha hai */}
                         <div className="bg-[#F9FAFB] rounded-xl p-4 flex items-center gap-4">
                             <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-100">
                                 <Hotel className="text-blue-500" size={20} />
                             </div>
                             <div className="flex-grow">
-                                <p className="text-sm font-bold text-gray-800">{pkg.title}</p>
-                                <p className="text-xs text-gray-500">Luxury Stay • Room: Private Pool Villa</p>
+                                <p className="text-sm font-bold text-gray-800">{pkg?.title || "Luxury Stay"}</p>
+                                <p className="text-xs text-gray-500">
+                                    Stay in {pkg?.included_cities?.[0] || "Destination"} • Premium Inclusions
+                                </p>
                             </div>
                         </div>
 
@@ -102,10 +114,10 @@ const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) =>
                             <p className="text-sm font-bold text-gray-800 mb-3">Confirmation sent to:</p>
                             <div className="space-y-2">
                                 <div className="flex items-center gap-3 text-sm text-gray-500">
-                                    <Mail size={16} /> {customer.email}
+                                    <Mail size={16} /> {customer?.email || "guest@email.com"}
                                 </div>
                                 <div className="flex items-center gap-3 text-sm text-gray-500">
-                                    <Phone size={16} /> {customer.phone || "+91 98765 43210"}
+                                    <Phone size={16} /> {customer?.phone || "+91 98765 43210"}
                                 </div>
                             </div>
                         </div>
@@ -113,37 +125,30 @@ const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) =>
                 </div>
 
                 {/* 3. Action Buttons */}
-// Is code ko apne component mein update kar lo
-<div className="flex flex-col sm:flex-row gap-4 px-2 mt-8 no-print">
-    <button 
-        onClick={() => {
-            // Sirf card area print karne ke liye simple print command
-            window.print();
-        }}
-        className="flex-1 bg-[#10B981] text-white py-3.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#059669] transition-all shadow-md active:scale-95"
-    >
-        <Download size={18} /> Download Invoice / PDF
-    </button>
-    
-    <button 
-        onClick={() => navigate('/')}
-        className="flex-1 bg-white text-gray-700 py-3.5 rounded-lg font-bold text-sm border border-gray-200 flex items-center justify-center gap-2 hover:bg-gray-50 transition-all shadow-sm active:scale-95"
-    >
-        <Home size={18} /> Back to Home
-    </button>
-</div>
+                <div className="flex flex-col sm:flex-row gap-4 px-2 mt-8 no-print">
+                    <button 
+                        onClick={() => window.print()}
+                        className="flex-1 bg-[#10B981] text-white py-3.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#059669] transition-all shadow-md active:scale-95"
+                    >
+                        <Download size={18} /> Download Invoice / PDF
+                    </button>
+                    
+                    <button 
+                        onClick={() => navigate('/')}
+                        className="flex-1 bg-white text-gray-700 py-3.5 rounded-lg font-bold text-sm border border-gray-200 flex items-center justify-center gap-2 hover:bg-gray-50 transition-all shadow-sm active:scale-95"
+                    >
+                        <Home size={18} /> Back to Home
+                    </button>
+                </div>
 
-{/* CSS for printing - isko component ke upar ya global CSS mein dal dena */}
-<style>{`
-  @media print {
-    .no-print { display: none !important; }
-    body { background: white !important; }
-    .fixed { position: relative !important; }
-  }
-`}</style>
+                <style>{`
+                  @media print {
+                    .no-print { display: none !important; }
+                    body { background: white !important; }
+                    .fixed { position: relative !important; }
+                  }
+                `}</style>
             </div>
-
-            
         </div>
     );
 };

@@ -116,6 +116,7 @@ const PackageBookingPage: React.FC = () => {
                 currency: "INR",
                 customerId: parseInt(customerId)
             };
+            console.log("Order Payload:", orderPayload.totalPrice);
 
             const response = await fetch(API_BASE, {
                 method: 'POST',
@@ -125,6 +126,9 @@ const PackageBookingPage: React.FC = () => {
 
             const orderData = await response.json();
             if (!response.ok) throw new Error(orderData.message || 'Order creation failed');
+            console.log("UI Price:", totalAmount);
+console.log("Price sent to Razorpay (in Paise):", totalAmount * 100);
+console.log("Razorpay Order ID from Backend:", orderData.razorpayOrderId);
 
             const options = {
                 key: RAZORPAY_KEY,
@@ -144,6 +148,7 @@ const PackageBookingPage: React.FC = () => {
             setErrorMessage(error.message);
             setIsProcessing(false);
         }
+        
     };
 
     const verifyPayment = async (rzpRes: any, orderId: string) => {
@@ -364,7 +369,7 @@ if (isBookingSuccessful && completeOrderData) {
                                 </div>
                                 <div>
                                     <p className="text-[11px] font-black text-gray-800 uppercase">Secure Payment</p>
-                                    <p className="text-[10px] text-gray-400 font-medium">PCI-DSS certified gateway</p>
+                                    <p className="text-[10px] text-gray-400 font-medium"></p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
