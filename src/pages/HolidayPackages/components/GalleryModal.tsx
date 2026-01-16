@@ -5,14 +5,13 @@ interface GalleryModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  imageCategories: any[]; // Swagger API se aane wala data
+  imageCategories: any[]; 
 }
 
 export const GalleryModal = ({ isOpen, onClose, title, imageCategories }: GalleryModalProps) => {
   const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
   const [activeCity, setActiveCity] = useState("All");
 
-  // Logic: Sirf wahi categories dikhao jinme images exist karti hain
   const validCategories = imageCategories?.filter(cat => cat.images && cat.images.length > 0) || [];
 
   // Reset index when modal opens to ensure we don't point to an empty category
@@ -30,7 +29,7 @@ export const GalleryModal = ({ isOpen, onClose, title, imageCategories }: Galler
   // Dynamic City Tabs
   const cities = ["All", ...Array.from(new Set(currentCategory.images?.map((img: any) => img.city).filter(Boolean) as string[]))];
 
-  // Filtering images based on City Tab
+
   const filteredImages = activeCity === "All" 
     ? currentCategory.images || []
     : (currentCategory.images || []).filter((img: any) => img.city === activeCity);

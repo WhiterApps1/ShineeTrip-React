@@ -10,8 +10,7 @@ const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) =>
     const navigate = useNavigate();
     const location = useLocation();
     
-    // Check kar rahe hain ki user ne flight ke saath book kiya tha ya land only
-    // Ye 'flight' ya 'land' PackageBookingPage ki navigation state se mil raha hai
+
     const selectionType = location.state?.type || 'flight';
 
     if (!orderData) return null;
@@ -81,7 +80,7 @@ const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) =>
                             </div>
                         </div>
 
-                        {/* ✅ DYNAMIC FLIGHT: Chhup jayega agar 'land' package hai */}
+
                         {selectionType === 'flight' && (
                             <div className="bg-[#F9FAFB] rounded-xl p-4 flex items-center gap-4 animate-in slide-in-from-left-2">
                                 <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-100">
@@ -96,7 +95,7 @@ const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) =>
                             </div>
                         )}
 
-                        {/* ✅ DYNAMIC HOTEL: Data Swagger se aa raha hai */}
+
                         <div className="bg-[#F9FAFB] rounded-xl p-4 flex items-center gap-4">
                             <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-100">
                                 <Hotel className="text-blue-500" size={20} />

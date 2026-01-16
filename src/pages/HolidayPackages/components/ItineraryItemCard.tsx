@@ -1,7 +1,7 @@
 import { Plane, Hotel, MapPin, Coffee, Car } from "lucide-react";
 
 export const ItineraryItemCard = ({ item }: any) => {
-  // Swagger schema mein metadata object ke andar saari detail hai
+
   const meta = item.metadata || {};
 
   // 1. FLIGHT CARD RENDER

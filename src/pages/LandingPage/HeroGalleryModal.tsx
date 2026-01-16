@@ -31,7 +31,7 @@ export const GalleryModal = ({ isOpen, onClose, title, imageCategories, onImageC
     : (currentCategory.images || []).filter((img: any) => img.city === activeCity);
 
   return (
-    // ✅ FIX: z-[9999] ko hata kar z-[60] kiya taki Login Modal (z-100) iske upar dikhe
+  
     <div className="fixed inset-0 z-20 mt-14 bg-white/95 backdrop-blur-sm overflow-y-auto font-opensans animate-in fade-in slide-in-from-bottom-10 duration-300">
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
         

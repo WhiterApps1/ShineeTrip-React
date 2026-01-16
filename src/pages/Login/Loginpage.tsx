@@ -146,17 +146,14 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       );
 
       if (!roleRes.ok) {
-          // Log error but DONT throw/stop, we proceed with current token state
         console.warn(`Roles not set (Status: ${roleRes.status}). Proceeding with login.`);
       } else {
         console.log("✅ Roles assigned successfully");
       }
-      
-      // Attempt 2: Fetch/Create Customer DB Record and get NUMERICAL ID
+
       try {
    const dbCustomerId = await checkOrCreateCustomer(user, token);
-   
-   // 2. AB TOKEN AUR DATA SAVE KARO (End mein)
+
    sessionStorage.setItem("shineetrip_token", token);
    sessionStorage.setItem("shineetrip_db_customer_id", String(dbCustomerId));
    sessionStorage.setItem("shineetrip_name", user.displayName || "");
@@ -170,7 +167,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 }
 
 
-      onClose(); // Close modal on success
+      onClose();
     } catch (error: any) {
       console.error("Google sign-in failed:", error);
       alert(error.message || "Login failed. Please try again.");
@@ -184,7 +181,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setSocialLoading("facebook")
     try {
       const user = await signInWithFacebook()
-      // TODO: Add checkOrCreateCustomer logic here for Facebook too
       if (user) onClose()
     } catch (error: any) {
       alert("Facebook login failed.")
@@ -196,7 +192,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const handleAppleLogin = async () => {
     setSocialLoading("apple")
     try {
-      // Add Apple sign-in logic here
+
       alert("Apple sign-in coming soon!")
     } catch (error: any) {
       alert("Apple login failed. Please try again.")

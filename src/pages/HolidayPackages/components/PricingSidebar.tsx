@@ -4,17 +4,17 @@ import { useNavigate, useParams } from "react-router-dom";
 interface PricingSidebarProps {
   priceData: any;
   calculatedSummary: any;
-  defaultOption?: 'flight' | 'land'; // Modal se 'flight' ya 'land' aa raha hai
+  defaultOption?: 'flight' | 'land'; 
   persons: number;
 }
 
 export const PricingSidebar = ({ priceData, calculatedSummary, defaultOption = 'flight', persons }: PricingSidebarProps) => {
-  // 1. Local state taaki user detail page par bhi toggle kar sake
+  
   const [selection, setSelection] = useState<'flight' | 'land'>(defaultOption);
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // Sync with defaultOption if it changes
+
   useEffect(() => {
     setSelection(defaultOption);
   }, [defaultOption]);
@@ -31,14 +31,13 @@ export const PricingSidebar = ({ priceData, calculatedSummary, defaultOption = '
     );
   }
 
-  // 2. Extracting necessary price components (Per Person)
+
   const baseFare = Number(priceData?.base_fare || 0);
   const flightPrice = Number(priceData?.flight_logistics || priceData?.flight_price || 0);
   const tax = Number(priceData?.tax || 0);
   const discount = Number(calculatedSummary?.discount || priceData?.discount || 0);
 
-  // 3. MAIN TOGGLE & MULTIPLICATION LOGIC
-  // Sabhi components ko 'persons' se multiply kar rahe hain
+
   const perPersonTotal = selection === 'flight' 
     ? (baseFare + flightPrice + tax - discount)
     : (baseFare + tax - discount);
@@ -83,7 +82,7 @@ export const PricingSidebar = ({ priceData, calculatedSummary, defaultOption = '
 
       <button 
         onClick={() => {
-          // Navigating to the booking page with dynamic total and persons
+         
           navigate(
             `/package-booking?packageId=${id}&amount=${totalAmount}&adults=${persons}`, 
             { state: { type: selection } }

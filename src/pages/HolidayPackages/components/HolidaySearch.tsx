@@ -91,7 +91,7 @@ export const HolidaySearch = ({ isDetailsPage = false , persons = 1 , setPersons
     if (date) params.departureDate = date;
     params.persons = persons.toString();
 
-    // URL update hoga, HolidayPackages.tsx isey pick kar lega
+ 
     setSearchParams(params);
     setShowSuggestions(false);
   };

@@ -247,10 +247,10 @@ useEffect(() => {
             </button>
         </div>
 
-        {/* Dynamic Services: Option 2 aur Option 3 yahan se handle honge */}
+      
         {services && services
             .filter((s: any) => s.roomTypes?.room_type === room.room_type)
-            .slice(0, 2) // Pehle 2 matching services ko dikhayenge
+            .slice(0, 2) 
             .map((service: any) => {
                 const sRetail = Number(service.price.preTaxRetailPrice) || 0; 
                 const sRack = Number(service.price.preTaxRackRate) || 0;
@@ -302,7 +302,7 @@ useEffect(() => {
             })
         }
 
-        {/* Fallback Empty Box: Agar koi service na mile toh layout khali na lage */}
+       
         {(!services || services.filter((s: any) => s.roomTypes?.room_type === room.room_type).length === 0) && (
              <div className="hidden md:flex items-center justify-center border border-dashed border-gray-200 rounded-xl p-4 min-h-[120px] text-gray-400 text-xs text-center">
                  No additional service bundles available for this room

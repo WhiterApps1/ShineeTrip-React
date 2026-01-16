@@ -65,7 +65,6 @@ export default function Testimonials() {
           package: item.title ? item.title.substring(0, 20) : "LUXURY STAY", 
           content: item.review || "An unforgettable experience!", 
           rating: item.rating || 5, 
-          // Default Avatar agar image na ho
           image: item.cu_img || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&q=80",
           number: formatNumber(index),
         }));
@@ -172,7 +171,6 @@ export default function Testimonials() {
                             alt={testimonial.name}
                             className="w-full h-full object-cover"
                             onError={(e) => {
-                                // Fallback image logic
                                 e.currentTarget.src = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&q=80";
                             }}
                           />

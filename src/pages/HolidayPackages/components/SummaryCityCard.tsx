@@ -11,7 +11,7 @@ interface SummaryCityCardProps {
       hotels: number;
       activities: number;
       meals: number;
-      plan: string; // SummarySection se 'plan' aa raha hai
+      plan: string; 
       date?: string;
     }>;
     transportInfo?: {

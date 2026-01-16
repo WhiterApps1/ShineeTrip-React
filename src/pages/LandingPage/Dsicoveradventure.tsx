@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { GalleryModal } from "./HeroGalleryModal"; // Ensure path is correct
+import { GalleryModal } from "./HeroGalleryModal"; 
 // ✅ 1. Import LoginModal
 import { LoginModal } from "../Login/Loginpage"; 
 
@@ -55,9 +55,9 @@ export default function PopularDestinations() {
   const checkAuth = () => {
     const token = sessionStorage.getItem("shineetrip_token");
     
-    // Agar token nahi hai ya expired hai
+
     if (!token || isTokenExpired(token)) {
-        // 🔥 Ye popup open karega agar login nahi hai
+  
         setShowLoginPopup(true); 
         return false;
     }
@@ -89,17 +89,12 @@ export default function PopularDestinations() {
 
   useEffect(() => { fetchStates() }, []); 
 
-  // --- Click Handlers ---
-
-  // 1. Explore All Button Click (Ispe usually login nahi mangte, par maanga hai to laga diya)
   const handleExploreAllClick = () => {
-    // Agar tum chahte ho ki Explore All pe login na mange, to niche wali line comment kar do
-    // if (!checkAuth()) return; 
-    
+
     setIsModalOpen(true);
   };
 
-  // 2. Normal Card Click (On Grid) - Yaha Login zaroori hai
+
   const handleClick = (dest: Destination) => {
     // ✅ Check Auth First
     if (!checkAuth()) return; 
@@ -120,16 +115,15 @@ export default function PopularDestinations() {
     }
   };
 
-  // 3. Gallery Modal Image Click - Yaha bhi Login zaroori hai
+
   const handleModalImageClick = (imgData: any) => {
-    // ✅ Check Auth First
+ 
     if (!checkAuth()) {
-        // Agar auth fail hua, to checkAuth() khud Login Modal open kar dega.
-        // Gallery modal khula rehne do, login ke baad user wapis try karega.
+
         return; 
     }
 
-    // Login successful hai, ab aage badho
+
     setIsModalOpen(false);
 
     if (imgData.redirect_url) {
@@ -214,7 +208,7 @@ export default function PopularDestinations() {
         onImageClick={handleModalImageClick} 
       />
 
-      {/* ✅ Login Modal (Ye tab dikhega jab checkAuth fail hoga) */}
+
       <LoginModal 
         isOpen={showLoginPopup} 
         onClose={() => setShowLoginPopup(false)} 

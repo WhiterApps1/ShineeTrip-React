@@ -20,7 +20,6 @@ export const HolidaySearchWidget = () => {
     const fetchPackageCities = async () => {
       try {
         const token = sessionStorage.getItem("shineetrip_token");
-        // Sabhi packages fetch kar rahe hain cities nikalne ke liye
         const res = await fetch("http://46.62.160.188:3000/holiday-package?limit=100", {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
@@ -29,7 +28,6 @@ export const HolidaySearchWidget = () => {
         const packages = result.data || result;
 
         if (Array.isArray(packages)) {
-          // included_cities array se unique cities extract karna
           const allCities = packages.flatMap((pkg: any) => pkg.included_cities || []);
           const uniqueCities: string[] = Array.from(new Set(allCities)).sort() as string[];
           setAvailableCities(uniqueCities);

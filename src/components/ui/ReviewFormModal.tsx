@@ -6,14 +6,14 @@ interface ReviewFormModalProps {
     isOpen: boolean;
     onClose: () => void;
     hotelId: string;
-    onReviewPosted: () => void; // Reviews list refresh karne ke liye
+    onReviewPosted: () => void; 
 }
 
 // ReviewFormModal Component
 const ReviewFormModal: React.FC<ReviewFormModalProps> = ({ isOpen, onClose, hotelId, onReviewPosted }) => {
     
     // --- State Management ---
-    const [rating, setRating] = useState(0); // 1 to 5 stars (Overall Rating)
+    const [rating, setRating] = useState(0); 
     const [comment, setComment] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [submissionError, setSubmissionError] = useState<string | null>(null);
@@ -108,8 +108,7 @@ const ReviewFormModal: React.FC<ReviewFormModalProps> = ({ isOpen, onClose, hote
     // --- Render Logic ---
     if (!isOpen) return null;
     
-    // NOTE: You might need to use a Shardcn Dialog component here instead of this simple div, 
-    // depending on the rest of your UI setup. I'm using the simple div structure here.
+   
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

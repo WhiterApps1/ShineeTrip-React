@@ -9,21 +9,21 @@ interface PackageGalleryProps {
 
 export const PackageGallery = ({ heroImage, title, onOpenGallery, imageCategories }: PackageGalleryProps) => {
   
-  // 1. Sirf wahi categories nikal rahe hain jinme asali images uploaded hain
+ 
   const validCategories = imageCategories?.filter(cat => cat.images && cat.images.length > 0) || [];
 
-  // 2. SMART SEARCH: Pehle specific keywords dhoondo, nahi toh koi bhi valid category utha lo
+
   const activitiesCat = validCategories.find(cat => 
     cat.title.toLowerCase().includes('activities') || 
     cat.title.toLowerCase().includes('sightseeing') ||
     cat.title.toLowerCase().includes('destination')
-  ) || validCategories[0]; // Fallback to first valid category
+  ) || validCategories[0]; 
 
   const propertyCat = validCategories.find(cat => 
     (cat.title.toLowerCase().includes('property') || 
      cat.title.toLowerCase().includes('hotel') ||
      cat.title.toLowerCase().includes('luxury')) && 
-     cat.id !== activitiesCat?.id // Taaki dono slots mein same image na aaye
+     cat.id !== activitiesCat?.id 
   ) || validCategories[1] || validCategories[0];
 
   // 3. Total Photos count for the button

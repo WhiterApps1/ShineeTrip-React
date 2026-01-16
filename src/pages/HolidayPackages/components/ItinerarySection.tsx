@@ -20,7 +20,7 @@ export const ItinerarySection = ({ days, holiday, summary }: ItinerarySectionPro
   }), { flights: 0, hotels: 0, activities: 0, meals: 0 }) || null;
 
   const getValidImage = (imgUrl: string) => {
-  // Agar image null hai, khali hai, ya wo error wali base64 string hai
+
   if (!imgUrl || imgUrl === "data:;base64,=" || imgUrl.trim() === "") {
     return "https://images.unsplash.com/photo-1512100356956-c1227c331701?q=80&w=1000"; // Fallback Image
   }

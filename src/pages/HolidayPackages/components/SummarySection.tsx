@@ -2,7 +2,7 @@ import { SummaryCityCard } from "./SummaryCityCard";
 
 interface SummarySectionProps {
   days: any[]; // Itinerary days array from /itineraries
-  summary: any; // Auto-calculated summary from PackageDetailsPage
+  summary: any;
 }
 
 export const SummarySection = ({ days, summary }: SummarySectionProps) => {
@@ -13,21 +13,20 @@ export const SummarySection = ({ days, summary }: SummarySectionProps) => {
     const groupedCities: any[] = [];
 
     summary.days.forEach((summaryDay: any) => {
-      // 1. Itinerary Day dhoondna metadata nikalne ke liye
+      
       const itineraryDay = days.find(d => d.id === summaryDay.id || d.dayNumber === summaryDay.dayNumber);
       
-      // 2. SMART CITY DETECTION (Swagger Metadata ke hisaab se)
+   
       const hotelCity = itineraryDay?.items?.find((i: any) => i.type === 'hotel')?.metadata?.location;
       const flightCity = itineraryDay?.items?.find((i: any) => i.type === 'flight')?.metadata?.arrivalCity;
       const sightseeingCity = itineraryDay?.items?.find((i: any) => i.type === 'sightseeing')?.metadata?.location;
       
-      // Priority: Hotel > Flight > Sightseeing > Fallback
+      
       const cityName = (hotelCity || flightCity || sightseeingCity || "Goa").split(',')[0].trim();
 
       let cityGroup = groupedCities.find(c => c.cityName === cityName);
 
-      // 3. Plan Text Logic (TBA hatane ke liye)
-      // Agar metadata mein description hai toh wo lo, nahi toh Day Title
+
       const planText = itineraryDay?.items?.[0]?.metadata?.description || 
                         itineraryDay?.title || 
                         "Independent activities and leisure time.";
@@ -43,14 +42,14 @@ export const SummarySection = ({ days, summary }: SummarySectionProps) => {
         cityGroup.days.push(dayData);
         cityGroup.nights = cityGroup.days.length; 
       } else {
-        // Entry Flight/Transport info for this City
+
         const transportItem = itineraryDay?.items?.find((i: any) => i.type === 'flight' || i.type === 'transfer');
         
         groupedCities.push({
           cityName: cityName,
           nights: 1,
           days: [dayData],
-          // Formatting Transport Info for the City Card Header
+       
           transportInfo: transportItem ? {
             type: transportItem.type,
             from: transportItem.metadata?.departureCity || "Origin",
@@ -66,7 +65,7 @@ export const SummarySection = ({ days, summary }: SummarySectionProps) => {
 
   const cityWiseData = getGroupedSummary();
 
-  // Summary counts calculate karna
+ 
   const totalActivities = summary?.days?.reduce((sum: number, day: any) => sum + (day.activities || 0), 0);
   const totalMeals = summary?.days?.reduce((sum: number, day: any) => sum + (day.meals || 0), 0);
 

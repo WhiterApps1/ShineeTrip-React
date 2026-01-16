@@ -19,7 +19,7 @@ const InvoicePDF: React.FC<InvoiceProps> = ({ invoiceData }) => {
 
     return (
         <div className="bg-gray-100 min-h-screen py-10 px-4">
-            {/* 🖨️ PRINT BUTTON (Screen par dikhega, PDF mein nahi) */}
+          
             <div className="max-w-[800px] mx-auto mb-6 flex justify-end no-print">
                 <button 
                     onClick={handlePrint}

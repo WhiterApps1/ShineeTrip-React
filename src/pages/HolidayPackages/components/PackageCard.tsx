@@ -9,7 +9,7 @@ interface PackageCardProps {
 
 export const PackageCard = ({ data , persons }: PackageCardProps) => {
   const [showPricePopup, setShowPricePopup] = useState(false);
-  const [showDetailsPopup, setShowDetailsPopup] = useState(false); // New Details Popup
+  const [showDetailsPopup, setShowDetailsPopup] = useState(false); 
   const navigate = useNavigate();
 
   const parsePrice = (price: any) => {
@@ -17,7 +17,7 @@ export const PackageCard = ({ data , persons }: PackageCardProps) => {
     return (val || 0).toLocaleString();
   };
 
-  // Limits set kar rahe hain
+
   const maxInclusions = 3;
   const maxHighlights = 4;
 

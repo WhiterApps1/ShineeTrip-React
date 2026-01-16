@@ -1,10 +1,10 @@
 import { X, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // Navigation ke liye
+import { useNavigate } from "react-router-dom"; 
 
 interface PackageSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  data: any; // API se aane wala holiday package data
+  data: any; 
   persons: number;
 }
 
@@ -15,9 +15,8 @@ export const PackageSelectionModal = ({ isOpen, onClose, data, persons }: Packag
 
   // Navigation Logic
   const handleNavigation = (selectionType: 'flight' | 'land') => {
-    onClose(); // Pehle modal band karein
-    // Detail page par navigate karein dynamic ID ke saath
-    // Saath mein state bhej rahe hain taaki details page ko pata ho kya select kiya tha
+    onClose(); 
+
     navigate(`/package-detail/${data.id}?persons=${persons}`, { 
       state: { type: selectionType } 
     });

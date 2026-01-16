@@ -33,7 +33,7 @@ const PackageBookingPage: React.FC = () => {
         agreePolicy: false
     });
     const [isProcessing, setIsProcessing] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(''); // FOR GLOBAL ALERT
+    const [errorMessage, setErrorMessage] = useState(''); 
     const [isBookingSuccessful, setIsBookingSuccessful] = useState(false);
     const [successOrderId, setSuccessOrderId] = useState('');
     const [completeOrderData, setCompleteOrderData] = useState<any>(null);
@@ -168,14 +168,13 @@ console.log("Razorpay Order ID from Backend:", orderData.razorpayOrderId);
         });
 
         if (verifyRes.ok) {
-            // BACKEND FIX: Kai baar backend crash hota hai agar hum turant ID se fetch karein.
-            // Hum list API se apna naya order dhoondenge jo safe hai.
+
             const res = await fetch(`http://46.62.160.188:3000/holiday-package-orders?limit=1`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const result = await res.json();
             
-            // Hum pehla hi order utha lenge kyunki wo hamara latest confirmed order hoga
+
             const latestOrder = result.data ? result.data[0] : result[0];
 
             setCompleteOrderData(latestOrder); 
@@ -185,7 +184,7 @@ console.log("Razorpay Order ID from Backend:", orderData.razorpayOrderId);
         }
     } catch (err: any) {
         setErrorMessage("Payment successful but failed to load summary. Check 'My Bookings'.");
-        setIsBookingSuccessful(true); // Fir bhi success dikhao taaki user darre nahi
+        setIsBookingSuccessful(true); 
     } finally {
         setIsProcessing(false);
     }

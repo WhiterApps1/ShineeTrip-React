@@ -411,7 +411,6 @@ const ProfileNavItem: React.FC<{ icon: React.ElementType, label: string, active?
                             destination={`${room.property?.city || 'India'}`}
                             count={1} 
                             image_url={room.property?.images?.[0]?.image || "https://placehold.co/180x110?text=Hotel"}
-                            // 🟢 CHANGE 2: Click par Order ID ke saath navigate karein
                             onClick={() => navigate(`/mybooking?highlight=${order.id}`)}
                         />
                     ));

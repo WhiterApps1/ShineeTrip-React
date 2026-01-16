@@ -21,8 +21,7 @@ const PackageDetailsPage = () => {
   const [persons, setPersons] = useState(Number(searchParams.get("persons")) || 1);
   const location = useLocation();
 
-  // FIX: Modal se 'flight' ya 'land' aa raha hai (Variable name: type)
-  // Hum ise defaultOption banayenge jo PricingSidebar use karega
+
   const userPreference = location.state?.type || 'flight';
 
   useEffect(() => {
@@ -59,7 +58,7 @@ const PackageDetailsPage = () => {
             id: mainItinerary.id,
             totalDays: mainItinerary.days?.length || 0,
             grandTotal: priceJson?.total_price_per_adult || mainItinerary.holidayPackage?.price?.total_price_per_adult || 0,
-            discount: priceJson?.discount || 0, // Discount add kiya yahan
+            discount: priceJson?.discount || 0, 
             days: mainItinerary.days?.map((day: any) => ({
               id: day.id,
               dayNumber: day.dayNumber,
@@ -147,7 +146,7 @@ const PackageDetailsPage = () => {
     </h3>
     
     <div 
-      /* break-words aur overflow-hidden lagane se text bahar nahi bhagega */
+     
       className="text-sm text-gray-600 leading-relaxed bg-gray-50 p-6 rounded-2xl border border-dashed overflow-hidden wrap-break-word"
       style={{ 
         wordBreak: 'break-word', 
@@ -162,7 +161,7 @@ const PackageDetailsPage = () => {
           </div>
 
           <div className="lg:col-span-4">
-            {/* FIX: Passing 'userPreference' which is now either 'flight' or 'land' */}
+
             <PricingSidebar 
                priceData={priceData || holiday?.price} 
                calculatedSummary={summaryData}

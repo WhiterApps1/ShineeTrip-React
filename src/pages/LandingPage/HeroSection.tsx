@@ -5,9 +5,7 @@ import { LoginModal } from "../Login/Loginpage";
 import { HolidaySearchWidget } from "./searchbars/HolidaySearchWidget";
 
 
-// --- TYPE DEFINITIONS ---
 
-// 1. Destination Item Structure
 interface Destination {
   id: number;
   name: string;
@@ -42,7 +40,7 @@ export default function HeroSection() {
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
-  const [errorPopup, setErrorPopup] = useState<string>(""); // Empty string means no popup
+  const [errorPopup, setErrorPopup] = useState<string>(""); 
   
   // Login Popup State
   const [showLoginPopup, setShowLoginPopup] = useState(false);
@@ -72,7 +70,7 @@ export default function HeroSection() {
 
   const visibleDestinations = currentDestinations.slice(slideIndex * cardsPerSlide, slideIndex * cardsPerSlide + cardsPerSlide);
 
-  // Helper to get today's date + N days ahead
+
   const getFutureDateString = (days: number) => {
     const date = new Date();
     date.setDate(date.getDate() + days);
@@ -82,15 +80,11 @@ export default function HeroSection() {
     return `${yyyy}-${mm}-${dd}`;
   };
 
-  // ✅ Helper to check if any required field is filled 
   const isFormFilled = location.trim() !== "" || checkIn.trim() !== "" || checkOut.trim() !== "";
   
-  // Check if all required fields for a detailed search are minimally filled (Used for validation)
   const isDetailedSearchReady = location.trim() !== "" && checkIn.trim() !== "" && checkOut.trim() !== "";
 
 
-  
-// FETCH ALL CITIES + COUNTRIES (100% WORKING - NO RED LINE)
 useEffect(() => {
   const fetchLocations = async () => {
     try {
@@ -128,7 +122,6 @@ useEffect(() => {
 
   fetchLocations();
 }, []);  
-  // Poora useEffect replace kar do (sirf yeh wala useEffect)
 useEffect(() => {
   const fetchCategories = async () => {
     try {
@@ -137,7 +130,6 @@ useEffect(() => {
 
       const data = await res.json();
 
-      // Yeh line sabse important hai
       const cleaned = data.map((cat: any) => ({
         ...cat,
         name: cat.name.replace(/[\u00A0\s]+/g, ' ').trim()
@@ -145,7 +137,7 @@ useEffect(() => {
 
       setCategories(cleaned);
       if (cleaned.length > 0 && activeTab === "") {
-        setActiveTab(cleaned[0].name); // ab space nahi hoga
+        setActiveTab(cleaned[0].name); 
       }
     } catch (error) {
       console.error(error);
@@ -162,7 +154,6 @@ useEffect(() => {
 }, [activeTab, currentDestinations]);
 
 
-  // Handle URL Params (Unchanged)
   useEffect(() => {
     const widgetState = searchParams.get("searchWidget");
     const type = searchParams.get("type");
@@ -178,12 +169,11 @@ useEffect(() => {
     }
   }, [searchParams]);
 
-  // Handle Location Input & Autocomplete (Unchanged)
+
 useEffect(() => {
   if (location.trim()) {
     const userInput = location.toLowerCase().trim();
     const filtered = availableLocations.filter(loc => {
-      // "City, COUNTRY" format ko split karke dono parts check karega
       const [city, country] = loc.toLowerCase().split(',').map(s => s.trim());
       return city.includes(userInput) || country.includes(userInput);
     });
@@ -193,7 +183,6 @@ useEffect(() => {
   }
 }, [location, availableLocations]);
 
-  // Close suggestions on click outside (Unchanged)
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
@@ -212,7 +201,7 @@ useEffect(() => {
     return; 
   }
 
-  // Safe defaults – future dates
+
   const safeCheckIn = getFutureDateString(1); // Tomorrow
   const safeCheckOut = getFutureDateString(2); // Day after
 
@@ -228,7 +217,7 @@ useEffect(() => {
   navigate(`/hotellists?${searchQuery}`);
 };
 
-// --- NEW HELPER FUNCTION TO MANUALLY CHECK JWT EXPIRY (NO LIBRARY NEEDED) ---
+
 
 const isTokenExpired = (token: string | null): boolean => {
     if (!token) return true;
@@ -243,9 +232,6 @@ const isTokenExpired = (token: string | null): boolean => {
         
         const payloadBase64 = parts[1];
 
-        // 2. Decode the Base64 string to JSON
-        // Note: For some older browsers or specific encoding issues, 
-        // this might need a polyfill, but usually works in modern browsers.
         const decodedPayload = atob(payloadBase64);
         const payload = JSON.parse(decodedPayload);
 
@@ -255,27 +241,22 @@ const isTokenExpired = (token: string | null): boolean => {
             return true;
         }
 
-        // 'exp' is usually in seconds. Current time is in milliseconds, so divide by 1000.
         const currentTimeInSeconds = Date.now() / 1000;
 
-        // Agar expiry time, current time se kam hai, toh expired hai.
         return payload.exp < currentTimeInSeconds;
 
     } catch (error) {
         console.error("Error decoding or parsing token:", error);
-        return true; // Agar koi bhi error aaye, toh expired/invalid maan lo
+        return true; 
     }
 };
 
-// --- END OF HELPER FUNCTION ---
 
-// Helper to extract city from "City, Country"
 const extractCity = (loc: string): string => {
   return loc.split(",")[0].trim();
 };
 
-// Final handleSearch — Copy-Paste kar de
-// Final handleSearch
+
 const handleSearch = () => {
     // 1. Authentication Check
     const token = sessionStorage.getItem("shineetrip_token");
@@ -329,19 +310,18 @@ const handleSearch = () => {
     const today = new Date().toISOString().split("T")[0];
 
     if (checkIn && checkOut) {
-        // Checking for Past dates OR Check-in >= Check-out
+   
         if (checkIn < today || checkOut < today || checkIn >= checkOut) {
             setErrorPopup("Please select valid dates. Check-out must be after Check-in.");
-            return; // Execution ko yahi rok dega
+            return;
         }
     } else if (checkIn || checkOut) {
-        // Agar user ne sirf ek date daali hai
+      
          setErrorPopup("Please enter both Check-in and Check-out dates.");
         return;
     }
     
-    // 5. Navigation Logic (Only runs if all checks pass)
-    // Sirf city bhejo
+
     const cityOnly = location.split(",")[0].trim();
 
     const query = new URLSearchParams({
@@ -356,7 +336,7 @@ const handleSearch = () => {
     navigate(`/hotellists?${query}`);
 };
 
-  // ✅ Unified Click Handler based on Form State
+ 
   const handleButtonClick = () => {
   const token = sessionStorage.getItem("shineetrip_token");
   if (!token || isTokenExpired(token)) {
@@ -386,7 +366,7 @@ const handleSearch = () => {
 };
 
 const handleDestinationClick = (destination: Destination) => {
-    // 1. Token Check (Authentication)
+ 
     const token = sessionStorage.getItem("shineetrip_token");
     if (!token || isTokenExpired(token)) {
         
@@ -409,7 +389,7 @@ const handleDestinationClick = (destination: Destination) => {
     const safeCheckIn = checkIn || getFutureDateString(1); 
     const safeCheckOut = checkOut || getFutureDateString(2); 
 
-    // 3. Query string banao aur navigate karo
+
     const searchQuery = new URLSearchParams({
         location: destinationName,
         checkIn: safeCheckIn,
@@ -430,8 +410,7 @@ const handleDestinationClick = (destination: Destination) => {
 
   return (
     <div className="w-full min-h-screen bg-gray-50 font-opensans">
-{/* Premium Error Popup – Perfectly Matches Your Site Theme */}
-{/* Enhanced Error Popup – Golden Theme Match */}
+
 {errorPopup && (
   <div className="fixed inset-0 z-50 flex items-center justify-center px-4 animate-in fade-in duration-300">
     {/* Backdrop – Click to Close */}
@@ -547,7 +526,7 @@ const handleDestinationClick = (destination: Destination) => {
     NAME OF LOCATION
   </div>
   
-  {/* ✅ INPUT CONTAINER (Dropdown ko iske andar move kiya hai) */}
+
   <div className="relative">
     <input 
       type="text" 
@@ -559,7 +538,7 @@ const handleDestinationClick = (destination: Destination) => {
     />
     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
 
-    {/* ✅ DROPDOWN MOVED HERE & ADDED 'top-full' */}
+
     {showSuggestions && filteredLocations.length > 0 && (
       <div 
         className="absolute top-full z-[100] w-full rounded-2xl mt-2 shadow-2xl overflow-hidden border animate-in slide-in-from-top-2 duration-200 backdrop-blur-2xl"
@@ -755,7 +734,7 @@ const handleDestinationClick = (destination: Destination) => {
         </div>
       </div>
 
-      {/* COMBINED STATS + CATEGORIES SECTION - Single White Card */}
+
       <div className="pb-10 bg-white">
         <div className="max-w-7xl mx-auto px-2">
           <div className="bg-white rounded-3xl shadow-[0_20px_50px_rgba(255,255,255,0.7)] border border-gray-300 p-8 md:p-12 pb-6 pt-20 md:pt-24 -mt-70 relative ">
@@ -788,7 +767,7 @@ const handleDestinationClick = (destination: Destination) => {
                   <button
                     key={cat.id}
                     onClick={() => {
-                       console.log('Clicked tab:', cat.name); // Check if click fires
+                       console.log('Clicked tab:', cat.name); 
                        setActiveTab(cat.name);
                        setSlideIndex(0);
                      }}
