@@ -108,7 +108,7 @@ const handleGuestChange = (index: number, field: string, value: string) => {
 
     // API URLS - Confirmed by your Postman testing
     const API_BASE = 'http://46.62.160.188:3000';
-    const CREATE_ORDER_URL = `${API_BASE}/order/book-now`;
+    const CREATE_ORDER_URL = `${API_BASE}/order`;
     const VERIFY_URL = `${API_BASE}/order/success`;
     const FAILURE_URL = `${API_BASE}/order/failure`;
     const INVOICE_URL = `${API_BASE}/invoices`;
@@ -270,22 +270,16 @@ useEffect(() => {
         try {
             // Step 1: POST /order/create to generate Razorpay Order ID
             const createOrderPayload = {
-                orderRooms: [
-                    {
-                        propertyId: propertyIdInt,
-                        roomTypeId: parseInt(roomId),
-                        adults: parseInt(searchParams.get('adults') || '2'),
-                        children: parseInt(searchParams.get('children') || '0'),
-                        checkIn: checkInStr,
-                        checkOut: checkOutStr,
-                        roomPrice: retailPrice, 
-                    }
-                ],
-                totalPrice: finalTotal,
+                propertyId: propertyIdInt,
+                roomTypeId: parseInt(roomId),
+                adults: parseInt(searchParams.get('adults') || '2'),
+                children: parseInt(searchParams.get('children') || '0'),
+                checkIn: checkInStr,
+                checkOut: checkOutStr,
                 paymentMethod: "online",
                 currency: "INR",
                 notes: { bookingSource: "web-portal-checkout" },
-                customerId: customerId, // Using parsed integer customer ID
+                customerId: customerId, // Abhi existing logic (Session ID) use kar rahe hain
             };
 
             console.log("Create Order Payload Sent:", createOrderPayload);
