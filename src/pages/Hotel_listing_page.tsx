@@ -869,7 +869,7 @@ if (loading) {
   </div>
 
                         {/* Features List - EXACT FIGMA STYLE */}
-                        <div className="space-y-3">
+                        <div className=" space-y-3">
 
                           {/* Couple Friendly */}
                           <div className="flex items-center gap-3">
