@@ -602,12 +602,14 @@ const handleDestinationClick = (destination: Destination) => {
                     <Calendar size={14} className="text-[#D2A256]" />
                     CHECK-IN DATE *
                   </div>
-                  <input 
-                    type="date" 
-                    value={checkIn}
-                    onChange={(e) => setCheckIn(e.target.value)}
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#C9A961] transition-colors [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
-                  />
+                  <input
+                    type="date"
+                    min={new Date().toISOString().split("T")[0]}
+                    value={checkIn}
+                    onChange={(e) => setCheckIn(e.target.value)}
+                    className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white"
+                  />
+
                 </div>
 
                 {/* Check Out */}
@@ -616,12 +618,15 @@ const handleDestinationClick = (destination: Destination) => {
                     <Calendar size={14} className="text-[#D2A256]" />
                     CHECK-OUT DATE *
                   </div>
-                  <input 
-                    type="date" 
-                    value={checkOut}
-                    onChange={(e) => setCheckOut(e.target.value)}
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#C9A961] transition-colors [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
-                  />
+                  <input
+                    type="date"
+                    min={checkIn || new Date().toISOString().split("T")[0]}
+                   value={checkOut}
+                    onChange={(e) => setCheckOut(e.target.value)}
+                    disabled={!checkIn}
+                    className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white disabled:opacity-50"
+                  />
+
                 </div>
               </div>
 
