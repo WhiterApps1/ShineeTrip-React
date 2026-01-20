@@ -41,28 +41,35 @@ return (
     {/* Header */}
     <div className="flex items-start justify-between mb-4">
       {/* User Info */}
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
-          <img
-            src={review.reviewerAvatar || "https://i.pravatar.cc/150?img=12"}
-            alt={review.reviewerName}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src =
-                "https://i.pravatar.cc/150?img=12";
-            }}
-          />
-        </div>
+     <div className="flex items-center gap-3">
+  {/* Container for Avatar */}
+                <div className="relative w-10 h-10 rounded-full overflow-hidden bg-[#D2A256] flex items-center justify-center"
+                 style={{
+                      background: 'linear-gradient(180.95deg, #AB7E29 0.87%, #EFD08D 217.04%)',
+                      boxShadow: '0px 2px 6px 2px rgba(0, 0, 0, 0.15)',
+                    }}>
+       
+                    
+                    
+    {/* Fallback Initial (Visible if image is missing or fails) */}
+                    <span className="text-white font-bold text-lg uppercase"
+                    >
+      {review.reviewerName ? review.reviewerName.charAt(0) : "G"}
+    </span>
 
-        <div>
-          <div className="text-sm font-semibold text-gray-900">
-            {review.reviewerName || "Guest User"}
-          </div>
-          <div className="text-xs text-gray-400">
-            {formatDate(review.postedOn)}
-          </div>
-        </div>
-      </div>
+    {/* Primary Image */}
+ 
+  </div>
+
+  <div>
+    <div className="text-sm font-semibold text-gray-900">
+      {review.reviewerName || "Guest User"}
+    </div>
+    <div className="text-xs text-gray-400">
+      {formatDate(review.postedOn)}
+    </div>
+  </div>
+</div>
 
       {/* Stars */}
       <div className="flex gap-1">

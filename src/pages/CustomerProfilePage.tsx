@@ -222,7 +222,7 @@ const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
                 dob: formState.dob, // Send the date as it is in state (YYYY-MM-DD from input)
                
                 address: formState.address,
-  profile_image:
+              profile_image:
     customer?.profile_image ||
     generateLetterAvatar(formState.first_name || "U"),
             };
@@ -397,7 +397,7 @@ const ProfileNavItem: React.FC<{ icon: React.ElementType, label: string, active?
                                         />
                                         <ProfileEditField label="Language" name="language" value={formState.language || ''} onChange={handleFormChange} />
                                         <div className="flex items-center gap-4 col-span-full">
-  <img
+                              <img
     src={imagePreview || customer?.profile_image || "https://ui-avatars.com/api/?name=U"}
     className="w-24 h-24 rounded-full object-cover border"
   />
