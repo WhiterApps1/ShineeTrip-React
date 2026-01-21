@@ -727,19 +727,43 @@ if (!orderResponse.ok) {
             )}
 
             {/* Header / Progress Steps (Unchanged) */}
-            <div className="bg-white py-6 px-6 mb-6">
-                <div className="max-w-md mx-auto flex items-center justify-center gap-4">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-medium">1</div>
-                        <span className="font-medium">Room</span>
-                    </div>
-                    <div className="w-32 h-px bg-gray-300"></div>
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-medium">2</div>
-                        <span className="text-gray-500">Reservation</span>
-                    </div>
-                </div>
-            </div>
+           <div className='max-w-7xl mx-auto my-5 px-4 md:px-6'>
+  {/* The White Box Container */}
+  <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
+    <div className="flex flex-col md:flex-row justify-between items-center">
+      
+      {/* LEFT SIDE: Heading */}
+      <h2 className="text-[22px] font-bold text-gray-900">
+        Review your booking
+      </h2>
+
+      {/* RIGHT SIDE: Progress Steps */}
+      <div className="flex items-center gap-4 mt-4 md:mt-0">
+        
+        {/* Step 1: Active */}
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-medium text-sm">
+            1
+          </div>
+          <span className="font-medium text-sm text-gray-900">Room 1</span>
+        </div>
+
+        {/* Connector Line */}
+        <div className="hidden sm:block w-12 md:w-16 h-px bg-gray-300"></div>
+
+        {/* Step 2: Inactive */}
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-medium text-sm">
+            2
+          </div>
+          <span className="font-medium text-sm text-gray-900">Reservation</span>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 

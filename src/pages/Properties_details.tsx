@@ -455,52 +455,61 @@ useEffect(() => {
 
                 </div>
             </div>
-            <div className='max-w-7xl mx-auto my-5 px-6'>
-<div className="flex flex-col md:flex-row justify-between items-center mt-6 pb-2 border-b border-gray-100">
-    
-    {/* LEFT SIDE: Heading */}
-    <h2 className="text-[22px] font-bold text-gray-900">
-        Review your booking
-    </h2>
-
-    {/* RIGHT SIDE: Progress Steps */}
-    <div className="flex items-center gap-4">
+         <div className='max-w-7xl mx-auto my-5 px-6'>
+    {/* White Box Wrapper */}
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         
-        {/* Step 1: Active */}
-        <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-medium text-sm">
-                1
+        {/* Header Section with Bottom Border */}
+        <div className="flex flex-col md:flex-row justify-between items-center p-6 md:px-8 md:py-5 border-b border-gray-100 bg-gray-50/30">
+            {/* LEFT SIDE: Heading */}
+            <h2 className="text-[20px] md:text-[22px] font-bold text-gray-900 tracking-tight">
+                Review your booking
+            </h2>
+
+            {/* RIGHT SIDE: Progress Steps */}
+            <div className="flex items-center gap-4 mt-4 md:mt-0">
+                {/* Step 1: Active */}
+                <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 bg-black text-white rounded-full flex items-center justify-center font-bold text-xs">
+                        1
+                    </div>
+                    <span className="font-semibold text-sm text-gray-900">Room 1</span>
+                </div>
+
+                {/* Connector Line */}
+                <div className="w-10 h-px bg-gray-300"></div>
+
+                {/* Step 2: Inactive */}
+                <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-bold text-xs">
+                        2
+                    </div>
+                    <span className="text-gray-400 text-sm font-medium">Reservation</span>
+                </div>
             </div>
-            <span className="font-medium text-sm text-gray-900">Room 1</span>
         </div>
 
-        {/* Connector Line */}
-        <div className="w-16 h-px bg-gray-300"></div>
-
-        {/* Step 2: Inactive */}
-        <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center font-medium text-sm">
-                2
+        {/* Hotel Details Section */}
+        <div className="p-6 md:p-8">
+            <div className="space-y-1">
+                <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
+                    {hotelData?.name || "Hotel Name"}
+                </h1> 
+                <div className="flex flex-wrap items-center gap-2 text-gray-500 text-sm font-medium">
+                    <span className="text-gray-700">{hotelData?.city || location}</span> 
+                    <span className="text-gray-300">•</span>
+                    <span className="italic">{hotelData?.address}</span>
+                </div>
             </div>
-            <span className="text-gray-500 text-sm">Reservation</span>
         </div>
-        
     </div>
-</div>
 </div>
 
 
             {/* Main Content */}
             <div className="max-w-7xl mx-auto px-6 pb-8">
                 {/* Hotel Header */}
-                <div className="mb-4">
-                    <h1 className="text-xl font-bold text-gray-900">{hotelData?.name}</h1> 
-                    <div className="flex items-center gap-2 text-gray-600 text-sm">
-                        <span>{hotelData?.city || location}</span> 
-                        <span>|</span>
-                        <span>{hotelData?.address}</span>
-                    </div>
-                </div>
+               
                 
                 {/* <button 
                   onClick={handleOpenPolicyModal}
