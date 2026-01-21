@@ -126,13 +126,13 @@ const BookingDetailModal = ({ isOpen, onClose, data }: { isOpen: boolean, onClos
     if (!isOpen || !data) return null;
     const { order, room } = data;
 
-
+    console.log(room); 
     const userName = sessionStorage.getItem('shineetrip_name') || "Guest User";
     const userEmail = sessionStorage.getItem('shineetrip_email') || "N/A";
 
     // 🟢 DYNAMIC PRICE CALCULATION
-    const roomBasePrice = Number(room.roomPrice) || 0;
-    const totalOrderPrice = Number(order.totalPrice) || 0;
+    const roomBasePrice = Number(room.pricePerNight) || 0;
+    const totalOrderPrice =  Number(room.totalAmount) || 0;
     const taxesAndFees = totalOrderPrice - roomBasePrice;
 
     return (
@@ -243,7 +243,7 @@ const BookingDetailModal = ({ isOpen, onClose, data }: { isOpen: boolean, onClos
                         <div className="bg-white p-5 rounded-2xl border border-gray-100 space-y-4 shadow-sm">
                             <div className="flex justify-between text-sm">
                                 <span className="text-gray-500 font-medium">Room Rate (Total Stay)</span>
-                                <span className="text-gray-900 font-black">{order.currency} {roomBasePrice.toLocaleString()}</span>
+                                <span className="text-gray-900 font-black">{order.currency} {roomBasePrice.toLocaleString()} </span>
                             </div>
                             <div className="flex justify-between text-sm">
                                 <span className="text-gray-500 font-medium">Taxes & Fees</span>
