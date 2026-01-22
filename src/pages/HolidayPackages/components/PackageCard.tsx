@@ -157,9 +157,13 @@ export const PackageCard = ({ data , persons }: PackageCardProps) => {
 
       {/* ================= PRICE POPUP (Existing) ================= */}
       {showPricePopup && (
-        <div className="absolute left-0 right-0 bottom-0 py-10 z-20 bg-white rounded-t-3xl shadow-2xl animate-in slide-in-from-bottom-5 duration-300 border-t">
-          <div className="flex justify-between items-center px-6 mb-6">
-            <h3 className="font-bold text-gray-900 truncate pr-4">{data.title}</h3>
+       <div className="absolute left-0 right-0 bottom-0 z-20 pb-8  bg-white rounded-t-3xl shadow-2xl animate-in slide-in-from-bottom-5 duration-300 border-t">
+  
+  {/* Top blue title bar */}
+  <div className="flex justify-between items-center px-6 py-6 mb-8 bg-blue-50 rounded-t-3xl border-b">
+    <h3 className="font-medium text-gray-900 truncate pr-4">
+      {data.title}
+    </h3>
             <button onClick={(e) =>{ e.stopPropagation(); setShowPricePopup(false)}}><X size={20} className="text-gray-400" /></button>
           </div>
           <div className="px-6 space-y-3">

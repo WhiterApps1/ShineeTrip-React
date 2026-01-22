@@ -1340,8 +1340,8 @@ if (!orderResponse.ok) {
             </div>
             
             {/* Second Line: Percentage/Reduction info */}
-            <p className="text-xs text-green-600 font-medium mt-1 group-hover:text-green-700 transition-colors">
-              Congratulations! Discount of {percentageText} Applied
+            <p className="text-xs text-gray-400 font-medium mt-1 group-hover:text-green-700 transition-colors">
+               Discount of {percentageText} will be applied
             </p>
           </div>
         </label>
