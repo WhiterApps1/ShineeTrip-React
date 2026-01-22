@@ -1,8 +1,10 @@
+import { Plane, ScrollText, ClipboardList } from "lucide-react";
+
 export const PackageTabs = ({ activeTab, setActiveTab }: any) => {
   const tabs = [
-    { id: 'itineraries', label: 'Itineraries', icon: '🗺️' },
-    { id: 'policies', label: 'Policies', icon: '📜' },
-    { id: 'summary', label: 'Summary', icon: '📋' }
+    { id: 'itineraries', label: 'Itineraries', Icon: Plane }, // Plane for Itinerary (Travel)
+    { id: 'policies', label: 'Policies', Icon: ScrollText },  // ScrollText for Policies (Rules/Docs)
+    { id: 'summary', label: 'Summary', Icon: ClipboardList }  // ClipboardList for Summary (Overview)
   ];
 
   return (
@@ -12,12 +14,13 @@ export const PackageTabs = ({ activeTab, setActiveTab }: any) => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            // Updated: text-sm -> text-[18px] and added font-opensans
             className={`flex items-center gap-2 py-4 px-2 font-bold text-[18px] font-opensans transition-all border-b-2 ${
               activeTab === tab.id ? "border-[#C9A961] text-[#C9A961]" : "border-transparent text-gray-500"
             }`}
           >
-            <span>{tab.icon}</span> {tab.label}
+            {/* Icon render */}
+            <tab.Icon size={20} strokeWidth={2} /> 
+            {tab.label}
           </button>
         ))}
       </div>

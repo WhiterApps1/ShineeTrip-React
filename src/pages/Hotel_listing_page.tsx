@@ -726,7 +726,7 @@ const HotelListingPage: React.FC = () => {
                 min={getTodayDateString()}
                 value={currentCheckIn} // Binds to state
                 onChange={(e) => setCurrentCheckIn(e.target.value)} // Updates state
-                className="text-[18px] font-[700] text-gray-900 bg-transparent w-full focus:outline-none appearance-none"
+                className="text-[18px] font-[700] [&::-webkit-calendar-picker-indicator]:hidden text-gray-900 bg-transparent w-full focus:outline-none appearance-none"
               />
             </div>
           </div>
@@ -743,7 +743,7 @@ const HotelListingPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => checkoutRef.current?.showPicker()}
-                className="text-[#D2A256] hover:scale-110 transition-transform"
+                className="text-[#D2A256] hover:scale-110 transition-transform "
               >
                 <Calendar className="w-7 h-7" />
               </button>
@@ -755,7 +755,7 @@ const HotelListingPage: React.FC = () => {
                 min={currentCheckIn} // Prevents picking date before check-in
                 value={currentCheckOut} // Binds to state
                 onChange={(e) => setCurrentCheckOut(e.target.value)} // Updates state
-                className="text-[18px] font-[700] text-gray-900 bg-transparent w-full focus:outline-none appearance-none"
+                className="text-[18px] font-[700] [&::-webkit-calendar-picker-indicator]:hidden text-gray-900 bg-transparent w-full focus:outline-none appearance-none"
               />
             </div>
           </div>

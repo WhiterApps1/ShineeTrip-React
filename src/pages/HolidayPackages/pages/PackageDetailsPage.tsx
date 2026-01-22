@@ -7,6 +7,7 @@ import { HolidaySearch } from "../components/HolidaySearch";
 import { ItinerarySection } from "../components/ItinerarySection";
 import { SummarySection } from "../components/SummarySection"; 
 import { GalleryModal } from "../components/GalleryModal";
+import { NewSearch } from "../components/NewSearch";
 
 const PackageDetailsPage = () => {
   const { id } = useParams(); 
@@ -99,12 +100,13 @@ const PackageDetailsPage = () => {
   return (
     <div className="min-h-screen bg-[#FDFDFD] font-opensans text-[18px] animate-in fade-in duration-700">
       <div className="pt-30"> 
-        <HolidaySearch 
+        <NewSearch 
         isDetailsPage={true}
         persons={persons} 
         setPersons={setPersons}
         initialCity={city}   
         initialDate={date}
+        packageDuration={holiday?.days || 0}
         />
       </div>
 
