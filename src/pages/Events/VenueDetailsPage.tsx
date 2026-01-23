@@ -101,7 +101,7 @@ const VenueDetailsPage = () => {
       <div className=" rounded-2xl overflow-hidden">
         {/* Header */}
         <div className="px-6 sm:px-8 pt-7 pb-5 border-b  bg-white border-gray-100">
-          <h1 className="text-3xl font-extrabold text-gray-900">{venue.name}</h1>
+          <h1 className="text-3xl font-semibold text-gray-900">{venue.name}</h1>
 
           <div className="mt-2 flex items-center gap-6 text-sm text-gray-600">
             <div className="flex items-center">
@@ -111,7 +111,7 @@ const VenueDetailsPage = () => {
 
             <div className="flex items-center gap-1">
               <Star size={14} className="text-[#D2A256] fill-current" />
-              <span className="font-bold text-gray-800">4.8</span>
+              <span className="font-semibold text-gray-800">4.8</span>
               <span className="text-gray-400">(156 reviews)</span>
             </div>
           </div>
@@ -152,19 +152,19 @@ const VenueDetailsPage = () => {
     <div className="lg:col-span-8 space-y-6">
       {/* Key Details */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-5">Key Details</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-5">Key Details</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
           <div>
             <p className="text-sm text-gray-500 mb-1">Guest Capacity</p>
-            <p className="text-lg font-bold text-gray-900">
+            <p className="text-lg font-semibold text-gray-900">
               {venue.min_guest_capacity}-{venue.max_guest_capacity} guests
             </p>
           </div>
 
           <div>
             <p className="text-sm text-gray-500 mb-1">Venue Type</p>
-            <p className="text-lg font-bold text-gray-900">{venue.venue_type}</p>
+            <p className="text-lg font-semibold text-gray-900">{venue.venue_type}</p>
           </div>
 
           <div>
@@ -187,7 +187,7 @@ const VenueDetailsPage = () => {
 
           <div>
             <p className="text-sm text-gray-500 mb-1">Budget Range</p>
-            <p className="text-lg font-bold text-gray-900">
+            <p className="text-lg font-semibold text-gray-900">
               {venue.budget_range || "Flexible"}
             </p>
           </div>
@@ -235,12 +235,12 @@ const VenueDetailsPage = () => {
       <div className="sticky top-28">
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
           <p className="text-sm text-gray-500 mb-1">Starting from</p>
-          <p className="text-3xl font-extrabold text-gray-900 mb-6">
+          <p className="text-3xl font-semibold text-gray-900 mb-6">
             {formatPrice(venue.min_price)}
           </p>
 
           <button
-            className="w-full rounded-xl py-4 font-bold text-white text-lg shadow-sm hover:opacity-95 transition"
+            className="w-full rounded-xl py-4 font-semibold text-white text-lg shadow-sm hover:opacity-95 transition"
             style={{ background: "linear-gradient(180deg, #C9A961 0%, #9B7A2F 100%)" }}
             onClick={() => venue && navigate(`/event-enquiry/${venue.id}`)}
           >
