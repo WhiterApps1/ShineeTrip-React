@@ -46,6 +46,7 @@ const EventVenuesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedBudget, setSelectedBudget] = useState("");
+  
 
   // --- Fetch Filter Options (Dropdowns) ---
   useEffect(() => {
@@ -181,7 +182,10 @@ const EventVenuesPage = () => {
 };
 
 // --- HELPER: Venue Card Component ---
+// --- HELPER: Venue Card Component ---
 const VenueCard = ({ venue }: { venue: Venue }) => {
+   
+    const navigate = useNavigate(); 
     
     // Format Price Logic (e.g., 800000 -> 8L)
     const formatPrice = (price: number) => {
@@ -193,15 +197,14 @@ const VenueCard = ({ venue }: { venue: Venue }) => {
         return `₹ ${price}`;
     };
 
-
     const rating = 4.5; 
     const reviews = 112; 
 
     return (
-        <div className="bg-white p-3 rounded-[2rem] shadow-xl overflow-hidden border border-gray-100 flex flex-col group hover:shadow-2xl transition-all duration-300">
+        <div className="bg-white rounded-[2rem] shadow-xl overflow-hidden border border-gray-100 flex flex-col group hover:shadow-2xl transition-all duration-300">
             
             {/* Image Section */}
-            <div className="relative h-64 rounded-xl w-full overflow-hidden">
+            <div className="relative h-64 w-full overflow-hidden">
                 <img 
                     src={venue.cover_img || "https://via.placeholder.com/600x400?text=Venue"} 
                     alt={venue.name} 
@@ -256,6 +259,8 @@ const VenueCard = ({ venue }: { venue: Venue }) => {
                         style={{
                             background: 'linear-gradient(90deg, #CA9C43 0%, #916E2B 100%)',
                         }}
+                        // ✅ AB YE SAHI CHALEGA
+                        onClick={() => navigate(`/venue-details/${venue.id}`)}
                     >
                         Select Venue
                     </button>

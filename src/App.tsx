@@ -21,6 +21,9 @@ import PackageBookingPage from "./pages/HolidayPackages/pages/PackageBookingPage
 import WriteBrandReview from "./components/ui/WriteBrandReview";
 import EventsPage from "./pages/Events/Events";
 import EventVenuesPage from "./pages/Events/EventVenuesPage";
+import VenueDetailsPage from "./pages/Events/VenueDetailsPage";
+import EventEnquiryPage from "./pages/Events/EventEnquiryPage";
+import EventConfirmationPage from "./pages/Events/EventConfirmationPage";
 
 
 // --- AUTH OBSERVER COMPONENT ---
@@ -105,6 +108,9 @@ const App: React.FC = () => {
 
         <Route path="/events" element={<EventsPage />} />
         <Route path="/event-venues/:id" element={<EventVenuesPage />} />
+        <Route path="/venue-details/:id" element={<VenueDetailsPage />} />
+        <Route path="/event-enquiry/:venueId" element={<EventEnquiryPage />} />
+        <Route path="/event-confirmation/:enquiryId" element={<EventConfirmationPage />} />
 
 
 
