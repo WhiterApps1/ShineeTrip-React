@@ -151,9 +151,21 @@ const EventVenuesPage = () => {
 
       {/* --- MAIN CONTENT --- */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-12 max-w-7xl">
-        <h2 className="text-center text-3xl font-bold text-[#CA9C43] mb-10 tracking-wide">
-            {categoryName || "Select Your Perfect Venue"}
-        </h2>
+        <div className="relative flex items-center justify-center mb-10">
+  {/* The Heading */}
+  <h2 className="flex items-center w-full text-center text-3xl font-bold text-[#CA9C43] tracking-wide">
+    {/* Left Line */}
+    <span className="flex-grow h-[2px] bg-[#CA9C43] opacity-30"></span>
+    
+    {/* Title Text */}
+    <span className="mx-8 shrink-0">
+      {"Select Your Perfect Venue"}
+    </span> 
+    
+    {/* Right Line */}
+    <span className="flex-grow h-[2px] bg-[#CA9C43] opacity-30"></span>
+  </h2>
+</div>
 
         {loading ? (
             <div className="flex justify-center items-center h-64">
