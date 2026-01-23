@@ -72,7 +72,8 @@ const EventVenuesPage = () => {
         if (token) headers["Authorization"] = `Bearer ${token}`;
 
         // Build Query URL
-        const queryParams = new URLSearchParams();
+          const queryParams = new URLSearchParams();
+          console.log()
         if (selectedLocation) queryParams.append("location", selectedLocation);
         if (selectedBudget) queryParams.append("budget_range", selectedBudget);
         
@@ -81,7 +82,7 @@ const EventVenuesPage = () => {
         
         const response = await fetch(url, { headers });
         const data = await response.json();
-        
+          console.log(data); 
         // Client-side search filtering (if API doesn't support 'q' param)
         let filteredData = data;
         if (searchQuery) {

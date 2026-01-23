@@ -105,6 +105,11 @@ useEffect(() => {
     scrollToSection("home");
   };
 
+  const handleEventRoute = () => {
+    navigate(`/Events`); 
+
+  }
+
  
 const handleLogout = async () => {
     const auth = getAuth();
@@ -302,7 +307,7 @@ const handleLogout = async () => {
               </button>
 
               <button 
-                onClick={() => handleNavClick("Events")} 
+                onClick={() => handleEventRoute()} 
                 className={`relative flex items-center gap-2 font-opensans font-medium text-[18px] leading-[21px] tracking-[0px] transition-colors group ${
                   activeTab === "Events" ? "text-[#C9A961]" : "text-black hover:text-[#C9A961]"
                 }`}
