@@ -96,21 +96,24 @@ export const ItinerarySection = ({ days, holiday, summary }: ItinerarySectionPro
               <div key={day.id} className="border border-gray-100 rounded-2xl overflow-hidden shadow-sm bg-white">
                 <div 
                   onClick={() => setOpenDay(openDay === day.dayNumber ? 0 : day.dayNumber)}
-                  className="bg-[#9c9e9f] text-white px-5 py-3 flex justify-between items-center cursor-pointer"
+                  className=" text-black px-5 py-3 flex justify-between items-center cursor-pointer"
                 >
                   <div className="flex items-center gap-4">
                     {/* Updated text size */}
-                    <span className="bg-white/20 px-3 py-1 rounded text-[16px] font-bold uppercase font-opensans">DAY {day.dayNumber}</span>
+                    <span className="bg-black/100 text-white px-3 py-1 border-2 rounded-2xl border-black rounded text-[16px] font-bold uppercase font-opensans">DAY {day.dayNumber}</span>
                     {/* Updated text size */}
                     <p className="text-[16px] font-medium font-opensans">
-                      {day.title} • 
+                      {day.title} 
                       {/* Updated sub-text size */}
-                      <span className="text-gray-300 uppercase text-[12px] ml-2 font-opensans">
-                        Included: {daySummary?.hotels ? '1 Hotel | ' : ''}{daySummary?.flightsAndTransfers ? 'Transport | ' : ''}{daySummary?.activities ? `${daySummary.activities} Activities` : ''}
+                      <span className="text-gray-600  uppercase text-[12px] ml-2 font-opensans">
+                       <span className="text-black/100 font-bold text-[14px]">Included</span> : {daySummary?.hotels ? '1 Hotel | ' : ''}{daySummary?.flightsAndTransfers ? 'Transport | ' : ''}{daySummary?.activities ? `${daySummary.activities} Activities` : ''}
                       </span>
                     </p>
                   </div>
-                  <ChevronDown size={20} className={`transition-transform ${openDay === day.dayNumber ? 'rotate-180' : ''}`} />
+                 <ChevronDown
+  size={30}
+  className={`transition-transform ${openDay === day.dayNumber ? "rotate-180" : ""} p-2 rounded-full border-1 bg-white-100`}
+/>
                 </div>
 
                 {openDay === day.dayNumber && (
