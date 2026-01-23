@@ -113,15 +113,15 @@ const EventVenuesPage = () => {
   }, [selectedLocation, selectedBudget, searchQuery, id]);
 
   return (
-    <div className="min-h-screen bg-[#F9F9F9] font-opensans pb-20">
+    <div className="min-h-screen bg-[#F9F9F9] font-opensans pb-20 pt-20">
       
       {/* --- SEARCH & FILTER BAR SECTION --- */}
       <div className="py-10 px-4">
         <div className="container mt-20 mx-auto max-w-6xl">
-           <div className="bg-white border border-gray-200 rounded-full shadow-md flex items-center p-2 max-w-4xl mx-auto h-16">
+           <div className="bg-white border border-gray-200 rounded-full shadow-md flex items-center p-2 max-w-6xl mx-auto h-16">
               
-              <div className="flex items-center flex-1 px-4 border-r border-gray-200 mt-2">
-                <Search className="text-gray-400 w-5 h-5 mr-3" />
+              <div className="flex items-center flex-1 px-4 pb-2 border-r border-gray-200 mt-2">
+                <Search className="text-black/100 w-6 h-6 mr-3 " />
                 <input 
                     type="text"
                     placeholder="Search Venues, Locations..."
@@ -153,7 +153,7 @@ const EventVenuesPage = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-12 max-w-7xl">
         <div className="relative flex items-center justify-center mb-10">
   {/* The Heading */}
-  <h2 className="flex items-center w-full text-center text-3xl font-bold text-[#CA9C43] tracking-wide">
+  <h2 className="flex items-center w-full text-center text-4xl font-bold text-[#CA9C43] tracking-wide mb-4">
     {/* Left Line */}
     <span className="flex-grow h-[2px] bg-[#CA9C43] opacity-30"></span>
     
