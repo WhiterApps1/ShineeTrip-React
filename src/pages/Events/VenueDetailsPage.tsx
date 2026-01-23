@@ -118,7 +118,7 @@ const VenueDetailsPage = () => {
         </div>
 
         {/* Gallery */}
-        <div className="px-6 sm:px-8 pt-6 pb-7 bg-white mb-8">
+       <div className="px-6 sm:px-8 pt-6 pb-7 bg-white mb-8 rounded-b-2xl border border-gray-200 border-t-0">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
             {/* Big image */}
             <div className="lg:col-span-9">
