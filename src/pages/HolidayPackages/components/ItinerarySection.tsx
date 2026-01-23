@@ -33,29 +33,29 @@ export const ItinerarySection = ({ days, holiday, summary }: ItinerarySectionPro
      <div className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm mb-8">
   <div className="flex flex-wrap gap-4">
     {/* 1. Day Plan Badge */}
-    <span className="bg-[#F8F8F8] text-[#2C4A5E] px-6 py-3 rounded-full text-[16px] font-bold tracking-wider font-opensans border border-gray-50 shadow-sm">
+    <span className="bg-[#F8F8F8] text-[#2C4A5E] px-6 py-3 rounded-full text-[17px] font-semibold tracking-wider font-opensans border border-gray-50 shadow-sm">
       {holiday?.days || summary?.totalDays || 0} DAY PLAN
     </span>
 
     {stats && (
       <>
         {/* 2. Flights & Transfers Badge */}
-        <span className="bg-[#F8F8F8] text-[#444] px-6 py-3 rounded-full text-[16px] font-bold tracking-wider uppercase font-opensans border border-gray-50 shadow-sm">
+        <span className="bg-[#F8F8F8] text-[#444] px-6 py-3 rounded-full text-[17px] font-semibold tracking-wider uppercase font-opensans border border-gray-50 shadow-sm">
           {stats.flights} FLIGHTS & TRANSFERS
         </span>
 
         {/* 3. Hotels Badge */}
-        <span className="bg-[#F8F8F8] text-[#444] px-6 py-3 rounded-full text-[16px] font-bold tracking-wider uppercase font-opensans border border-gray-50 shadow-sm">
+        <span className="bg-[#F8F8F8] text-[#444] px-6 py-3 rounded-full text-[17px] font-semibold tracking-wider uppercase font-opensans border border-gray-50 shadow-sm">
           {stats.hotels} HOTELS
         </span>
 
         {/* 4. Activities Badge */}
-        <span className="bg-[#F8F8F8] text-[#444] px-6 py-3 rounded-full text-[16px] font-bold tracking-wider uppercase font-opensans border border-gray-50 shadow-sm">
+        <span className="bg-[#F8F8F8] text-[#444] px-6 py-3 rounded-full text-[17px] font-semibold tracking-wider uppercase font-opensans border border-gray-50 shadow-sm">
           {stats.activities} ACTIVITIES
         </span>
 
         {/* 5. Meals Badge */}
-        <span className="bg-[#F8F8F8] text-[#444] px-6 py-3 rounded-full text-[16px] font-bold tracking-wider uppercase font-opensans border border-gray-50 shadow-sm">
+        <span className="bg-[#F8F8F8] text-[#444] px-6 py-3 rounded-full text-[17px] font-semibold tracking-wider uppercase font-opensans border border-gray-50 shadow-sm">
           {stats.meals} MEALS
         </span>
       </>
