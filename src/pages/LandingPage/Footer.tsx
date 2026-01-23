@@ -18,16 +18,16 @@ export default function Footer() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
-   
+
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="flex items-center gap-3">
-                 <img src={Logo} alt="Shinee Trip Logo" className="h-14 w-auto object-contain" />
-                 <div className="flex flex-col">
-                   <span className="text-white font-medium text-2xl tracking-wide border-b-2 border-[#C9A961] font-opensans">
-                     SHINEE <span className="text-[#C9A961]">TRIP</span>
-                   </span>
-                 </div>
+                <img src={Logo} alt="Shinee Trip Logo" className="h-14 w-auto object-contain" />
+                <div className="flex flex-col">
+                  <span className="text-white font-medium text-2xl tracking-wide border-b-2 border-[#C9A961] font-opensans">
+                    SHINEE <span className="text-[#C9A961]">TRIP</span>
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -129,7 +129,7 @@ export default function Footer() {
                 width: '68px',
                 height: '45.6px'
               }}
-           > 
+            >
               <Mail size={18} className="text-white" />
             </button>
           </div>

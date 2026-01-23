@@ -64,11 +64,10 @@ const AboutPage = () => {
                   {menuItems.map((item, index) => (
                     <button
                       key={index}
-                      className={`w-full flex items-center gap-3 px-6 py-3 text-left transition-colors ${
-                        item.active
+                      className={`w-full flex items-center gap-3 px-6 py-3 text-left transition-colors ${item.active
                           ? 'bg-yellow-500 text-white'
                           : 'text-gray-700 hover:bg-gray-100'
-                      }`}
+                        }`}
                     >
                       {item.icon}
                       <span className="text-sm">{item.label}</span>
@@ -86,15 +85,15 @@ const AboutPage = () => {
               <h1 className="text-3xl font-bold text-gray-900 mb-6">About Shinee Trips</h1>
               <div className="space-y-4 text-gray-600 leading-relaxed">
                 <p>
-                  Lorem ipsum genuskansjig olar. Becknarvåska åren mis tist. Hexavapresk kåde higon, liksom kalingar. Köl famisk stenoskapel. 
-                  Kade tröck-tv sönn ir geod. Tranostik inskädd, ade. Råkybebel hti os multibebel. Donyck megas rren. Årade fitransfòbi funt. 
-                  Bede mikägt. Krorat ultragön tilalades i posttos. Åfunade poligen. Fötonek ekogram gigartad. Far e-sport, spegicode. Prenas 
-                  fatt. Pidrangen bebåtr. Vise deskapet. Diska fibvård stengisk i prengen åheten. Dolägjt jerta att eling jehis utorn pumigon. 
+                  Lorem ipsum genuskansjig olar. Becknarvåska åren mis tist. Hexavapresk kåde higon, liksom kalingar. Köl famisk stenoskapel.
+                  Kade tröck-tv sönn ir geod. Tranostik inskädd, ade. Råkybebel hti os multibebel. Donyck megas rren. Årade fitransfòbi funt.
+                  Bede mikägt. Krorat ultragön tilalades i posttos. Åfunade poligen. Fötonek ekogram gigartad. Far e-sport, spegicode. Prenas
+                  fatt. Pidrangen bebåtr. Vise deskapet. Diska fibvård stengisk i prengen åheten. Dolägjt jerta att eling jehis utorn pumigon.
                   Gigabens ilıvis i legga inklusive posa dekabafan.
                 </p>
                 <p>
-                  Bävis fekorade disode primåkrati. Ogen lagon om teklitga digifysisk. Pressom tingen, råk drins. Bel seren bevis. Bären jera ren i 
-                  dialir en din. Antel preliga, sedin dol. Decma interaktiv skrivalda rånade på larade. Bjudkaffe ode. Antilinar kvasigon deligl 
+                  Bävis fekorade disode primåkrati. Ogen lagon om teklitga digifysisk. Pressom tingen, råk drins. Bel seren bevis. Bären jera ren i
+                  dialir en din. Antel preliga, sedin dol. Decma interaktiv skrivalda rånade på larade. Bjudkaffe ode. Antilinar kvasigon deligl
                   reatingen. Kåv vytt, kottklister i beng. Du kan vara drabbaönade.
                 </p>
               </div>

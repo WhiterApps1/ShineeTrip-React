@@ -163,7 +163,7 @@ export default function Testimonials() {
                     <Card className="relative bg-[#425656] border-0 p-15 overflow-hidden group hover:-translate-y-1 transition-all duration-300 rounded-sm  shadow-lg hover:shadow-2xl h-[537px]">
 
                       <div className="relative z-10 flex flex-col h-full">
-                        
+
                         {/* Rating Stars */}
                         <div className="flex gap-1 mb-4">
                           {[...Array(5)].map((_, i) => (

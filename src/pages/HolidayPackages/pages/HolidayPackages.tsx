@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { SlidersHorizontal } from "lucide-react"; 
+import { SlidersHorizontal } from "lucide-react";
 import Footer from "@/pages/LandingPage/Footer";
 import { HolidaySearch } from "../components/HolidaySearch";
 import { PackageCard } from "../components/PackageCard";
@@ -58,7 +58,7 @@ const HolidayPackages = () => {
         // Client Side Filtering Logic
         if (city || date) {
           const searchCity = city ? city.toLowerCase().trim() : "";
-          const searchDate = date; 
+          const searchDate = date;
 
           const filtered = finalData.filter((pkg: any) => {
             const matchCity = searchCity ? (
@@ -96,41 +96,41 @@ const HolidayPackages = () => {
 
     // Helper to get price safely
     const getPrice = (pkg: any) => {
-       const price = pkg.price?.total_price_per_adult || pkg.price?.base_fare || 0;
-       return parseFloat(price);
+      const price = pkg.price?.total_price_per_adult || pkg.price?.base_fare || 0;
+      return parseFloat(price);
     };
 
 
     const getDays = (pkg: any) => {
 
-        const daysFromItinerary = pkg.itinerary?.days?.length || 0;
-        const directDays = Number(pkg.days);
-        const derivedFromNights = pkg.nights ? Number(pkg.nights) + 1 : 0;
+      const daysFromItinerary = pkg.itinerary?.days?.length || 0;
+      const directDays = Number(pkg.days);
+      const derivedFromNights = pkg.nights ? Number(pkg.nights) + 1 : 0;
 
-        // Valid day count return karega
-        return directDays || daysFromItinerary || derivedFromNights || 0;
+      // Valid day count return karega
+      return directDays || daysFromItinerary || derivedFromNights || 0;
     };
 
     switch (sortBy) {
-        case "Price - Low to High":
-            sorted.sort((a, b) => getPrice(a) - getPrice(b));
-            break;
+      case "Price - Low to High":
+        sorted.sort((a, b) => getPrice(a) - getPrice(b));
+        break;
 
-        case "Price - High to Low":
-            sorted.sort((a, b) => getPrice(b) - getPrice(a));
-            break;
+      case "Price - High to Low":
+        sorted.sort((a, b) => getPrice(b) - getPrice(a));
+        break;
 
-        case "Duration - Short to Long":
-            sorted.sort((a, b) => getDays(a) - getDays(b));
-            break;
+      case "Duration - Short to Long":
+        sorted.sort((a, b) => getDays(a) - getDays(b));
+        break;
 
-        case "Duration - Long to Short":
-            sorted.sort((a, b) => getDays(b) - getDays(a));
-            break;
+      case "Duration - Long to Short":
+        sorted.sort((a, b) => getDays(b) - getDays(a));
+        break;
 
-        case "Most Popular":
-        default:
-            break;
+      case "Most Popular":
+      default:
+        break;
     }
     return sorted;
   }, [packages, sortBy]);
@@ -144,44 +144,43 @@ const HolidayPackages = () => {
           Find Your Perfect Holiday
         </h1>
       </div>
-      
-      <HolidaySearch 
-        isDetailsPage={false} 
-        persons={persons}      
-        setPersons={setPersons} 
-        initialCity={currentCity} 
+
+      <HolidaySearch
+        isDetailsPage={false}
+        persons={persons}
+        setPersons={setPersons}
+        initialCity={currentCity}
         initialDate={currentDate}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
+
         {/* --- SORT BY SECTION --- */}
         <div className="flex justify-center mb-8">
-            <div className="flex items-center gap-6 flex-wrap justify-center">
-                <div className="hidden sm:flex items-center gap-2 text-gray-900 font-[700] text-sm">
-                    <SlidersHorizontal className="w-4 h-4 text-[#D2A256]" />
-                    <span>Sort By:</span>
-                </div>
-
-                <div className="flex gap-4 flex-wrap justify-center">
-                    {sortOptions.map((option) => (
-                        <button
-                            key={option}
-                            onClick={() => setSortBy(option)}
-                            className={`
-                                px-4 py-1.5 rounded-full text-[15px] font-[600] border transition-all duration-200
-                                ${
-                                  sortBy === option
-                                    ? "bg-[#D2A256] text-white border-[#D2A256]" // Active
-                                    : "bg-white text-gray-700 border-[#E0DACF] hover:bg-[#D2A256] hover:text-white hover:border-[#D2A256]" // Inactive
-                                }
-                            `}
-                        >
-                            {option}
-                        </button>
-                    ))}
-                </div>
+          <div className="flex items-center gap-6 flex-wrap justify-center">
+            <div className="hidden sm:flex items-center gap-2 text-gray-900 font-[700] text-sm">
+              <SlidersHorizontal className="w-4 h-4 text-[#D2A256]" />
+              <span>Sort By:</span>
             </div>
+
+            <div className="flex gap-4 flex-wrap justify-center">
+              {sortOptions.map((option) => (
+                <button
+                  key={option}
+                  onClick={() => setSortBy(option)}
+                  className={`
+                                px-4 py-1.5 rounded-full text-[15px] font-[600] border transition-all duration-200
+                                ${sortBy === option
+                      ? "bg-[#D2A256] text-white border-[#D2A256]" // Active
+                      : "bg-white text-gray-700 border-[#E0DACF] hover:bg-[#D2A256] hover:text-white hover:border-[#D2A256]" // Inactive
+                    }
+                            `}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="mb-8">
@@ -201,12 +200,12 @@ const HolidayPackages = () => {
             {/* HERE: We map sortedPackages instead of packages */}
             {sortedPackages.length > 0 ? (
               sortedPackages.map((pkg: any) => (
-                <PackageCard 
-                    key={pkg.id} 
-                    data={pkg} 
-                    persons={persons} 
-                    currentCity={currentCity}
-                    currentDate={currentDate}
+                <PackageCard
+                  key={pkg.id}
+                  data={pkg}
+                  persons={persons}
+                  currentCity={currentCity}
+                  currentDate={currentDate}
                 />
               ))
             ) : (
@@ -218,7 +217,7 @@ const HolidayPackages = () => {
           </div>
         )}
       </main>
-      
+
     </div>
   );
 };

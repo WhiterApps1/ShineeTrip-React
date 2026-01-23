@@ -1,11 +1,11 @@
 import { X, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 // Note: useSearchParams hata diya hai kyunki ab hum Props use karenge
 
 interface PackageSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  data: any; 
+  data: any;
   persons: number;
   // ✅ CHANGE 1: Ye do naye props add karo
   currentCity?: string;
@@ -13,15 +13,15 @@ interface PackageSelectionModalProps {
 }
 
 // ✅ CHANGE 2: Props yaha receive (destructure) karo
-export const PackageSelectionModal = ({ 
-  isOpen, 
-  onClose, 
-  data, 
-  persons, 
-  currentCity, 
-  currentDate 
+export const PackageSelectionModal = ({
+  isOpen,
+  onClose,
+  data,
+  persons,
+  currentCity,
+  currentDate
 }: PackageSelectionModalProps) => {
-  
+
   const navigate = useNavigate();
   // Note: searchParams hook ki ab zarurat nahi hai
 
@@ -29,11 +29,11 @@ export const PackageSelectionModal = ({
 
   // Navigation Logic
   const handleNavigation = (selectionType: 'flight' | 'land') => {
-    onClose(); 
-    
+    onClose();
+
     // ✅ CHANGE 3: URL banana (Ab seedha props use kar rahe hain)
     let targetUrl = `/package-detail/${data.id}?persons=${persons}`;
-    
+
     // Agar prop me city aayi hai to add karo
     if (currentCity) {
       targetUrl += `&city=${currentCity}`;
@@ -44,8 +44,8 @@ export const PackageSelectionModal = ({
     }
 
     // Navigate karo
-    navigate(targetUrl, { 
-      state: { type: selectionType } 
+    navigate(targetUrl, {
+      state: { type: selectionType }
     });
   };
 
@@ -58,7 +58,7 @@ export const PackageSelectionModal = ({
   // API fields mapping
   const withFlightPrice = data?.price?.total_price_per_adult ?? 0;
   const withoutFlightPrice = data?.price?.base_fare ?? 0;
-  
+
   // Discount logic check
   const discountPercent = data?.price?.discount ?? 10;
   const originalWithFlight = Math.round(withFlightPrice / (1 - discountPercent / 100));
@@ -67,7 +67,7 @@ export const PackageSelectionModal = ({
   return (
     <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div className="bg-white w-full max-w-[450px] rounded-t-[24px] md:rounded-[24px] shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300">
-        
+
         {/* Header - Light Sky Blue Background */}
         <div className="flex justify-between items-center px-6 py-5 bg-[#5271c79c] border-b border-blue-100">
           <h3 className="font-bold text-gray-900 text-lg truncate pr-4 leading-tight">{data.title}</h3>
@@ -77,9 +77,9 @@ export const PackageSelectionModal = ({
         </div>
 
         <div className="p-6 space-y-4 bg-white">
-          
+
           {/* Card 1: With Flight (Light Blue Theme) */}
-          <div 
+          <div
             onClick={() => handleNavigation('flight')}
             className="group relative bg-[#F5FAFF] border border-[#CDE5F7] rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer flex justify-between items-center"
           >
@@ -104,7 +104,7 @@ export const PackageSelectionModal = ({
           </div>
 
           {/* Card 2: Without Flight (Beige/Gold Theme) */}
-          <div 
+          <div
             onClick={() => handleNavigation('land')}
             className="group relative bg-[#FFF9F0] border border-[#E8DCC2] rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer flex justify-between items-center"
           >

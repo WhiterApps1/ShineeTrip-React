@@ -36,7 +36,7 @@ export function PhoneLoginForm({ onSuccess }: { onSuccess?: () => void }) {
   const [confirmationResult, setConfirmationResult] = useState<any>(null)
   const [consentChecked, setConsentChecked] = useState(false)
   const [resendTimer, setResendTimer] = useState(0)
-  
+
   const inputRefs = [
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),

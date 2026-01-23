@@ -83,49 +83,49 @@ const BookingPage: React.FC = () => {
     };
 
     const fetchCatalogPrices = useCallback(async () => {
-     try {
-       const token = sessionStorage.getItem("shineetrip_token");
-       const customerid = sessionStorage.getItem("shineetrip_db_customer_id");
-   
-       // Safety check: only call if we have a token
-       if (!token) return;
-   
-       // Use backticks for template literals
-       const discounturl = `http://46.62.160.188:3000/catalog-price-rules?customerid=${customerid || ""}`;
-   
-       const response = await fetch(discounturl, {
-         method: "GET",
-         headers: {
-           Authorization: `Bearer ${token}`,
-           "Content-Type": "application/json",
-         },
-       });
-   
-       if (response.ok) {
-         const data = await response.json();
-         // Most APIs wrap results in a 'data' key or return the array directly
-         // Update this based on your exact API response structure
-           const rules = Array.isArray(data) ? data : (data.data || []);
-           console.log(rules); 
-         setCatalogPrices(rules);
-       } else {
-         console.error("Failed to fetch discounts:", response.status);
-       }
-     } catch (error) {
-       console.error("Error fetching catalog prices:", error);
-     }
-   }, []);
-   
-     // --- EFFECT TO TRIGGER FETCH ---
-     useEffect(() => {
-       fetchCatalogPrices();
-     }, [fetchCatalogPrices]);
+        try {
+            const token = sessionStorage.getItem("shineetrip_token");
+            const customerid = sessionStorage.getItem("shineetrip_db_customer_id");
+
+            // Safety check: only call if we have a token
+            if (!token) return;
+
+            // Use backticks for template literals
+            const discounturl = `http://46.62.160.188:3000/catalog-price-rules?customerid=${customerid || ""}`;
+
+            const response = await fetch(discounturl, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // Most APIs wrap results in a 'data' key or return the array directly
+                // Update this based on your exact API response structure
+                const rules = Array.isArray(data) ? data : (data.data || []);
+                console.log(rules);
+                setCatalogPrices(rules);
+            } else {
+                console.error("Failed to fetch discounts:", response.status);
+            }
+        } catch (error) {
+            console.error("Error fetching catalog prices:", error);
+        }
+    }, []);
+
+    // --- EFFECT TO TRIGGER FETCH ---
+    useEffect(() => {
+        fetchCatalogPrices();
+    }, [fetchCatalogPrices]);
 
 
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const propertyId = searchParams.get('propertyId');
-    
+
     const retailPriceStr = searchParams.get('retailPrice') || '0';
     const taxPriceStr = searchParams.get('taxPrice') || '0';
     const grandTotalStr = searchParams.get('grandTotal') || '0';
@@ -136,16 +136,16 @@ const BookingPage: React.FC = () => {
     const rooms = searchParams.get('rooms') || '1';
 
     const nights = (() => {
-  try {
-    const inDate = new Date(checkInStr);
-    const outDate = new Date(checkOutStr);
-    const ms = outDate.getTime() - inDate.getTime();
-    const diff = Math.ceil(ms / (1000 * 60 * 60 * 24));
-    return diff > 0 ? diff : 1;
-  } catch {
-    return 1;
-  }
-})();
+        try {
+            const inDate = new Date(checkInStr);
+            const outDate = new Date(checkOutStr);
+            const ms = outDate.getTime() - inDate.getTime();
+            const diff = Math.ceil(ms / (1000 * 60 * 60 * 24));
+            return diff > 0 ? diff : 1;
+        } catch {
+            return 1;
+        }
+    })();
 
     const retailPrice = parseFloat(retailPriceStr);
     const taxPrice = parseFloat(taxPriceStr);
@@ -368,31 +368,31 @@ const BookingPage: React.FC = () => {
                 body: JSON.stringify(createOrderPayload),
             });
 
-        
-          const responseText = await orderResponse.text();
 
-if (!orderResponse.ok) {
-    const errorStatus = orderResponse.status;
-    setIsProcessing(false); // ✅ Stop the loader immediately
+            const responseText = await orderResponse.text();
 
-    if (errorStatus === 401 || errorStatus === 403) {
-        sessionStorage.removeItem('shineetrip_token');
-        setShowAuthErrorModal(true);
-        return;
-    }
+            if (!orderResponse.ok) {
+                const errorStatus = orderResponse.status;
+                setIsProcessing(false); // ✅ Stop the loader immediately
 
-    let errorMsg = `API failed (${orderResponse.status}).`;
-    try {
-        const errorData = JSON.parse(responseText);
-        errorMsg = errorData.message || errorMsg;
-    } catch {
-        errorMsg = "Server Error. Please try again later.";
-    }
+                if (errorStatus === 401 || errorStatus === 403) {
+                    sessionStorage.removeItem('shineetrip_token');
+                    setShowAuthErrorModal(true);
+                    return;
+                }
 
-    // ✅ SHOW TOAST INSTEAD OF THROWING
-    toast.error(errorMsg); 
-    return; // Exit the function gracefully
-}
+                let errorMsg = `API failed (${orderResponse.status}).`;
+                try {
+                    const errorData = JSON.parse(responseText);
+                    errorMsg = errorData.message || errorMsg;
+                } catch {
+                    errorMsg = "Server Error. Please try again later.";
+                }
+
+                // ✅ SHOW TOAST INSTEAD OF THROWING
+                toast.error(errorMsg);
+                return; // Exit the function gracefully
+            }
 
             const orderData = JSON.parse(responseText);
             const razorpayOrderId = orderData.order.razorpayOrderId || orderData.razorpay_order_id;
@@ -498,23 +498,23 @@ if (!orderResponse.ok) {
             });
 
             if (verifyResponse.ok) {
-            await createInvoiceAfterPayment(backendId);
-            paymentCompletedRef.current = true;
-            if (paymentTimeoutRef.current) clearTimeout(paymentTimeoutRef.current);
+                await createInvoiceAfterPayment(backendId);
+                paymentCompletedRef.current = true;
+                if (paymentTimeoutRef.current) clearTimeout(paymentTimeoutRef.current);
 
-            toast.success('Payment Verified Successfully!'); // Success Toast
-            setSuccessOrderId(verificationPayload.razorpayOrderId);
-            setIsBookingSuccessful(true);
-        } else {
-            // BACKEND ERROR HANDLING
-            const errorMsg = verifydata.message || 'Verification failed';
-            toast.error(errorMsg); // Show backend error in Toast
-            setIsProcessing(false); // STOP PROCESSING
-        }
+                toast.success('Payment Verified Successfully!'); // Success Toast
+                setSuccessOrderId(verificationPayload.razorpayOrderId);
+                setIsBookingSuccessful(true);
+            } else {
+                // BACKEND ERROR HANDLING
+                const errorMsg = verifydata.message || 'Verification failed';
+                toast.error(errorMsg); // Show backend error in Toast
+                setIsProcessing(false); // STOP PROCESSING
+            }
         } catch (error: any) {
             console.error("Verification Catch Error:", error);
-        toast.error(error.message || 'Something went wrong. Please contact support.'); // Catch Toast
-        setIsProcessing(false); // STOP PROCESSING
+            toast.error(error.message || 'Something went wrong. Please contact support.'); // Catch Toast
+            setIsProcessing(false); // STOP PROCESSING
         } finally {
             setIsProcessing(false);
         }
@@ -765,42 +765,42 @@ if (!orderResponse.ok) {
             )}
 
             {/* Header / Progress Steps (Unchanged) */}
-           <div className='max-w-7xl mx-auto my-5 px-4 md:px-6'>
-  {/* The White Box Container */}
-  <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
-    <div className="flex flex-col md:flex-row justify-between items-center">
-      
-      {/* LEFT SIDE: Heading */}
-      <h2 className="text-[22px] font-bold text-gray-900">
-        Review your booking
-      </h2>
+            <div className='max-w-7xl mx-auto my-5 px-4 md:px-6'>
+                {/* The White Box Container */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
+                    <div className="flex flex-col md:flex-row justify-between items-center">
 
-      {/* RIGHT SIDE: Progress Steps */}
-      <div className="flex items-center gap-4 mt-4 md:mt-0">
-        
-        {/* Step 1: Active */}
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-medium text-sm">
-            1
-          </div>
-          <span className="font-medium text-sm text-gray-900">Room 1</span>
-        </div>
+                        {/* LEFT SIDE: Heading */}
+                        <h2 className="text-[22px] font-bold text-gray-900">
+                            Review your booking
+                        </h2>
 
-        {/* Connector Line */}
-        <div className="hidden sm:block w-12 md:w-16 h-px bg-gray-300"></div>
+                        {/* RIGHT SIDE: Progress Steps */}
+                        <div className="flex items-center gap-4 mt-4 md:mt-0">
 
-        {/* Step 2: Inactive */}
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-medium text-sm">
-            2
-          </div>
-          <span className="font-medium text-sm text-gray-900">Reservation</span>
-        </div>
-        
-      </div>
-    </div>
-  </div>
-</div>
+                            {/* Step 1: Active */}
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-medium text-sm">
+                                    1
+                                </div>
+                                <span className="font-medium text-sm text-gray-900">Room 1</span>
+                            </div>
+
+                            {/* Connector Line */}
+                            <div className="hidden sm:block w-12 md:w-16 h-px bg-gray-300"></div>
+
+                            {/* Step 2: Inactive */}
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-medium text-sm">
+                                    2
+                                </div>
+                                <span className="font-medium text-sm text-gray-900">Reservation</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
 
@@ -825,7 +825,7 @@ if (!orderResponse.ok) {
                             />
 
 
-                          </div>
+                        </div>
 
 
                         {/* ... inside your component ... */}
@@ -981,131 +981,131 @@ if (!orderResponse.ok) {
 
                                 {/* ✅ DYNAMIC GUEST LIST RENDER */}
                                 {/* ✅ DYNAMIC GUEST LIST RENDER */}
-{guestList.map((guest, index) => (
-    <div key={index} className="animate-in fade-in slide-in-from-top-4 duration-300 border-t border-gray-100 mt-8 pt-8">
-        <div className="flex justify-between items-center mb-6">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Guest {index + 2} Details</span>
-            <button 
-                type="button" 
-                onClick={() => handleRemoveGuest(index)} 
-                className="text-red-500 hover:text-red-700 text-xs font-bold flex items-center gap-1 uppercase"
-            >
-                <Trash2 size={14} /> Remove
-            </button>
-        </div>
+                                {guestList.map((guest, index) => (
+                                    <div key={index} className="animate-in fade-in slide-in-from-top-4 duration-300 border-t border-gray-100 mt-8 pt-8">
+                                        <div className="flex justify-between items-center mb-6">
+                                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Guest {index + 2} Details</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRemoveGuest(index)}
+                                                className="text-red-500 hover:text-red-700 text-xs font-bold flex items-center gap-1 uppercase"
+                                            >
+                                                <Trash2 size={14} /> Remove
+                                            </button>
+                                        </div>
 
-        <div className="space-y-6">
-            {/* ROW 1: Names (Title, First Name, Last Name) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Left Col: Title + First Name */}
-                <div>
-                    <div className="flex gap-4 mb-1">
-                        <label className="text-xs font-bold text-gray-500 uppercase">Title</label>
-                        <label className="text-xs font-bold text-gray-500 uppercase flex-1 pl-[52px]">First Name</label>
-                    </div>
-                    <div className="flex gap-3">
-                        {/* Title Select */}
-                        <div className="relative min-w-[80px]">
-                            <select
-                                value={guest.title}
-                                onChange={(e) => handleGuestChange(index, 'title', e.target.value)}
-                                className="w-full appearance-none bg-gray-100 text-gray-900 font-medium px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                disabled={isProcessing}
-                            >
-                                <option value="">Select</option>
-                                <option value="Mr.">Mr</option>
-                                <option value="Mrs.">Mrs</option>
-                                <option value="Ms.">Ms</option>
-                            </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
-                            </div>
-                        </div>
+                                        <div className="space-y-6">
+                                            {/* ROW 1: Names (Title, First Name, Last Name) */}
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                {/* Left Col: Title + First Name */}
+                                                <div>
+                                                    <div className="flex gap-4 mb-1">
+                                                        <label className="text-xs font-bold text-gray-500 uppercase">Title</label>
+                                                        <label className="text-xs font-bold text-gray-500 uppercase flex-1 pl-[52px]">First Name</label>
+                                                    </div>
+                                                    <div className="flex gap-3">
+                                                        {/* Title Select */}
+                                                        <div className="relative min-w-[80px]">
+                                                            <select
+                                                                value={guest.title}
+                                                                onChange={(e) => handleGuestChange(index, 'title', e.target.value)}
+                                                                className="w-full appearance-none bg-gray-100 text-gray-900 font-medium px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                                disabled={isProcessing}
+                                                            >
+                                                                <option value="">Select</option>
+                                                                <option value="Mr.">Mr</option>
+                                                                <option value="Mrs.">Mrs</option>
+                                                                <option value="Ms.">Ms</option>
+                                                            </select>
+                                                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                                                            </div>
+                                                        </div>
 
-                        {/* First Name Input */}
-                        <input
-                            type="text"
-                            placeholder="First Name"
-                            value={guest.firstName}
-                            onChange={(e) => handleGuestChange(index, 'firstName', e.target.value)}
-                            className="flex-1 bg-gray-100 text-gray-900 font-medium placeholder-gray-500 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            disabled={isProcessing}
-                            required
-                        />
-                    </div>
-                </div>
+                                                        {/* First Name Input */}
+                                                        <input
+                                                            type="text"
+                                                            placeholder="First Name"
+                                                            value={guest.firstName}
+                                                            onChange={(e) => handleGuestChange(index, 'firstName', e.target.value)}
+                                                            className="flex-1 bg-gray-100 text-gray-900 font-medium placeholder-gray-500 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            disabled={isProcessing}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
 
-                {/* Right Col: Last Name */}
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Last Name</label>
-                    <input
-                        type="text"
-                        placeholder="Last Name"
-                        value={guest.lastName}
-                        onChange={(e) => handleGuestChange(index, 'lastName', e.target.value)}
-                        className="w-full bg-gray-100 text-gray-900 font-medium placeholder-gray-500 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        disabled={isProcessing}
-                        required
-                    />
-                </div>
-            </div>
+                                                {/* Right Col: Last Name */}
+                                                <div>
+                                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Last Name</label>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Last Name"
+                                                        value={guest.lastName}
+                                                        onChange={(e) => handleGuestChange(index, 'lastName', e.target.value)}
+                                                        className="w-full bg-gray-100 text-gray-900 font-medium placeholder-gray-500 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        disabled={isProcessing}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
 
-            {/* ROW 2: Contact (Email & Mobile) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Email Field */}
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Email</label>
-                    <input
-                        type="email"
-                        placeholder="Email ID"
-                        value={guest.email}
-                        onChange={(e) => handleGuestChange(index, 'email', e.target.value)}
-                        className="w-full bg-gray-100 text-gray-900 font-medium placeholder-gray-500 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        disabled={isProcessing}
-                        required
-                    />
-                </div>
+                                            {/* ROW 2: Contact (Email & Mobile) */}
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                {/* Email Field */}
+                                                <div>
+                                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Email</label>
+                                                    <input
+                                                        type="email"
+                                                        placeholder="Email ID"
+                                                        value={guest.email}
+                                                        onChange={(e) => handleGuestChange(index, 'email', e.target.value)}
+                                                        className="w-full bg-gray-100 text-gray-900 font-medium placeholder-gray-500 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        disabled={isProcessing}
+                                                        required
+                                                    />
+                                                </div>
 
-                {/* Mobile Number Field */}
-                <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Mobile Number</label>
-                    <div className="flex bg-gray-100 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
-                        {/* Code Select */}
-                        <div className="relative border-r border-gray-300">
-                            <select
-                                value={guest.phoneCode || '+91'}
-                                onChange={(e) => handleGuestChange(index, 'phoneCode', e.target.value)}
-                                className="appearance-none bg-transparent text-gray-900 font-bold px-4 py-3 pr-8 focus:outline-none h-full cursor-pointer"
-                            >
-                                <option value="+91">+91</option>
-                                <option value="+1">+1</option>
-                                <option value="+44">+44</option>
-                            </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
-                            </div>
-                        </div>
+                                                {/* Mobile Number Field */}
+                                                <div>
+                                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Mobile Number</label>
+                                                    <div className="flex bg-gray-100 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
+                                                        {/* Code Select */}
+                                                        <div className="relative border-r border-gray-300">
+                                                            <select
+                                                                value={guest.phoneCode || '+91'}
+                                                                onChange={(e) => handleGuestChange(index, 'phoneCode', e.target.value)}
+                                                                className="appearance-none bg-transparent text-gray-900 font-bold px-4 py-3 pr-8 focus:outline-none h-full cursor-pointer"
+                                                            >
+                                                                <option value="+91">+91</option>
+                                                                <option value="+1">+1</option>
+                                                                <option value="+44">+44</option>
+                                                            </select>
+                                                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                                                            </div>
+                                                        </div>
 
-                        {/* Phone Input */}
-                        <input
-                            type="tel"
-                            placeholder="Contact Number"
-                            value={guest.phone}
-                            onChange={(e) => {
-                                const onlyDigits = e.target.value.replace(/\D/g, '');
-                                const limitedDigits = onlyDigits.slice(0, 10);
-                                handleGuestChange(index, 'phone', limitedDigits);
-                            }}
-                            className="flex-1 bg-transparent text-gray-900 font-medium placeholder-gray-500 px-4 py-3 focus:outline-none"
-                            disabled={isProcessing}
-                            required
-                        />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-))}
+                                                        {/* Phone Input */}
+                                                        <input
+                                                            type="tel"
+                                                            placeholder="Contact Number"
+                                                            value={guest.phone}
+                                                            onChange={(e) => {
+                                                                const onlyDigits = e.target.value.replace(/\D/g, '');
+                                                                const limitedDigits = onlyDigits.slice(0, 10);
+                                                                handleGuestChange(index, 'phone', limitedDigits);
+                                                            }}
+                                                            className="flex-1 bg-transparent text-gray-900 font-medium placeholder-gray-500 px-4 py-3 focus:outline-none"
+                                                            disabled={isProcessing}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
 
                                 {/* GST Toggle / Header (Optional visual separator) */}
                                 <div className="flex justify-end">
@@ -1289,64 +1289,64 @@ if (!orderResponse.ok) {
                                 </div>
                             </div>
 
-                         
-                             <div className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-gray-100 p-6">
-  <h3 className="font-bold text-gray-900 mb-5 text-base">Coupon Code</h3>
 
-  <div className="space-y-4">
-  {catalogPrices.length > 0 ? (
-    catalogPrices.map((rule, index) => {
-      // Calculate display percentage (0.1 -> 10%)
-      const percentageText = rule.reduction_type === "percentage" 
-        ? `${(parseFloat(rule.reduction) * 100).toFixed(0)}% OFF` 
-        : `${rule.currency?.symbol || '₹'}${rule.reduction} OFF`;
+                            <div className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-gray-100 p-6">
+                                <h3 className="font-bold text-gray-900 mb-5 text-base">Coupon Code</h3>
 
-      return (
-        <label key={rule.id || index} className="flex items-start gap-3 cursor-pointer group relative">
-          <div className="mt-1">
-            <input type="radio" name="coupon" className="peer sr-only" />
-            <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-[#4585b9] peer-checked:bg-[#4c8ae7] transition-all"></div>
-          </div>
-          
-          <div className="flex-1">
-            <div className="flex justify-between w-full">
-              {/* Top Line: Name and Base Price */}
-              <span className="font-bold text-gray-800 text-sm uppercase">
-                {rule.group?.name || "Discount"}
-              </span>
-              <span className="font-bold text-gray-900 text-sm">
-                ₹{rule.base_price}
-              </span>
-            </div>
-            
-            {/* Second Line: Percentage/Reduction info */}
-            <p className="text-xs text-gray-400 font-medium mt-1 group-hover:text-green-700 transition-colors">
-               Discount of {percentageText} will be applied
-            </p>
-          </div>
-        </label>
-      );
-    })
-  ) : (
-    <p className="text-sm text-gray-400 italic">No coupons available.</p>
-  )}
-</div>
+                                <div className="space-y-4">
+                                    {catalogPrices.length > 0 ? (
+                                        catalogPrices.map((rule, index) => {
+                                            // Calculate display percentage (0.1 -> 10%)
+                                            const percentageText = rule.reduction_type === "percentage"
+                                                ? `${(parseFloat(rule.reduction) * 100).toFixed(0)}% OFF`
+                                                : `${rule.currency?.symbol || '₹'}${rule.reduction} OFF`;
 
-  {/* Manual Entry Field */}
-  <div className="mt-6 pt-4 border-t border-gray-100">
-    <div className="relative">
-      <input
-        type="text"
-        placeholder="Have a Coupon Code?"
-        className="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:border-[#B98E45] focus:bg-white transition-all placeholder:text-gray-400"
-      />
-      <button className="absolute right-3 top-1/2 -translate-y-1/2 text-[#B98E45] hover:text-[#a37d3b]">
-        {/* Make sure Lucide ArrowRight is imported */}
-        <ArrowRight size={20} />
-      </button>
-    </div>
-  </div>
-</div>
+                                            return (
+                                                <label key={rule.id || index} className="flex items-start gap-3 cursor-pointer group relative">
+                                                    <div className="mt-1">
+                                                        <input type="radio" name="coupon" className="peer sr-only" />
+                                                        <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-[#4585b9] peer-checked:bg-[#4c8ae7] transition-all"></div>
+                                                    </div>
+
+                                                    <div className="flex-1">
+                                                        <div className="flex justify-between w-full">
+                                                            {/* Top Line: Name and Base Price */}
+                                                            <span className="font-bold text-gray-800 text-sm uppercase">
+                                                                {rule.group?.name || "Discount"}
+                                                            </span>
+                                                            <span className="font-bold text-gray-900 text-sm">
+                                                                ₹{rule.base_price}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Second Line: Percentage/Reduction info */}
+                                                        <p className="text-xs text-gray-400 font-medium mt-1 group-hover:text-green-700 transition-colors">
+                                                            Discount of {percentageText} will be applied
+                                                        </p>
+                                                    </div>
+                                                </label>
+                                            );
+                                        })
+                                    ) : (
+                                        <p className="text-sm text-gray-400 italic">No coupons available.</p>
+                                    )}
+                                </div>
+
+                                {/* Manual Entry Field */}
+                                <div className="mt-6 pt-4 border-t border-gray-100">
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            placeholder="Have a Coupon Code?"
+                                            className="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:border-[#B98E45] focus:bg-white transition-all placeholder:text-gray-400"
+                                        />
+                                        <button className="absolute right-3 top-1/2 -translate-y-1/2 text-[#B98E45] hover:text-[#a37d3b]">
+                                            {/* Make sure Lucide ArrowRight is imported */}
+                                            <ArrowRight size={20} />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
                     </div>

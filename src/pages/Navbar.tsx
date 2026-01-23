@@ -23,73 +23,73 @@ export const Navbar = () => {
   const isLandingPage = location.pathname === "/";
 
 
-useEffect(() => {
-  const path = location.pathname.toLowerCase();
+  useEffect(() => {
+    const path = location.pathname.toLowerCase();
 
-  // Hotel flow (list → detail → booking → payment)
-  if (
-    path.includes("hotel") ||
-    path.includes("room") ||
-    path.includes("booking") ||
-    path.includes("payment")
-  ) {
-    setActiveTab("Hotels");
-  }
+    // Hotel flow (list → detail → booking → payment)
+    if (
+      path.includes("hotel") ||
+      path.includes("room") ||
+      path.includes("booking") ||
+      path.includes("payment")
+    ) {
+      setActiveTab("Hotels");
+    }
 
-  // Flights flow
-  else if (path.includes("flight")) {
-    setActiveTab("Flights");
-  }
+    // Flights flow
+    else if (path.includes("flight")) {
+      setActiveTab("Flights");
+    }
 
-  // Trains flow
-  else if (path.includes("train")) {
-    setActiveTab("Trains");
-  }
+    // Trains flow
+    else if (path.includes("train")) {
+      setActiveTab("Trains");
+    }
 
-  // Holiday Packages
-  else if (path.includes("package")) {
-    setActiveTab("Holiday Packages");
-  }
+    // Holiday Packages
+    else if (path.includes("package")) {
+      setActiveTab("Holiday Packages");
+    }
 
-  // Events
-  else if (path.includes("event")) {
-    setActiveTab("Events");
-  }
+    // Events
+    else if (path.includes("event")) {
+      setActiveTab("Events");
+    }
 
-  // Landing page fallback
-  else {
-    setActiveTab("");
-  }
-}, [location.pathname]);
+    // Landing page fallback
+    else {
+      setActiveTab("");
+    }
+  }, [location.pathname]);
 
 
 
   // Check if user is logged in
   useEffect(() => {
-  const token = sessionStorage.getItem("shineetrip_token");
-  const name =  sessionStorage.getItem("shineetrip_name");
+    const token = sessionStorage.getItem("shineetrip_token");
+    const name = sessionStorage.getItem("shineetrip_name");
 
-  // Check if token exists and is not a junk value
-  if (token && token !== "undefined" && token !== "null" && token.length > 20) {
-    setIsLoggedIn(true);
-    if (name) {
-      setUserInitial(name.charAt(0).toUpperCase());
+    // Check if token exists and is not a junk value
+    if (token && token !== "undefined" && token !== "null" && token.length > 20) {
+      setIsLoggedIn(true);
+      if (name) {
+        setUserInitial(name.charAt(0).toUpperCase());
+      }
+    } else {
+      // Agar token galat hai toh clear kardo
+      setIsLoggedIn(false);
+      sessionStorage.removeItem("shineetrip_token");
     }
-  } else {
-    // Agar token galat hai toh clear kardo
-    setIsLoggedIn(false);
-    sessionStorage.removeItem("shineetrip_token");
-  }
 
-  // Storage listener for synchronization
-  const handleStorageChange = () => {
-    const newToken = sessionStorage.getItem("shineetrip_token");
-    setIsLoggedIn(!!newToken);
-  };
+    // Storage listener for synchronization
+    const handleStorageChange = () => {
+      const newToken = sessionStorage.getItem("shineetrip_token");
+      setIsLoggedIn(!!newToken);
+    };
 
-  window.addEventListener("storage", handleStorageChange);
-  return () => window.removeEventListener("storage", handleStorageChange);
-}, []);
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -106,31 +106,31 @@ useEffect(() => {
   };
 
   const handleEventRoute = () => {
-    navigate(`/Events`); 
+    navigate(`/Events`);
 
   }
 
- 
-const handleLogout = async () => {
+
+  const handleLogout = async () => {
     const auth = getAuth();
     try {
       await signOut(auth);
-      
+
       sessionStorage.clear();
       localStorage.clear();
-      
+
       // 3. UI Reset
       setIsLoggedIn(false);
       setShowUserMenu(false);
-      
+
       // 4. Redirect & Refresh
       navigate("/");
-      window.location.reload(); 
+      window.location.reload();
     } catch (error) {
       console.error("Logout Error:", error);
     }
   };
-  
+
   const handleLoginSuccess = () => {
     setIsModalOpen(false);
     const token = sessionStorage.getItem("shineetrip_token");
@@ -175,8 +175,8 @@ const handleLogout = async () => {
         <div className="w-full">
           <div className="flex justify-between items-center h-20 px-4 sm:px-6 lg:px-8">
             {/* Logo - Leftmost */}
-            <div 
-              className="flex-shrink-0 flex items-center cursor-pointer" 
+            <div
+              className="flex-shrink-0 flex items-center cursor-pointer"
               onClick={() => navigate("/")}
             >
               <img src={Logo} alt="Shinee Trip" className="h-12 w-auto" />
@@ -189,147 +189,137 @@ const handleLogout = async () => {
 
             {/* Desktop Menu - Center */}
             <div className="hidden md:flex items-center gap-8 flex-1 justify-center">
-<button 
-  onClick={() => handleNavClick("Hotels")} 
-  className={`relative flex items-center gap-2 font-opensans font-medium 
-  text-[18px] leading-[21px] transition-colors group ${
-    activeTab === "Hotels"
-      ? "text-[#C9A961]"
-      : "text-black hover:text-[#C9A961]"
-  }`}
->
-  <img 
-    src={HotelIcon} 
-    alt="Hotels" 
-    className="w-5 h-5 transition-all nav-icon"
-    style={{
-      filter: activeTab === "Hotels" 
-        ? "brightness(0) saturate(100%) invert(63%) sepia(25%) saturate(1089%) hue-rotate(359deg)" 
-        : "brightness(0)"
-    }}
-  />
-
-  Hotels
-
-  {/* underline */}
-  <span
-    className={`absolute left-0 -bottom-2 h-[2px] w-full bg-[#C9A961]
-    transform scale-x-0 origin-left transition-transform duration-300
-    group-hover:scale-x-100 ${
-      activeTab === "Hotels" ? "scale-x-100" : ""
-    }`}
-  />
-</button>
-
-                              
-<button
-  onClick={() => handleNavClick("Flights")}
-  className={`relative flex items-center gap-2 font-opensans font-medium
-  text-[18px] leading-[21px] transition-colors group ${
-    activeTab === "Flights"
-      ? "text-[#C9A961]"
-      : "text-black hover:text-[#C9A961]"
-  }`}
->
-  <svg viewBox="0 0 24 24" className="w-5 h-5">
-    <path
-      d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3-1 3 1v-1.5L13 19v-5.5l8 2.5Z"
-      fill="currentColor"
-    />
-  </svg>
-
-  Flights
-
-  <span
-    className={`absolute left-0 -bottom-2 h-[2px] w-full bg-[#C9A961]
-    transform scale-x-0 origin-left transition-transform duration-300
-    group-hover:scale-x-100 ${
-      activeTab === "Flights" ? "scale-x-100" : ""
-    }`}
-  />
-</button>
-
-
-
-
-              <button 
-                onClick={() => handleNavClick("Trains")} 
-                className={`flex relative items-center gap-2 font-opensans font-medium text-[18px] leading-[21px] tracking-[0px] transition-colors group ${
-                  activeTab === "Trains" ? "text-[#C9A961]" : "text-black hover:text-[#C9A961]"
-                }`}
+              <button
+                onClick={() => handleNavClick("Hotels")}
+                className={`relative flex items-center gap-2 font-opensans font-medium 
+  text-[18px] leading-[21px] transition-colors group ${activeTab === "Hotels"
+                    ? "text-[#C9A961]"
+                    : "text-black hover:text-[#C9A961]"
+                  }`}
               >
-                <img 
-                  src={TrainIcon} 
-                  alt="Trains" 
+                <img
+                  src={HotelIcon}
+                  alt="Hotels"
                   className="w-5 h-5 transition-all nav-icon"
                   style={{
-                    filter: activeTab === "Trains" 
-                      ? "brightness(0) saturate(100%) invert(63%) sepia(25%) saturate(1089%) hue-rotate(359deg)" 
+                    filter: activeTab === "Hotels"
+                      ? "brightness(0) saturate(100%) invert(63%) sepia(25%) saturate(1089%) hue-rotate(359deg)"
+                      : "brightness(0)"
+                  }}
+                />
+
+                Hotels
+
+                {/* underline */}
+                <span
+                  className={`absolute left-0 -bottom-2 h-[2px] w-full bg-[#C9A961]
+    transform scale-x-0 origin-left transition-transform duration-300
+    group-hover:scale-x-100 ${activeTab === "Hotels" ? "scale-x-100" : ""
+                    }`}
+                />
+              </button>
+
+
+              <button
+                onClick={() => handleNavClick("Flights")}
+                className={`relative flex items-center gap-2 font-opensans font-medium
+  text-[18px] leading-[21px] transition-colors group ${activeTab === "Flights"
+                    ? "text-[#C9A961]"
+                    : "text-black hover:text-[#C9A961]"
+                  }`}
+              >
+                <svg viewBox="0 0 24 24" className="w-5 h-5">
+                  <path
+                    d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3-1 3 1v-1.5L13 19v-5.5l8 2.5Z"
+                    fill="currentColor"
+                  />
+                </svg>
+
+                Flights
+
+                <span
+                  className={`absolute left-0 -bottom-2 h-[2px] w-full bg-[#C9A961]
+    transform scale-x-0 origin-left transition-transform duration-300
+    group-hover:scale-x-100 ${activeTab === "Flights" ? "scale-x-100" : ""
+                    }`}
+                />
+              </button>
+
+
+
+
+              <button
+                onClick={() => handleNavClick("Trains")}
+                className={`flex relative items-center gap-2 font-opensans font-medium text-[18px] leading-[21px] tracking-[0px] transition-colors group ${activeTab === "Trains" ? "text-[#C9A961]" : "text-black hover:text-[#C9A961]"
+                  }`}
+              >
+                <img
+                  src={TrainIcon}
+                  alt="Trains"
+                  className="w-5 h-5 transition-all nav-icon"
+                  style={{
+                    filter: activeTab === "Trains"
+                      ? "brightness(0) saturate(100%) invert(63%) sepia(25%) saturate(1089%) hue-rotate(359deg)"
                       : "brightness(0)"
                   }}
                 />
                 Trains
                 <span
-  className={`absolute left-0 -bottom-2 h-[2px] w-full bg-[#C9A961] 
+                  className={`absolute left-0 -bottom-2 h-[2px] w-full bg-[#C9A961] 
   transform scale-x-0 origin-left transition-transform duration-300
-  group-hover:scale-x-100 ${
-    activeTab === "Flights" ? "scale-x-100" : ""
-  }`}
-/>
+  group-hover:scale-x-100 ${activeTab === "Flights" ? "scale-x-100" : ""
+                    }`}
+                />
 
               </button>
 
-              <button 
-                onClick={() => handleNavClick("Holiday Packages")} 
-                className={` relative flex items-center gap-2 font-opensans font-medium text-[18px] leading-[21px] tracking-[0px] transition-colors group ${
-                  activeTab === "Holiday Packages" ? "text-[#C9A961]" : "text-black hover:text-[#C9A961]"
-                }`}
+              <button
+                onClick={() => handleNavClick("Holiday Packages")}
+                className={` relative flex items-center gap-2 font-opensans font-medium text-[18px] leading-[21px] tracking-[0px] transition-colors group ${activeTab === "Holiday Packages" ? "text-[#C9A961]" : "text-black hover:text-[#C9A961]"
+                  }`}
               >
-                <img 
-                  src={EventIcon} 
-                  alt="Holiday Packages" 
+                <img
+                  src={EventIcon}
+                  alt="Holiday Packages"
                   className="w-5 h-5 transition-all nav-icon"
                   style={{
-                    filter: activeTab === "Holiday Packages" 
-                      ? "brightness(0) saturate(100%) invert(63%) sepia(25%) saturate(1089%) hue-rotate(359deg)" 
+                    filter: activeTab === "Holiday Packages"
+                      ? "brightness(0) saturate(100%) invert(63%) sepia(25%) saturate(1089%) hue-rotate(359deg)"
                       : "brightness(0)"
                   }}
                 />
                 Holiday Packages
                 <span
-  className={`absolute left-0 -bottom-2 h-[2px] w-full bg-[#C9A961] 
+                  className={`absolute left-0 -bottom-2 h-[2px] w-full bg-[#C9A961] 
   transform scale-x-0 origin-left transition-transform duration-300
-  group-hover:scale-x-100 ${
-    activeTab === "Flights" ? "scale-x-100" : ""
-  }`}
-/>
+  group-hover:scale-x-100 ${activeTab === "Flights" ? "scale-x-100" : ""
+                    }`}
+                />
 
               </button>
 
-              <button 
-                onClick={() => handleEventRoute()} 
-                className={`relative flex items-center gap-2 font-opensans font-medium text-[18px] leading-[21px] tracking-[0px] transition-colors group ${
-                  activeTab === "Events" ? "text-[#C9A961]" : "text-black hover:text-[#C9A961]"
-                }`}
+              <button
+                onClick={() => handleEventRoute()}
+                className={`relative flex items-center gap-2 font-opensans font-medium text-[18px] leading-[21px] tracking-[0px] transition-colors group ${activeTab === "Events" ? "text-[#C9A961]" : "text-black hover:text-[#C9A961]"
+                  }`}
               >
-                <img 
-                  src={PackageIcon} 
-                  alt="Events" 
+                <img
+                  src={PackageIcon}
+                  alt="Events"
                   className="w-5 h-5 transition-all nav-icon"
                   style={{
-                    filter: activeTab === "Events" 
-                      ? "brightness(0) saturate(100%) invert(63%) sepia(25%) saturate(1089%) hue-rotate(359deg)" 
+                    filter: activeTab === "Events"
+                      ? "brightness(0) saturate(100%) invert(63%) sepia(25%) saturate(1089%) hue-rotate(359deg)"
                       : "brightness(0)"
                   }}
                 />
                 Events
                 <span
-  className={`absolute left-0 -bottom-2 h-[2px] w-full bg-[#C9A961] 
+                  className={`absolute left-0 -bottom-2 h-[2px] w-full bg-[#C9A961] 
   transform scale-x-0 origin-left transition-transform duration-300
-  group-hover:scale-x-100 ${
-    activeTab === "Flights" ? "scale-x-100" : ""
-  }`}
-/>
+  group-hover:scale-x-100 ${activeTab === "Flights" ? "scale-x-100" : ""
+                    }`}
+                />
 
               </button>
             </div>
@@ -339,7 +329,7 @@ const handleLogout = async () => {
               {isLoggedIn ? (
                 <>
                   {/* User Avatar */}
-                  <div 
+                  <div
                     onClick={() => navigate('/about')}
                     className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-xl cursor-pointer"
                     style={{
@@ -349,7 +339,7 @@ const handleLogout = async () => {
                   >
                     {userInitial}
                   </div>
-                  
+
                   {/* Menu Icon with Dropdown */}
                   <div className="relative">
                     <button
@@ -358,7 +348,7 @@ const handleLogout = async () => {
                     >
                       <Menu size={28} className="text-gray-700" />
                     </button>
-                    
+
                     {/* Dropdown Menu */}
                     {showUserMenu && (
                       <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
@@ -370,7 +360,7 @@ const handleLogout = async () => {
                           className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors text-gray-700"
                         >
                           Profile
-                          
+
                         </button>
                         <button
                           onClick={() => {
@@ -393,7 +383,7 @@ const handleLogout = async () => {
                   </div>
                 </>
               ) : (
-                <button 
+                <button
                   onClick={() => setIsModalOpen(true)}
                   className="text-white font-medium hover:opacity-90 transition-opacity text-[17px]"
                   style={{
@@ -442,7 +432,7 @@ const handleLogout = async () => {
                 {isLoggedIn ? (
                   <div className="space-y-2">
                     <div className="flex items-center gap-3 px-3 py-2">
-                      <div 
+                      <div
                         className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg"
                         style={{
                           background: 'linear-gradient(180.95deg, #AB7E29 0.87%, #EFD08D 217.04%)',
@@ -478,7 +468,7 @@ const handleLogout = async () => {
                     </button>
                   </div>
                 ) : (
-                  <button 
+                  <button
                     onClick={() => setIsModalOpen(true)}
                     className="w-full bg-[#2C4A5E] text-white px-4 py-2 rounded-full font-medium hover:bg-[#1a2e3b] transition-colors flex items-center justify-center gap-2"
                   >

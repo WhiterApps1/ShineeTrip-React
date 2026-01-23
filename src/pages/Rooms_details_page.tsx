@@ -198,61 +198,61 @@ export function RoomDetailsModal({
 
 
 
- const handleCheckAvailability = async () => {
-  
-  setLoading(true);
-  try {
-    const payload = {
-      propertyId: Number(propertyId),
-      roomTypeId: Number(roomData?.id),
-      adults: adults,
-      children: children,
-      checkIn: checkIn,
-      checkOut: checkOut,
-    };
+  const handleCheckAvailability = async () => {
 
-    const res = await fetch("http://46.62.160.188:3000/order/check-availability", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionStorage.getItem("shineetrip_token")}`,
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const responseData = await res.json();
-    console.log(responseData); 
-
-    if (res.ok) {
-      const queryParams = new URLSearchParams({
-        location: searchParams.get("location") || "",
+    setLoading(true);
+    try {
+      const payload = {
+        propertyId: Number(propertyId),
+        roomTypeId: Number(roomData?.id),
+        adults: adults,
+        children: children,
         checkIn: checkIn,
         checkOut: checkOut,
-        adults: adults.toString(),
-        children: children.toString(),
-        rooms: responseData.roomsRequired || "1" ,  
-        propertyId: propertyId || "",
-        roomId: roomData?.id?.toString() || "",
-        roomName: roomData?.room_type || roomName,
-        retailPrice: responseData?.pricePerNight || "0", // Data from API response
-        taxPrice: responseData?.taxTotal || "0",
-        grandTotal: responseData?.grandTotal || "0" // Data from API response
+      };
+
+      const res = await fetch("http://46.62.160.188:3000/order/check-availability", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("shineetrip_token")}`,
+        },
+        body: JSON.stringify(payload),
       });
 
-      // Navigate to the booking route with the response data passed in state
-    navigate(`/booking?${queryParams.toString()}`, { 
-     state: { availabilityResponse: responseData } 
-     });
-      
-    } else {
-      alert(responseData.message || "Availability check failed");
+      const responseData = await res.json();
+      console.log(responseData);
+
+      if (res.ok) {
+        const queryParams = new URLSearchParams({
+          location: searchParams.get("location") || "",
+          checkIn: checkIn,
+          checkOut: checkOut,
+          adults: adults.toString(),
+          children: children.toString(),
+          rooms: responseData.roomsRequired || "1",
+          propertyId: propertyId || "",
+          roomId: roomData?.id?.toString() || "",
+          roomName: roomData?.room_type || roomName,
+          retailPrice: responseData?.pricePerNight || "0", // Data from API response
+          taxPrice: responseData?.taxTotal || "0",
+          grandTotal: responseData?.grandTotal || "0" // Data from API response
+        });
+
+        // Navigate to the booking route with the response data passed in state
+        navigate(`/booking?${queryParams.toString()}`, {
+          state: { availabilityResponse: responseData }
+        });
+
+      } else {
+        alert(responseData.message || "Availability check failed");
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("API Error:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   // ✅ Render Stars Logic
   const renderStars = (ratingValue: number) => {
@@ -377,8 +377,8 @@ export function RoomDetailsModal({
                     }}
                     onClick={() => setCurrentImageIndex(index)}
                     className={`flex-shrink-0 rounded-md overflow-hidden border-2 transition-all ${currentImageIndex === index
-                        ? "border-blue-500"
-                        : "border-transparent hover:border-gray-300"
+                      ? "border-blue-500"
+                      : "border-transparent hover:border-gray-300"
                       }`}
                   >
                     <img

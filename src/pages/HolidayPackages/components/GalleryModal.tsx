@@ -5,7 +5,7 @@ interface GalleryModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  imageCategories: any[]; 
+  imageCategories: any[];
 }
 
 export const GalleryModal = ({ isOpen, onClose, title, imageCategories }: GalleryModalProps) => {
@@ -25,19 +25,19 @@ export const GalleryModal = ({ isOpen, onClose, title, imageCategories }: Galler
 
   // Current selected category data
   const currentCategory = validCategories[activeCategoryIndex] || { images: [], title: "Gallery" };
-  
+
   // Dynamic City Tabs
   const cities = ["All", ...Array.from(new Set(currentCategory.images?.map((img: any) => img.city).filter(Boolean) as string[]))];
 
 
-  const filteredImages = activeCity === "All" 
+  const filteredImages = activeCity === "All"
     ? currentCategory.images || []
     : (currentCategory.images || []).filter((img: any) => img.city === activeCity);
 
   return (
     <div className="fixed inset-0 mt-24 z-[999] bg-white overflow-y-auto font-opensans animate-in fade-in slide-in-from-bottom duration-500">
       <div className="max-w-7xl mx-auto px-6 py-8">
-        
+
         {/* Sticky Header Section */}
         <div className="flex justify-between items-center mb-8 sticky top-0 bg-white z-50 py-4 border-b border-gray-100">
           <div className="max-w-[80%]">
@@ -47,8 +47,8 @@ export const GalleryModal = ({ isOpen, onClose, title, imageCategories }: Galler
               <p className="text-[#C9A961] text-[10px] font-black uppercase tracking-[0.2em]">Official Visual Gallery</p>
             </div>
           </div>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="p-3 bg-gray-50 hover:bg-gray-100 rounded-full transition-all active:scale-90 shadow-sm"
           >
             <X size={28} className="text-gray-800" />
@@ -58,19 +58,18 @@ export const GalleryModal = ({ isOpen, onClose, title, imageCategories }: Galler
         {/* 1. Category Selection Chips */}
         <div className="flex flex-wrap gap-4 mb-10">
           {validCategories.map((cat, idx) => (
-            <div 
+            <div
               key={cat.id || idx}
               onClick={() => { setActiveCategoryIndex(idx); setActiveCity("All"); }}
-              className={`flex items-center gap-4 border p-2 rounded-2xl cursor-pointer transition-all duration-300 ${
-                activeCategoryIndex === idx 
-                ? "bg-white border-[#C9A961] shadow-xl ring-1 ring-[#C9A961]/20 scale-105" 
-                : "bg-gray-50 border-gray-100 hover:bg-white hover:border-gray-200"
-              }`}
+              className={`flex items-center gap-4 border p-2 rounded-2xl cursor-pointer transition-all duration-300 ${activeCategoryIndex === idx
+                  ? "bg-white border-[#C9A961] shadow-xl ring-1 ring-[#C9A961]/20 scale-105"
+                  : "bg-gray-50 border-gray-100 hover:bg-white hover:border-gray-200"
+                }`}
             >
-              <img 
-                src={cat.images?.[0]?.image_url || "https://images.unsplash.com/photo-1593693397690-362af9666fc2"} 
-                className="w-12 h-12 rounded-xl object-cover shadow-sm" 
-                alt={cat.title} 
+              <img
+                src={cat.images?.[0]?.image_url || "https://images.unsplash.com/photo-1593693397690-362af9666fc2"}
+                className="w-12 h-12 rounded-xl object-cover shadow-sm"
+                alt={cat.title}
               />
               <div className="flex flex-col pr-3">
                 <span className="text-[10px] font-black text-gray-800 leading-none mb-1 uppercase">{cat.title}</span>
@@ -87,11 +86,10 @@ export const GalleryModal = ({ isOpen, onClose, title, imageCategories }: Galler
               <button
                 key={city}
                 onClick={() => setActiveCity(city)}
-                className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
-                  activeCity === city 
-                  ? "bg-black text-white shadow-lg scale-105" 
-                  : "bg-gray-100 text-gray-400 border border-transparent hover:bg-gray-200"
-                }`}
+                className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeCity === city
+                    ? "bg-black text-white shadow-lg scale-105"
+                    : "bg-gray-100 text-gray-400 border border-transparent hover:bg-gray-200"
+                  }`}
               >
                 {city}
               </button>
@@ -111,13 +109,13 @@ export const GalleryModal = ({ isOpen, onClose, title, imageCategories }: Galler
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredImages.map((img: any, i: number) => (
             <div key={img.id || i} className="aspect-[4/3] rounded-[22px] overflow-hidden shadow-xl group relative bg-gray-50 border border-gray-100">
-              <img 
+              <img
                 src={img.image_url}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
                 alt={img.caption || "Gallery item"}
                 loading="lazy"
               />
-              
+
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
                 <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                   <p className="text-white text-xs font-bold leading-tight">

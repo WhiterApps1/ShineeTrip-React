@@ -39,9 +39,9 @@ export const ItineraryItemCard = ({ item }: any) => {
   if (item.type === 'hotel') {
     return (
       <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex gap-4 mb-4 hover:shadow-md transition-shadow animate-in fade-in duration-300">
-        <img 
-          src={item.image || "https://images.unsplash.com/photo-1566073771259-6a8506099945"} 
-          className="w-24 h-24 rounded-xl object-cover border border-gray-50" 
+        <img
+          src={item.image || "https://images.unsplash.com/photo-1566073771259-6a8506099945"}
+          className="w-24 h-24 rounded-xl object-cover border border-gray-50"
           alt="hotel"
         />
         <div className="flex-1">
@@ -62,16 +62,16 @@ export const ItineraryItemCard = ({ item }: any) => {
             </span>
           </div>
           <div className="flex items-center gap-4 mt-3">
-             {/* Updated: text-[11px] -> text-[18px] font-opensans */}
-             <div className="flex items-center gap-1 text-gray-400 text-[18px] font-opensans font-medium">
-                <Coffee size={14} className="text-[#C9A961]" /> 
-                {meta.inclusions?.includes("Breakfast") ? "Breakfast Included" : "Meals as per plan"}
-             </div>
-             {/* Updated: text-[11px] -> text-[18px] font-opensans */}
-             <div className="flex items-center gap-1 text-gray-400 text-[18px] font-opensans font-medium">
-                <MapPin size={14} className="text-[#C9A961]" /> 
-                {meta.city || "Destination"}
-             </div>
+            {/* Updated: text-[11px] -> text-[18px] font-opensans */}
+            <div className="flex items-center gap-1 text-gray-400 text-[18px] font-opensans font-medium">
+              <Coffee size={14} className="text-[#C9A961]" />
+              {meta.inclusions?.includes("Breakfast") ? "Breakfast Included" : "Meals as per plan"}
+            </div>
+            {/* Updated: text-[11px] -> text-[18px] font-opensans */}
+            <div className="flex items-center gap-1 text-gray-400 text-[18px] font-opensans font-medium">
+              <MapPin size={14} className="text-[#C9A961]" />
+              {meta.city || "Destination"}
+            </div>
           </div>
         </div>
       </div>

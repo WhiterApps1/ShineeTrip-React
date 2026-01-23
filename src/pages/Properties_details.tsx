@@ -1,54 +1,54 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 // Required icons for Search Bar
-import { MapPin, Calendar, Search, Users, Plus, Minus } from 'lucide-react'; 
+import { MapPin, Calendar, Search, Users, Plus, Minus } from 'lucide-react';
 
-import { RoomDetailsModal } from './Rooms_details_page'; 
-import RoomCard from '../components/ui/RoomCard'; 
-import { AvailabilityCheckModal } from '../components/ui/AvailabilityCheckModal'; 
-import HotelReviews from '../components/ui/HotelReviews'; 
+import { RoomDetailsModal } from './Rooms_details_page';
+import RoomCard from '../components/ui/RoomCard';
+import { AvailabilityCheckModal } from '../components/ui/AvailabilityCheckModal';
+import HotelReviews from '../components/ui/HotelReviews';
 import { PolicyModal } from '../components/ui/PolicyModal';
 import { ServiceDetailsModal } from '../components/ui/ServiceDetailsModal';
 
 // --- HELPER COMPONENT FOR DROPDOWN ROWS ---
 const GuestRow = ({ label, value, min, onMinus, onPlus }: { label: string; value: string; min: number; onMinus: () => void; onPlus: () => void }) => {
     return (
-      <div className="flex items-center justify-between py-2">
-        <span className="text-gray-700 font-medium">{label}</span>
-  
-        <div className="flex items-center gap-3">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onMinus();
-            }}
-            className="w-8 h-8 rounded-full border flex items-center justify-center
+        <div className="flex items-center justify-between py-2">
+            <span className="text-gray-700 font-medium">{label}</span>
+
+            <div className="flex items-center gap-3">
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onMinus();
+                    }}
+                    className="w-8 h-8 rounded-full border flex items-center justify-center
                        hover:border-[#D2A256] hover:text-[#D2A256]"
-          >
-            <Minus size={14} />
-          </button>
-  
-          <span className="w-6 text-center font-semibold">{value}</span>
-  
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onPlus();
-            }}
-            className="w-8 h-8 rounded-full border flex items-center justify-center
+                >
+                    <Minus size={14} />
+                </button>
+
+                <span className="w-6 text-center font-semibold">{value}</span>
+
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onPlus();
+                    }}
+                    className="w-8 h-8 rounded-full border flex items-center justify-center
                        hover:border-[#D2A256] hover:text-[#D2A256]"
-          >
-            <Plus size={14} />
-          </button>
+                >
+                    <Plus size={14} />
+                </button>
+            </div>
         </div>
-      </div>
     );
-  };
+};
 
 // Main Component: RoomBookingPage
 export default function RoomBookingPage() {
 
-    
+
     // 1. FETCHING LOGIC (hotelId path se, Filters query se)
     const { hotelId } = useParams<{ hotelId: string }>(); // ✅ Path parameter uthaya
     const hotelIdNumber = hotelId ? Number(hotelId) : null;
@@ -61,7 +61,7 @@ export default function RoomBookingPage() {
     const [hotelData, setHotelData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState<any>(null);
     const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false);
@@ -85,7 +85,7 @@ export default function RoomBookingPage() {
     const initialAdults = searchParams.get("adults") || "2";
     const initialChildren = searchParams.get("children") || "0";
     const initialRooms = searchParams.get("rooms") || "1";
-    
+
     // Original filters for API call
     const checkIn = initialCheckIn;
     const checkOut = initialCheckOut;
@@ -97,66 +97,66 @@ export default function RoomBookingPage() {
     const [currentAdults, setCurrentAdults] = useState(initialAdults);
     const [currentChildren, setCurrentChildren] = useState(initialChildren);
     const [currentRooms, setCurrentRooms] = useState(initialRooms);
-        
+
     // Search data for modal forwarding
-    const searchParamData = { 
-        location: currentLocation, 
-        checkIn: currentCheckIn, 
-        checkOut: currentCheckOut, 
-        adults: currentAdults, 
+    const searchParamData = {
+        location: currentLocation,
+        checkIn: currentCheckIn,
+        checkOut: currentCheckOut,
+        adults: currentAdults,
         children: currentChildren,
         rooms: currentRooms,
     };
-    
+
     // --- Handlers (Modal & Booking) ---
     const handleOpenPolicyModal = () => { setIsPolicyModalOpen(true); };
     const handleClosePolicyModal = () => { setIsPolicyModalOpen(false); };
     const handleOpenModal = (roomData: any) => { setSelectedRoom(roomData); setIsModalOpen(true); };
     const handleCloseModal = () => { setIsModalOpen(false); setSelectedRoom(null); };
-    const handleCloseAvailabilityCheck = () => { setIsAvailabilityCheckOpen(false); setRoomForCheck(null); }; 
-    
+    const handleCloseAvailabilityCheck = () => { setIsAvailabilityCheckOpen(false); setRoomForCheck(null); };
+
     const handleOpenServiceModal = (serviceData: any) => {
         setSelectedService(serviceData);
         setIsServiceModalOpen(true);
     };
-    
-  
+
+
     // 🟢 CRITICAL FIX: Navigation to Payment Page
-    const handleProceedToPayment = (roomData: any) => { 
- 
-    const params = new URLSearchParams();
+    const handleProceedToPayment = (roomData: any) => {
 
-    // 1. Basic Search Info (Editable states se lo)
-    params.set('location', currentLocation);
-    params.set('checkIn', currentCheckIn);
-    params.set('checkOut', currentCheckOut);
-    params.set('adults', currentAdults);
-    params.set('children', currentChildren);
-    params.set('rooms', currentRooms);
+        const params = new URLSearchParams();
 
-    // 2. Property & Room Info
-    params.set('propertyId', hotelId || ''); 
-    params.set('roomId', roomData.id);
-    params.set('roomName', roomData.room_type);
-    
-    // 3. Price Details (roomData se fresh values uthao)
-    const retailPrice = parseFloat(roomData.price.retail_price) || 0;
-    const taxPrice = parseFloat(roomData.price.retail_tax_price) || 0;
-    
-    params.set('retailPrice', retailPrice.toFixed(2));
-    params.set('taxPrice', taxPrice.toFixed(2));
-    
-    // 4. Navigate
-    navigate(`/booking?${params.toString()}`);
-    
-    handleCloseAvailabilityCheck(); 
-};
-    
-  
-    const handleBookNow = (roomData: any) => { 
+        // 1. Basic Search Info (Editable states se lo)
+        params.set('location', currentLocation);
+        params.set('checkIn', currentCheckIn);
+        params.set('checkOut', currentCheckOut);
+        params.set('adults', currentAdults);
+        params.set('children', currentChildren);
+        params.set('rooms', currentRooms);
+
+        // 2. Property & Room Info
+        params.set('propertyId', hotelId || '');
+        params.set('roomId', roomData.id);
+        params.set('roomName', roomData.room_type);
+
+        // 3. Price Details (roomData se fresh values uthao)
+        const retailPrice = parseFloat(roomData.price.retail_price) || 0;
+        const taxPrice = parseFloat(roomData.price.retail_tax_price) || 0;
+
+        params.set('retailPrice', retailPrice.toFixed(2));
+        params.set('taxPrice', taxPrice.toFixed(2));
+
+        // 4. Navigate
+        navigate(`/booking?${params.toString()}`);
+
+        handleCloseAvailabilityCheck();
+    };
+
+
+    const handleBookNow = (roomData: any) => {
         handleProceedToPayment(roomData);
     };
-    
+
     // ✅ NEW: Function to trigger a fresh search
     const handleSearch = () => {
         const newSearchParams = new URLSearchParams({
@@ -167,11 +167,11 @@ export default function RoomBookingPage() {
             children: currentChildren,
             rooms: currentRooms,
         }).toString();
-        
-       
+
+
         navigate(`/hotellists?${newSearchParams}`);
     };
-     
+
     // --- DROPDOWN CLICK OUTSIDE HANDLER ---
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -192,76 +192,76 @@ export default function RoomBookingPage() {
         };
     }, [showGuestPicker]);
 
-   
-useEffect(() => {
-    const fetchServices = async () => {
-        try {
-            const token = sessionStorage.getItem('shineetrip_token');
-            const response = await fetch('http://46.62.160.188:3000/service-prod-info', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await response.json();
-            setServices(Array.isArray(data) ? data : []);
-        } catch (err) {
-            console.error("Failed to fetch services", err);
-            setServices([]); 
-        }
-    };
-    fetchServices();
-}, [hotelId]);
 
-useEffect(() => {
-    const urlLoc = searchParams.get("location") || "";
-    const urlCin = searchParams.get("checkIn") || "";
-    const urlCout = searchParams.get("checkOut") || "";
-    const urlAdl = searchParams.get("adults") || "2";
-    const urlChl = searchParams.get("children") || "0";
-    const urlRms = searchParams.get("rooms") || "1";
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const token = sessionStorage.getItem('shineetrip_token');
+                const response = await fetch('http://46.62.160.188:3000/service-prod-info', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                setServices(Array.isArray(data) ? data : []);
+            } catch (err) {
+                console.error("Failed to fetch services", err);
+                setServices([]);
+            }
+        };
+        fetchServices();
+    }, [hotelId]);
 
-    setCurrentLocation(urlLoc);
-    setCurrentCheckIn(urlCin);
-    setCurrentCheckOut(urlCout);
-    setCurrentAdults(urlAdl);
-    setCurrentChildren(urlChl);
-    setCurrentRooms(urlRms); // Sync rooms
-}, [searchParams]);
+    useEffect(() => {
+        const urlLoc = searchParams.get("location") || "";
+        const urlCin = searchParams.get("checkIn") || "";
+        const urlCout = searchParams.get("checkOut") || "";
+        const urlAdl = searchParams.get("adults") || "2";
+        const urlChl = searchParams.get("children") || "0";
+        const urlRms = searchParams.get("rooms") || "1";
+
+        setCurrentLocation(urlLoc);
+        setCurrentCheckIn(urlCin);
+        setCurrentCheckOut(urlCout);
+        setCurrentAdults(urlAdl);
+        setCurrentChildren(urlChl);
+        setCurrentRooms(urlRms); // Sync rooms
+    }, [searchParams]);
     // --- Data Fetching (Fetch Hotel Details ONLY - Unchanged) ---
     useEffect(() => {
         const fetchHotelData = async () => {
             // ... (Fetching logic remains unchanged)
             if (!hotelId) { setError('No hotel ID provided'); setLoading(false); return; }
-            
+
             const token = sessionStorage.getItem('shineetrip_token');
-            
+
             if (!token) {
                 console.error("Authorization Required: Token missing. Redirecting to home/login.");
                 setError("You must be logged in to view property details.");
                 setLoading(false);
-                navigate('/'); 
-                return; 
+                navigate('/');
+                return;
             }
-            
+
             try {
                 const response = await fetch(`http://46.62.160.188:3000/properties/${hotelId}`, {
                     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 });
-                
+
                 if (!response.ok) {
                     const errorStatus = response.status;
                     if (errorStatus === 403 || errorStatus === 401) {
-                        sessionStorage.removeItem('shineetrip_token'); 
-                        navigate('/'); 
+                        sessionStorage.removeItem('shineetrip_token');
+                        navigate('/');
                         throw new Error("Session expired. Please log in again.");
                     }
                     throw new Error(`Failed to fetch hotel data: ${errorStatus}`);
                 }
-                
+
                 const data = await response.json();
                 setHotelData(data);
                 setLoading(false);
-            } catch (err) { 
-                setError(err instanceof Error ? err.message : 'Failed to load hotel data'); 
-                setLoading(false); 
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Failed to load hotel data');
+                setLoading(false);
             }
         };
         fetchHotelData();
@@ -270,7 +270,7 @@ useEffect(() => {
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
     // --- Conditional Render (Pre-JSX Checks) ---
-    const token = sessionStorage.getItem('shineetrip_token');    
+    const token = sessionStorage.getItem('shineetrip_token');
     // Check if redirect was triggered (token missing but not loading anymore)
     if (!token && !loading && !hotelData) {
         return (
@@ -281,7 +281,7 @@ useEffect(() => {
             </div>
         );
     }
-    
+
     // 1. Loading State UI
     if (loading) {
         return (
@@ -307,9 +307,9 @@ useEffect(() => {
             </div>
         );
     }
-    
+
     // --- Data Calculation (Only runs if data is available) ---
-    const hotelImages = hotelData?.images?.map((img: any) => img.image) || []; 
+    const hotelImages = hotelData?.images?.map((img: any) => img.image) || [];
     const roomTypes = hotelData?.roomTypes?.filter((room: any) => room.show_front_office && room.is_active) || [];
 
     // --- Main Component Render ---
@@ -319,7 +319,7 @@ useEffect(() => {
             <div className="bg-white border-b border-gray-200 pt-6 sticky top-[90px] z-20 shadow-sm">
                 <div className="max-w-7xl mx-auto px-6 py-3">
                     {/* Search Fields (Now Editable) */}
-                   {/* Search Fields */}
+                    {/* Search Fields */}
                     <div className="
                         flex flex-col sm:flex-row items-stretch sm:items-center 
                         justify-center gap-0 mb-4 
@@ -345,8 +345,8 @@ useEffect(() => {
                         </div>
 
                         {/* Check-in Field - FIXED REF */}
-                        <div 
-                            className="flex-1 w-full sm:max-w-[200px] px-4 py-3 border-b sm:border-r sm:border-b-0 border-gray-300 cursor-pointer" 
+                        <div
+                            className="flex-1 w-full sm:max-w-[200px] px-4 py-3 border-b sm:border-r sm:border-b-0 border-gray-300 cursor-pointer"
                             onClick={() => checkinRef.current?.showPicker()} // ✅ Click handler
                         >
                             <div className="text-[18px] font-bold text-gray-900 mb-1 uppercase tracking-wide" >
@@ -365,8 +365,8 @@ useEffect(() => {
                         </div>
 
                         {/* Check-out Field - FIXED REF & ONCLICK */}
-                        <div 
-                            className="flex-1 w-full sm:max-w-[200px] px-4 py-3 border-b sm:border-r sm:border-b-0 border-gray-300 cursor-pointer" 
+                        <div
+                            className="flex-1 w-full sm:max-w-[200px] px-4 py-3 border-b sm:border-r sm:border-b-0 border-gray-300 cursor-pointer"
                             onClick={() => checkoutRef.current?.showPicker()} // ✅ Corrected to checkoutRef
                         >
                             <div className="text-[18px] font-bold text-gray-900  mb-1 uppercase tracking-wide">
@@ -455,62 +455,62 @@ useEffect(() => {
 
                 </div>
             </div>
-         <div className='max-w-7xl mx-auto my-5 px-6'>
-    {/* White Box Wrapper */}
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        
-        {/* Header Section with Bottom Border */}
-        <div className="flex flex-col md:flex-row justify-between items-center p-6 md:px-8 md:py-5 border-b border-gray-100 bg-gray-50/30">
-            {/* LEFT SIDE: Heading */}
-            <h2 className="text-[20px] md:text-[22px] font-bold text-gray-900 tracking-tight">
-                Review your booking
-            </h2>
+            <div className='max-w-7xl mx-auto my-5 px-6'>
+                {/* White Box Wrapper */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
 
-            {/* RIGHT SIDE: Progress Steps */}
-            <div className="flex items-center gap-4 mt-4 md:mt-0">
-                {/* Step 1: Active */}
-                <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 bg-black text-white rounded-full flex items-center justify-center font-bold text-xs">
-                        1
+                    {/* Header Section with Bottom Border */}
+                    <div className="flex flex-col md:flex-row justify-between items-center p-6 md:px-8 md:py-5 border-b border-gray-100 bg-gray-50/30">
+                        {/* LEFT SIDE: Heading */}
+                        <h2 className="text-[20px] md:text-[22px] font-bold text-gray-900 tracking-tight">
+                            Review your booking
+                        </h2>
+
+                        {/* RIGHT SIDE: Progress Steps */}
+                        <div className="flex items-center gap-4 mt-4 md:mt-0">
+                            {/* Step 1: Active */}
+                            <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 bg-black text-white rounded-full flex items-center justify-center font-bold text-xs">
+                                    1
+                                </div>
+                                <span className="font-semibold text-sm text-gray-900">Room 1</span>
+                            </div>
+
+                            {/* Connector Line */}
+                            <div className="w-10 h-px bg-gray-300"></div>
+
+                            {/* Step 2: Inactive */}
+                            <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-bold text-xs">
+                                    2
+                                </div>
+                                <span className="text-gray-400 text-sm font-medium">Reservation</span>
+                            </div>
+                        </div>
                     </div>
-                    <span className="font-semibold text-sm text-gray-900">Room 1</span>
-                </div>
 
-                {/* Connector Line */}
-                <div className="w-10 h-px bg-gray-300"></div>
-
-                {/* Step 2: Inactive */}
-                <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center font-bold text-xs">
-                        2
+                    {/* Hotel Details Section */}
+                    <div className="p-6 md:p-8">
+                        <div className="space-y-1">
+                            <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
+                                {hotelData?.name || "Hotel Name"}
+                            </h1>
+                            <div className="flex flex-wrap items-center gap-2 text-gray-500 text-sm font-medium">
+                                <span className="text-gray-700">{hotelData?.city || location}</span>
+                                <span className="text-gray-300">•</span>
+                                <span className="italic">{hotelData?.address}</span>
+                            </div>
+                        </div>
                     </div>
-                    <span className="text-gray-400 text-sm font-medium">Reservation</span>
                 </div>
             </div>
-        </div>
-
-        {/* Hotel Details Section */}
-        <div className="p-6 md:p-8">
-            <div className="space-y-1">
-                <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
-                    {hotelData?.name || "Hotel Name"}
-                </h1> 
-                <div className="flex flex-wrap items-center gap-2 text-gray-500 text-sm font-medium">
-                    <span className="text-gray-700">{hotelData?.city || location}</span> 
-                    <span className="text-gray-300">•</span>
-                    <span className="italic">{hotelData?.address}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 
             {/* Main Content */}
             <div className="max-w-7xl mx-auto px-6 pb-8">
                 {/* Hotel Header */}
-               
-                
+
+
                 {/* <button 
                   onClick={handleOpenPolicyModal}
                   className="mb-6 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors"
@@ -522,15 +522,15 @@ useEffect(() => {
                 <div className="mb-8">
                     {roomTypes.length > 0 ? (
                         roomTypes.map((room: any) => (
-                            <RoomCard 
-                                key={room.id} 
-                                room={room} 
-                                hotelImages={hotelImages} 
-                                onMoreInfoClick={handleOpenModal} 
-                                onBookNowClick={handleBookNow} 
+                            <RoomCard
+                                key={room.id}
+                                room={room}
+                                hotelImages={hotelImages}
+                                onMoreInfoClick={handleOpenModal}
+                                onBookNowClick={handleBookNow}
                                 services={services}
                                 onServiceDetailClick={handleOpenServiceModal}
-                                onPolicyClick={handleOpenPolicyModal} 
+                                onPolicyClick={handleOpenPolicyModal}
                             />
                         ))
                     ) : (
@@ -542,19 +542,19 @@ useEffect(() => {
 
                 {/* GUEST FAVORITE REVIEWS SECTION */}
                 {hotelIdNumber && <HotelReviews hotelId={hotelIdNumber} />}
-                
+
             </div>
-            
+
             {/* 1. Room Details Modal Render */}
             {selectedRoom && (
                 <RoomDetailsModal
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}
                     roomName={selectedRoom.room_type || 'Room Details'}
-                    roomImages={hotelImages} 
-                    roomData={selectedRoom}               />
+                    roomImages={hotelImages}
+                    roomData={selectedRoom} />
             )}
-            
+
             {/* 2. Availability Check Modal Render */}
             {roomForCheck && (
                 <AvailabilityCheckModal
@@ -576,7 +576,7 @@ useEffect(() => {
                 />
             )}
 
-            <ServiceDetailsModal 
+            <ServiceDetailsModal
                 isOpen={isServiceModalOpen}
                 onClose={() => setIsServiceModalOpen(false)}
                 serviceData={selectedService}

@@ -197,62 +197,62 @@ const CustomerProfilePage: React.FC = () => {
         imagePreview ||
         customer?.profile_image ||
         generateLetterAvatar(customer?.first_name || "U");
-   const handleSaveProfile = async () => {
-    if (!customerDbId || !token || !customer) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-        const apiUrl = `http://46.62.160.188:3000/customers/${customerDbId}`;
-        
-        // 🟢 Use FormData for Multer compatibility
-        const formData = new FormData();
-        
-        // Append text fields
-        if (formState.first_name) formData.append('first_name', formState.first_name);
-        if (formState.last_name) formData.append('last_name', formState.last_name);
-        if (formState.email) formData.append('email', formState.email);
-        if (formState.phone) formData.append('phone', formState.phone);
-        if (formState.address) formData.append('address', formState.address);
-        
-        // Format DOB to ISO for backend validation
-        if (formState.dob && formState.dob !== 'N/A') {
-            formData.append('dob', new Date(formState.dob).toISOString());
+    const handleSaveProfile = async () => {
+        if (!customerDbId || !token || !customer) return;
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            const apiUrl = `http://46.62.160.188:3000/customers/${customerDbId}`;
+
+            // 🟢 Use FormData for Multer compatibility
+            const formData = new FormData();
+
+            // Append text fields
+            if (formState.first_name) formData.append('first_name', formState.first_name);
+            if (formState.last_name) formData.append('last_name', formState.last_name);
+            if (formState.email) formData.append('email', formState.email);
+            if (formState.phone) formData.append('phone', formState.phone);
+            if (formState.address) formData.append('address', formState.address);
+
+            // Format DOB to ISO for backend validation
+            if (formState.dob && formState.dob !== 'N/A') {
+                formData.append('dob', new Date(formState.dob).toISOString());
+            }
+
+            // 🟢 Append the actual File object
+            if (selectedImage) {
+                formData.append('profile_image', selectedImage);
+            }
+
+            const response = await fetch(apiUrl, {
+                method: "PATCH",
+                headers: {
+                    // ⚠️ IMPORTANT: Do NOT set 'Content-Type' header manually when using FormData.
+                    // The browser will automatically set it to 'multipart/form-data' with the correct boundary.
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.json();
+                throw new Error(errorBody.message || "Failed to update profile.");
+            }
+
+            await fetchProfileData();
+            setSelectedImage(null); // Clear the file state after success
+            setIsEditMode(false);
+            alert("Profile updated successfully!");
+
+        } catch (err) {
+            console.error("Profile update error:", err);
+            setError(err instanceof Error ? err.message : 'Failed to update profile.');
+        } finally {
+            setLoading(false);
         }
-
-        // 🟢 Append the actual File object
-        if (selectedImage) {
-            formData.append('profile_image', selectedImage);
-        }
-
-        const response = await fetch(apiUrl, {
-            method: "PATCH", 
-            headers: {
-                // ⚠️ IMPORTANT: Do NOT set 'Content-Type' header manually when using FormData.
-                // The browser will automatically set it to 'multipart/form-data' with the correct boundary.
-                "Authorization": `Bearer ${token}`,
-            },
-            body: formData,
-        });
-
-        if (!response.ok) {
-            const errorBody = await response.json();
-            throw new Error(errorBody.message || "Failed to update profile.");
-        }
-
-        await fetchProfileData(); 
-        setSelectedImage(null); // Clear the file state after success
-        setIsEditMode(false);
-        alert("Profile updated successfully!");
-
-    } catch (err) {
-        console.error("Profile update error:", err);
-        setError(err instanceof Error ? err.message : 'Failed to update profile.');
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
 
 
@@ -387,13 +387,13 @@ const CustomerProfilePage: React.FC = () => {
                                         <ProfileEditField label="First Name" name="first_name" value={formState.first_name || ''} onChange={handleFormChange} />
                                         <ProfileEditField label="Last Name" name="last_name" value={formState.last_name || ''} onChange={handleFormChange} />
                                         <ProfileEditField label="Work Title" name="work_title" value={formState.work_title || ''} onChange={handleFormChange} />
-                                       <ProfileEditField 
-    label="Birthdate" 
-    name="dob" 
-    value={formState.dob || ''} // Removed formatDateForInput call from here
-    onChange={handleFormChange} 
-    type="date"
-/>
+                                        <ProfileEditField
+                                            label="Birthdate"
+                                            name="dob"
+                                            value={formState.dob || ''} // Removed formatDateForInput call from here
+                                            onChange={handleFormChange}
+                                            type="date"
+                                        />
                                         <ProfileEditField label="Language" name="language" value={formState.language || ''} onChange={handleFormChange} />
                                         <div className="flex items-center gap-4 col-span-full">
                                             <img
@@ -503,8 +503,8 @@ const ProfileDataField: React.FC<{ icon: React.ElementType, label: string, value
 // Reusable Component for Side Navigation Items
 const ProfileNavItem: React.FC<{ icon: React.ElementType, label: string, active?: boolean }> = ({ icon: Icon, label, active = false }) => (
     <button className={`w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${active
-            ? 'bg-[#D2A256] text-white shadow-md'
-            : 'text-gray-700 hover:bg-gray-100'
+        ? 'bg-[#D2A256] text-white shadow-md'
+        : 'text-gray-700 hover:bg-gray-100'
         }`}>
         <Icon className="w-5 h-5" />
         <span className="font-medium text-sm">{label}</span>

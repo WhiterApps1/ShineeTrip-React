@@ -33,7 +33,7 @@ const PackageBookingPage: React.FC = () => {
         agreePolicy: false
     });
     const [isProcessing, setIsProcessing] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(''); 
+    const [errorMessage, setErrorMessage] = useState('');
     const [isBookingSuccessful, setIsBookingSuccessful] = useState(false);
     const [successOrderId, setSuccessOrderId] = useState('');
     const [completeOrderData, setCompleteOrderData] = useState<any>(null);
@@ -47,9 +47,9 @@ const PackageBookingPage: React.FC = () => {
             try {
                 const token = sessionStorage.getItem("shineetrip_token");
                 const res = await fetch(`http://46.62.160.188:3000/holiday-package?page=1&limit=50`, {
-                    headers: { 
+                    headers: {
                         'accept': 'application/json',
-                        'Authorization': `Bearer ${token}` 
+                        'Authorization': `Bearer ${token}`
                     }
                 });
                 const result = await res.json();
@@ -90,9 +90,9 @@ const PackageBookingPage: React.FC = () => {
 
     const handlePayment = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // 1. Validation check
-        if(!validateForm()) {
+        if (!validateForm()) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
         }
@@ -115,7 +115,7 @@ const PackageBookingPage: React.FC = () => {
                 paymentMethod: "online",
                 currency: "INR",
                 customerId: parseInt(customerId)
-                
+
             };
             console.log("Order Payload:", orderPayload.totalPrice);
 
@@ -128,8 +128,8 @@ const PackageBookingPage: React.FC = () => {
             const orderData = await response.json();
             if (!response.ok) throw new Error(orderData.message || 'Order creation failed');
             console.log("UI Price:", totalAmount);
-console.log("Price sent to Razorpay (in Paise):", totalAmount * 100);
-console.log("Razorpay Order ID from Backend:", orderData.razorpayOrderId);
+            console.log("Price sent to Razorpay (in Paise):", totalAmount * 100);
+            console.log("Razorpay Order ID from Backend:", orderData.razorpayOrderId);
 
             const options = {
                 key: RAZORPAY_KEY,
@@ -149,56 +149,56 @@ console.log("Razorpay Order ID from Backend:", orderData.razorpayOrderId);
             setErrorMessage(error.message);
             setIsProcessing(false);
         }
-        
+
     };
 
     const verifyPayment = async (rzpRes: any, orderId: string) => {
-    const token = sessionStorage.getItem('shineetrip_token');
-    try {
-        const verifyRes = await fetch(`${API_BASE}/success`, {
-            method: 'POST',
-            headers: { 
-                'Authorization': `Bearer ${token}`, 
-                'Content-Type': 'application/json' 
-            },
-            body: JSON.stringify({
-                razorpayOrderId: orderId,
-                razorpayPaymentId: rzpRes.razorpay_payment_id,
-                razorpaySignature: rzpRes.razorpay_signature
-            }),
-        });
-
-        if (verifyRes.ok) {
-
-            const res = await fetch(`http://46.62.160.188:3000/holiday-package-orders?limit=1`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+        const token = sessionStorage.getItem('shineetrip_token');
+        try {
+            const verifyRes = await fetch(`${API_BASE}/success`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    razorpayOrderId: orderId,
+                    razorpayPaymentId: rzpRes.razorpay_payment_id,
+                    razorpaySignature: rzpRes.razorpay_signature
+                }),
             });
-            const result = await res.json();
-            
 
-            const latestOrder = result.data ? result.data[0] : result[0];
+            if (verifyRes.ok) {
 
-            setCompleteOrderData(latestOrder); 
+                const res = await fetch(`http://46.62.160.188:3000/holiday-package-orders?limit=1`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await res.json();
+
+
+                const latestOrder = result.data ? result.data[0] : result[0];
+
+                setCompleteOrderData(latestOrder);
+                setIsBookingSuccessful(true);
+            } else {
+                throw new Error('Verification failed');
+            }
+        } catch (err: any) {
+            setErrorMessage("Payment successful but failed to load summary. Check 'My Bookings'.");
             setIsBookingSuccessful(true);
-        } else {
-            throw new Error('Verification failed');
+        } finally {
+            setIsProcessing(false);
         }
-    } catch (err: any) {
-        setErrorMessage("Payment successful but failed to load summary. Check 'My Bookings'.");
-        setIsBookingSuccessful(true); 
-    } finally {
-        setIsProcessing(false);
-    }
-};
+    };
 
-if (isBookingSuccessful && completeOrderData) {
-    return <HolidayBookingSuccessCard orderData={completeOrderData} />;
-}
+    if (isBookingSuccessful && completeOrderData) {
+        return <HolidayBookingSuccessCard orderData={completeOrderData} />;
+    }
 
     return (
         <div className="min-h-screen bg-[#F8F9FA] pt-32 pb-20 font-opensans">
             <div className="max-w-7xl mx-auto px-4">
-                
+
                 {/* 🛑 GLOBAL ERROR ALERT DESIGN */}
                 {errorMessage && (
                     <div className="mb-6 flex items-center gap-3 bg-red-50 border border-red-200 p-4 rounded-2xl animate-in slide-in-from-top-4 duration-300">
@@ -223,15 +223,15 @@ if (isBookingSuccessful && completeOrderData) {
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                     <div className="lg:col-span-8 space-y-6">
-                        
+
                         {/* 1. Package Info Card (Existing Design) */}
                         {packageDetails ? (
                             <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row gap-6">
                                 <div className="w-full md:w-56 h-40 rounded-2xl overflow-hidden shrink-0 bg-gray-100">
-                                    <img 
-                                        src={packageDetails.hero_image || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"} 
-                                        className="w-full h-full object-cover" 
-                                        alt="Package" 
+                                    <img
+                                        src={packageDetails.hero_image || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"}
+                                        className="w-full h-full object-cover"
+                                        alt="Package"
                                     />
                                 </div>
                                 <div className="flex-grow">
@@ -271,20 +271,20 @@ if (isBookingSuccessful && completeOrderData) {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-gray-400 uppercase ml-1">First Name</label>
-                                        <input 
+                                        <input
                                             type="text" required placeholder="John"
                                             value={formData.firstName}
                                             className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#D2A256] outline-none transition-all font-bold text-gray-700"
-                                            onChange={(e) => setFormData({...formData, firstName: e.target.value.replace(/[^a-zA-Z\s]/g, '')})}
+                                            onChange={(e) => setFormData({ ...formData, firstName: e.target.value.replace(/[^a-zA-Z\s]/g, '') })}
                                         />
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Last Name</label>
-                                        <input 
+                                        <input
                                             type="text" required placeholder="Doe"
                                             value={formData.lastName}
                                             className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#D2A256] outline-none transition-all font-bold text-gray-700"
-                                            onChange={(e) => setFormData({...formData, lastName: e.target.value.replace(/[^a-zA-Z\s]/g, '')})}
+                                            onChange={(e) => setFormData({ ...formData, lastName: e.target.value.replace(/[^a-zA-Z\s]/g, '') })}
                                         />
                                     </div>
                                 </div>
@@ -292,36 +292,36 @@ if (isBookingSuccessful && completeOrderData) {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Email Address</label>
-                                        <input 
+                                        <input
                                             type="email" required placeholder="john@example.com"
                                             value={formData.email}
                                             className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#D2A256] outline-none transition-all font-bold text-gray-700"
-                                            onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                         />
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Phone Number (10 Digits)</label>
-                                        <input 
+                                        <input
                                             type="tel" required placeholder="9876543210"
                                             value={formData.phone}
                                             maxLength={10}
                                             className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-[#D2A256] outline-none transition-all font-bold text-gray-700"
-                                            onChange={(e) => setFormData({...formData, phone: e.target.value.replace(/\D/g, '')})}
+                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '') })}
                                         />
                                     </div>
                                 </div>
 
                                 <div className="flex items-start gap-3 bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
-                                    <input 
+                                    <input
                                         type="checkbox" required className="mt-1 w-4 h-4 accent-[#AB7E29]"
-                                        onChange={(e) => setFormData({...formData, agreePolicy: e.target.checked})}
+                                        onChange={(e) => setFormData({ ...formData, agreePolicy: e.target.checked })}
                                     />
                                     <label className="text-[11px] text-blue-900 font-medium leading-relaxed">
                                         I confirm that the traveler names match their government ID. I also agree to the <span className="">Terms of Service</span> and <span className="">Cancellation Policy</span>.
                                     </label>
                                 </div>
 
-                                <button 
+                                <button
                                     type="submit" disabled={isProcessing}
                                     className="w-full bg-gray-900 text-white py-5 rounded-[20px] font-black text-sm shadow-xl shadow-gray-200 hover:bg-black active:scale-[0.98] transition-all flex items-center justify-center gap-3 uppercase tracking-widest"
                                 >

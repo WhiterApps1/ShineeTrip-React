@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { ArrowRight, MapPin, FileText, Phone, ChevronRight, ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import type { EventType } from "./eventstype"; 
+import type { EventType } from "./eventstype";
 
-const API_BASE_URL = "http://46.62.160.188:3000"; 
+const API_BASE_URL = "http://46.62.160.188:3000";
 
 const EventsPage = () => {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ const EventsPage = () => {
           method: "GET",
           headers: headers,
         });
-        
+
         if (!response.ok) {
           throw new Error("Failed to fetch events");
         }
@@ -65,13 +65,13 @@ const EventsPage = () => {
 
   return (
     <div className="w-full bg-[#f1f1f1] font-opensans pb-20">
-      
+
       {/* --- HERO SECTION --- */}
       <div className="relative w-full h-[600px] flex items-center">
-        <div 
+        <div
           className="absolute inset-0 z-0"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2098&auto=format&fit=crop')`, 
+            backgroundImage: `url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2098&auto=format&fit=crop')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
@@ -86,8 +86,8 @@ const EventsPage = () => {
           <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl">
             Let us take care of every detail and create an unforgettable experience for you.
           </p>
-          
-          <button 
+
+          <button
             onClick={() => navigate('/Events')}
             className="px-8 py-3 rounded-full font-semibold text-white transition-transform hover:scale-105 shadow-lg"
             style={{
@@ -121,10 +121,10 @@ const EventsPage = () => {
           {/* CAROUSEL CONTAINER */}
           {!loading && !error && (
             <div className="relative flex items-center justify-center">
-              
+
               {/* Left Arrow (Only show if not at start) */}
               {currentIndex > 0 && (
-                <button 
+                <button
                   onClick={handlePrev}
                   className="absolute left-[-20px] md:left-[-40px] z-10 p-3 rounded-full bg-white shadow-lg text-[#C9A961] hover:scale-110 transition-transform border border-gray-100"
                 >
@@ -138,20 +138,20 @@ const EventsPage = () => {
                   .slice(currentIndex, currentIndex + cardsToShow)
                   .map((event) => (
                     <div key={event.id} className="w-full md:w-1/3 min-w-[300px] max-w-[400px]">
-                      <EventCard 
+                      <EventCard
                         id={event.id}
-                        image={event.img_link} 
-                        title={event.name} 
+                        image={event.img_link}
+                        title={event.name}
                         subtitle={event.desc}
                         onClick={() => navigate(`/event-venues/${event.id}`)}
                       />
                     </div>
-                ))}
+                  ))}
               </div>
 
               {/* Right Arrow (Only show if more items exist) */}
               {currentIndex + cardsToShow < eventTypes.length && (
-                <button 
+                <button
                   onClick={handleNext}
                   className="absolute right-[-20px] md:right-[-40px] z-10 p-3 rounded-full bg-[#5A5550] shadow-lg text-[#C9A961] hover:scale-110 transition-transform border border-gray-600"
                 >
@@ -185,7 +185,7 @@ const EventsPage = () => {
               <p className="text-gray-600 text-sm">Select your event type and destination.</p>
             </div>
             <div className="hidden md:block absolute left-[22%] top-[30%]"><ArrowRight className="text-[#C9A961] w-12 h-12" /></div>
-            
+
             <div className="flex flex-col items-center text-center max-w-xs z-10 mt-8 md:mt-0">
               <div className="w-24 h-24 rounded-full bg-white border-4 border-[#E5E7EB] flex items-center justify-center mb-4 shadow-sm">
                 <FileText className="text-[#F4A460] w-10 h-10" />
@@ -223,13 +223,13 @@ const EventCard = ({ image, title, subtitle, onClick }: EventCardProps) => {
   return (
     // Updated Card Container matching the new design (Rounded corners, white bg, inner padding)
     <div className="bg-white rounded-[2.5rem] shadow-xl p-3 border border-gray-100 flex flex-col h-full transform transition-all duration-300 hover:scale-[1.02]">
-      
+
       {/* Image Container (Inside padding, rounded corners) */}
       <div className="w-full h-60 rounded-[2rem] overflow-hidden relative shadow-sm">
-        <img 
-          src={image || "https://via.placeholder.com/400x300?text=Event"} 
-          alt={title} 
-          className="w-full h-full object-cover" 
+        <img
+          src={image || "https://via.placeholder.com/400x300?text=Event"}
+          alt={title}
+          className="w-full h-full object-cover"
           onError={(e) => {
             (e.target as HTMLImageElement).src = "https://via.placeholder.com/400x300?text=Image+Not+Found";
           }}
@@ -239,10 +239,10 @@ const EventCard = ({ image, title, subtitle, onClick }: EventCardProps) => {
       {/* Content */}
       <div className="text-center mt-4 px-2 flex-1 flex flex-col">
         <h3 className="text-2xl font-bold text-[#1A1A1A] mb-1">{title}</h3>
-        <p className="text-gray-500 text-sm mb-6 line-clamp-2">{subtitle}</p> 
-        
+        <p className="text-gray-500 text-sm mb-6 line-clamp-2">{subtitle}</p>
+
         {/* Full Width Button at Bottom */}
-        <button 
+        <button
           onClick={onClick}
           className="mt-auto w-full py-3 rounded-2xl text-white font-bold text-base transition-opacity hover:opacity-90 cursor-pointer shadow-md"
           style={{

@@ -26,7 +26,7 @@ export const PackageCard = ({ data, persons, currentCity, currentDate }: Package
 
   const handleNavigate = (type: 'flight' | 'land') => {
     let url = `/package-detail/${data.id}?persons=${persons}`;
-    
+
     if (currentCity) {
       url += `&city=${currentCity}`;
     }
@@ -42,10 +42,10 @@ export const PackageCard = ({ data, persons, currentCity, currentDate }: Package
 
   return (
     <div onClick={() => setShowPricePopup(true)} className="relative bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 font-opensans flex flex-col h-full group">
-      
+
       {/* Content Wrapper */}
       <div className={`transition-all duration-300 ${(showPricePopup || showDetailsPopup) ? "opacity-10 scale-[0.98]" : "opacity-100 scale-100"}`}>
-        
+
         {/* Image Section */}
         <div className="relative h-64 overflow-hidden">
           <img
@@ -53,7 +53,7 @@ export const PackageCard = ({ data, persons, currentCity, currentDate }: Package
             alt={data.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             onError={(e) => {
-                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=1000";
+              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=1000";
             }}
           />
         </div>
@@ -79,7 +79,7 @@ export const PackageCard = ({ data, persons, currentCity, currentDate }: Package
               </div>
             ))}
             {data.inclusions?.length > maxInclusions && (
-              <button 
+              <button
                 onClick={(e) => { e.stopPropagation(); setShowDetailsPopup(true); }}
                 className="text-[12px] font-bold text-[#3A96DA] hover:underline font-opensans"
               >
@@ -104,7 +104,7 @@ export const PackageCard = ({ data, persons, currentCity, currentDate }: Package
               ))}
             </div>
             {data.highlights?.length > maxHighlights && (
-              <button 
+              <button
                 onClick={(e) => { e.stopPropagation(); setShowDetailsPopup(true); }}
                 className="mt-3 text-[14px] font-bold text-[#2EB159] flex items-center gap-1 font-opensans"
               >
@@ -142,11 +142,11 @@ export const PackageCard = ({ data, persons, currentCity, currentDate }: Package
         <div className="absolute inset-0 z-30 bg-white p-6 flex flex-col animate-in fade-in slide-in-from-bottom-5 duration-300">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-[20px] text-gray-900 font-opensans">Package Details</h3>
-            <button onClick={(e) => { e.stopPropagation(); setShowDetailsPopup(false)}} className="p-2 hover:bg-gray-100 rounded-full">
+            <button onClick={(e) => { e.stopPropagation(); setShowDetailsPopup(false) }} className="p-2 hover:bg-gray-100 rounded-full">
               <X size={24} className="text-gray-500" />
             </button>
           </div>
-          
+
           <div className="overflow-y-auto space-y-6 flex-grow pr-2 custom-scrollbar">
             <div>
               <p className="text-[14px] font-bold text-gray-400 uppercase mb-3 font-opensans">All Inclusions</p>
@@ -172,8 +172,8 @@ export const PackageCard = ({ data, persons, currentCity, currentDate }: Package
               </div>
             </div>
           </div>
-          
-          <button 
+
+          <button
             onClick={(e) => { e.stopPropagation(); setShowDetailsPopup(false); setShowPricePopup(true); }}
             className="mt-4 w-full bg-[#2EB159] text-white py-3 rounded-xl font-bold text-[18px] font-opensans"
           >
@@ -187,12 +187,12 @@ export const PackageCard = ({ data, persons, currentCity, currentDate }: Package
         <div className="absolute left-0 right-0 bottom-0 pb-10 z-20 bg-white rounded-t-3xl shadow-2xl animate-in slide-in-from-bottom-5 duration-300 border-t overflow-hidden">
           <div className="flex justify-between items-center py-6 bg-blue-300/20 px-6 mb-6">
             <h2 className="font-semibold text-gray-900 truncate pr-4">{data.title}</h2>
-            <button onClick={(e) =>{ e.stopPropagation(); setShowPricePopup(false)}}><X size={20} className="text-gray-400" /></button>
+            <button onClick={(e) => { e.stopPropagation(); setShowPricePopup(false) }}><X size={20} className="text-gray-400" /></button>
           </div>
           <div className="px-6 space-y-3">
-            
-            <div 
-              onClick={() => handleNavigate('flight')} 
+
+            <div
+              onClick={() => handleNavigate('flight')}
               className="border border-gray-200 rounded-2xl p-4 flex justify-between items-center cursor-pointer hover:bg-blue-50 transition-colors"
             >
               <div>
@@ -202,8 +202,8 @@ export const PackageCard = ({ data, persons, currentCity, currentDate }: Package
               <ChevronRight size={24} className="text-[#2EB159]" />
             </div>
 
-            <div 
-              onClick={() => handleNavigate('land')} 
+            <div
+              onClick={() => handleNavigate('land')}
               className="border-2 border-[#EAD8B1] bg-[#F9F3E5] rounded-2xl p-4 flex justify-between items-center cursor-pointer hover:bg-[#f3ead4] transition-colors"
             >
               <div>

@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Tag } from "lucide-react"; 
+import { Tag } from "lucide-react";
 
 interface PricingSidebarProps {
   priceData: any;
   calculatedSummary: any;
-  defaultOption?: 'flight' | 'land'; 
+  defaultOption?: 'flight' | 'land';
   persons: number;
 }
 
 export const PricingSidebar = ({ priceData, calculatedSummary, defaultOption = 'flight', persons }: PricingSidebarProps) => {
-  
+
   const [selection, setSelection] = useState<'flight' | 'land'>(defaultOption);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -54,22 +54,20 @@ export const PricingSidebar = ({ priceData, calculatedSummary, defaultOption = '
 
   return (
     <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 sticky top-40 h-fit font-sans">
-      
+
       {/* 1. TOP SECTION: SELECTION TOGGLE */}
       <div className="flex p-1.5 bg-gray-50 rounded-2xl mb-6 border border-gray-100">
-        <button 
+        <button
           onClick={() => setSelection('flight')}
-          className={`flex-1 py-2.5 text-[10px] font-black rounded-xl transition-all tracking-tighter ${
-            selection === 'flight' ? 'bg-white shadow-sm text-[#C9A961]' : 'text-gray-400 hover:text-gray-600'
-          }`}
+          className={`flex-1 py-2.5 text-[10px] font-black rounded-xl transition-all tracking-tighter ${selection === 'flight' ? 'bg-white shadow-sm text-[#C9A961]' : 'text-gray-400 hover:text-gray-600'
+            }`}
         >
           WITH FLIGHT
         </button>
-        <button 
+        <button
           onClick={() => setSelection('land')}
-          className={`flex-1 py-2.5 text-[10px] font-black rounded-xl transition-all tracking-tighter ${
-            selection === 'land' ? 'bg-white shadow-sm text-[#C9A961]' : 'text-gray-400 hover:text-gray-600'
-          }`}
+          className={`flex-1 py-2.5 text-[10px] font-black rounded-xl transition-all tracking-tighter ${selection === 'land' ? 'bg-white shadow-sm text-[#C9A961]' : 'text-gray-400 hover:text-gray-600'
+            }`}
         >
           WITHOUT FLIGHT
         </button>
@@ -84,10 +82,10 @@ export const PricingSidebar = ({ priceData, calculatedSummary, defaultOption = '
         </span>
       </div>
 
-      <button 
+      <button
         onClick={() => {
           navigate(
-            `/package-booking?packageId=${id}&amount=${finalPayableAmount}&adults=${persons}`, 
+            `/package-booking?packageId=${id}&amount=${finalPayableAmount}&adults=${persons}`,
             { state: { type: selection } }
           );
         }}
@@ -122,7 +120,7 @@ export const PricingSidebar = ({ priceData, calculatedSummary, defaultOption = '
           <span className="text-gray-500 font-medium">Tatkal Fare</span>
           <span className="text-gray-900 font-bold">₹{formatPrice(tatkalFare * persons)}</span>
         </div>
-        
+
         {selection === 'flight' && (
           <div className="flex justify-between items-center text-sm animate-in slide-in-from-left-2 duration-300 pt-2 border-t border-dashed border-gray-100">
             <span className="text-gray-500 font-medium">Flights ({persons}x)</span>
@@ -130,7 +128,7 @@ export const PricingSidebar = ({ priceData, calculatedSummary, defaultOption = '
           </div>
         )}
 
-         <div className="flex justify-between items-center text-[16px] pt-2 border-t border-gray-100">
+        <div className="flex justify-between items-center text-[16px] pt-2 border-t border-gray-100">
           <span className="text-gray-900 font-opensans ">Total Price per adult</span>
           <span className="text-gray-900 font-bold">₹{formatPrice(grossTotalPerPerson)}</span>
         </div>
@@ -160,30 +158,30 @@ export const PricingSidebar = ({ priceData, calculatedSummary, defaultOption = '
       {/* 4. SEPARATE DIV SECTION: FINAL PRICE FOOTER */}
       <div className="mt-auto border-t border-dashed border-gray-200 pt-5">
         <div className="flex justify-between items-center">
-            
-            {/* Left Side: Label */}
-            <div className="flex flex-col">
-              <span className="font-bold text-gray-800">Total Amount</span>
-              <span className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">
-                *Includes all taxes
+
+          {/* Left Side: Label */}
+          <div className="flex flex-col">
+            <span className="font-bold text-gray-800">Total Amount</span>
+            <span className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">
+              *Includes all taxes
+            </span>
+          </div>
+
+          {/* Right Side: Price Box */}
+          <div className="flex items-center gap-3">
+            {discountPerPerson > 0 && (
+              <span className="text-sm font-bold text-gray-400 line-through decoration-gray-400">
+                ₹{formatPrice(totalGrossAmount)}
+              </span>
+            )}
+
+            {/* Green Pill Box for Price */}
+            <div className="bg-[#22C55E] text-white px-5 py-2.5 rounded-xl shadow-lg shadow-green-100 flex items-center justify-center">
+              <span className="text-[18px] font-opensans  tracking-tight">
+                ₹{formatPrice(finalPayableAmount)}
               </span>
             </div>
-            
-            {/* Right Side: Price Box */}
-            <div className="flex items-center gap-3">
-              {discountPerPerson > 0 && (
-                 <span className="text-sm font-bold text-gray-400 line-through decoration-gray-400">
-                   ₹{formatPrice(totalGrossAmount)}
-                 </span>
-              )}
-              
-              {/* Green Pill Box for Price */}
-              <div className="bg-[#22C55E] text-white px-5 py-2.5 rounded-xl shadow-lg shadow-green-100 flex items-center justify-center">
-                 <span className="text-[18px] font-opensans  tracking-tight">
-                    ₹{formatPrice(finalPayableAmount)}
-                 </span>
-              </div>
-            </div>
+          </div>
 
         </div>
       </div>

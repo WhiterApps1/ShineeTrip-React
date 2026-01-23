@@ -5,18 +5,18 @@ import { LoginModal } from "../../Login/Loginpage";
 
 interface NewSearchProps {
   isDetailsPage?: boolean;
-  persons?: number; 
+  persons?: number;
   setPersons?: (count: number) => void;
   initialCity?: string;
   initialDate?: string;
   packageDuration?: number; // ✅ NEW PROP: Package ke total days
 }
 
-export const NewSearch = ({ 
-  isDetailsPage = false, 
-  persons = 1, 
-  setPersons = () => {}, 
-  initialCity = "", 
+export const NewSearch = ({
+  isDetailsPage = false,
+  persons = 1,
+  setPersons = () => { },
+  initialCity = "",
   initialDate = "",
   packageDuration = 0 // Default 0
 }: NewSearchProps) => {
@@ -24,25 +24,25 @@ export const NewSearch = ({
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  
+
   const [city, setCity] = useState(initialCity || searchParams.get("city") || "");
   const [date, setDate] = useState(initialDate || searchParams.get("departureDate") || "");
 
   // --- Date Range Formatter Logic ---
   const getFormattedDateRange = () => {
     if (!date) return "Select Dates";
-    
+
     const startDate = new Date(date);
-    
+
     // Agar packageDuration diya hai (Details Page), to End Date calculate karo
     if (packageDuration > 1) {
-        const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + (packageDuration - 1));
-        
-        const startStr = startDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-        const endStr = endDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-        
-        return `${startStr} - ${endStr}`; // Output: 1 Feb - 8 Feb
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + (packageDuration - 1));
+
+      const startStr = startDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+      const endStr = endDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+
+      return `${startStr} - ${endStr}`; // Output: 1 Feb - 8 Feb
     }
 
     // Agar normal search hai (Home Page)
@@ -53,7 +53,7 @@ export const NewSearch = ({
     if (initialCity) setCity(initialCity);
     if (initialDate) setDate(initialDate);
   }, [initialCity, initialDate]);
-  
+
 
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [filteredCities, setFilteredCities] = useState<string[]>([]);
@@ -84,7 +84,7 @@ export const NewSearch = ({
 
   useEffect(() => {
     if (city.trim()) {
-      const filtered = availableCities.filter(c => 
+      const filtered = availableCities.filter(c =>
         c.toLowerCase().includes(city.toLowerCase().trim())
       );
       setFilteredCities(filtered);
@@ -92,7 +92,7 @@ export const NewSearch = ({
       setFilteredCities([]);
     }
   }, [city, availableCities]);
-  
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
@@ -121,26 +121,25 @@ export const NewSearch = ({
 
   return (
     <>
-      <div className={`w-full transition-all duration-300 font-opensans ${
-        isDetailsPage ? "bg-white py-4" : "-mt-8 relative z-50"
-      }`}>
+      <div className={`w-full transition-all duration-300 font-opensans ${isDetailsPage ? "bg-white py-4" : "-mt-8 relative z-50"
+        }`}>
         <div className="max-w-5xl mx-auto px-4"> {/* Width reduced to 5xl */}
-          
+
           {/* Main Search Container - Gray Pill Design, Compact Height */}
           <div className="bg-[#F3F4F6] rounded-full shadow-lg border border-gray-200 flex items-center p-1.5 relative h-[60px]">
-            
+
             {/* DESTINATION SECTION */}
             <div className="flex-1 flex items-center gap-3 px-5 relative" ref={wrapperRef}>
               <div className="shrink-0">
                 <MapPin size={20} className="text-[#C9A961]" />
               </div>
               <div className="flex flex-col flex-1 min-w-0 justify-center">
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={city}
                   onFocus={() => setShowSuggestions(true)}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="Where to?" 
+                  placeholder="Where to?"
                   // Font size reduced to 15px for compact look
                   className="text-[15px] font-opensans font-bold text-gray-800 focus:outline-none bg-transparent w-full placeholder:text-gray-400 placeholder:font-normal"
                 />
@@ -153,7 +152,7 @@ export const NewSearch = ({
                   </div>
                   <ul className="max-h-52 overflow-y-auto">
                     {filteredCities.map((item, idx) => (
-                      <li 
+                      <li
                         key={idx}
                         onClick={() => {
                           setCity(item);
@@ -179,15 +178,15 @@ export const NewSearch = ({
                 <Calendar size={20} className="text-[#C9A961]" />
               </div>
               <div className="flex flex-col flex-1 justify-center relative">
-                
+
                 {/* 1. VISUAL TEXT (Dikhega ye: "1 Feb - 8 Feb") */}
                 <span className={`text-[15px] font-opensans font-bold ${date ? 'text-gray-800' : 'text-gray-400 font-normal'}`}>
-                    {getFormattedDateRange()}
+                  {getFormattedDateRange()}
                 </span>
 
                 {/* 2. HIDDEN INPUT (Kaam ye karega: Click karne pe calendar khulega) */}
-                <input 
-                  type="date" 
+                <input
+                  type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
@@ -204,30 +203,30 @@ export const NewSearch = ({
                 <Users size={20} className="text-[#C9A961]" />
               </div>
               <div className="flex items-center gap-3 flex-1 justify-between">
-                 <span className="text-[15px] font-opensans font-bold text-gray-800 whitespace-nowrap">
-                    {persons} Guests
-                 </span>
-                 
-                 <div className="flex items-center gap-1">
-                    <button 
-                      onClick={() => persons > 1 && setPersons(persons - 1)}
-                      className="w-5 h-5 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:text-[#C9A961] hover:border-[#C9A961] transition-colors text-xs"
-                    >—</button>
-                    <button 
-                      onClick={() => setPersons(persons + 1)}
-                      className="w-5 h-5 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:text-[#C9A961] hover:border-[#C9A961] transition-colors text-xs"
-                    >+</button>
-                 </div>
+                <span className="text-[15px] font-opensans font-bold text-gray-800 whitespace-nowrap">
+                  {persons} Guests
+                </span>
+
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => persons > 1 && setPersons(persons - 1)}
+                    className="w-5 h-5 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:text-[#C9A961] hover:border-[#C9A961] transition-colors text-xs"
+                  >—</button>
+                  <button
+                    onClick={() => setPersons(persons + 1)}
+                    className="w-5 h-5 flex items-center justify-center rounded-full border border-gray-400 text-gray-500 hover:text-[#C9A961] hover:border-[#C9A961] transition-colors text-xs"
+                  >+</button>
+                </div>
               </div>
             </div>
 
             {/* SEARCH BUTTON */}
             <div className="pl-2 pr-1">
-              <button 
+              <button
                 onClick={handleListingSearch}
                 // Size thoda chota kiya (w-12 h-12)
                 className="w-[48px] h-[48px] bg-[#D4AF37] rounded-full hover:bg-[#b39552] transition-all shadow-md flex items-center justify-center active:scale-95 group"
-                style={{ background: 'linear-gradient(135deg, #DFBD69 0%, #926F34 100%)' }} 
+                style={{ background: 'linear-gradient(135deg, #DFBD69 0%, #926F34 100%)' }}
               >
                 <Search size={20} className="text-white" />
               </button>
@@ -236,7 +235,7 @@ export const NewSearch = ({
           </div>
         </div>
       </div>
-      
+
       <LoginModal isOpen={showLoginPopup} onClose={() => setShowLoginPopup(false)} />
     </>
   );

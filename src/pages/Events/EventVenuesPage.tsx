@@ -4,195 +4,195 @@ import { useParams, useNavigate } from "react-router-dom";
 
 // --- Types matched to your JSON structure ---
 interface Venue {
-  id: number;
-  name: string;
-  cover_img: string;
-  images: string[];
-  desc: string;
-  location: string;
-  min_price: string | number; // JSON has it as string "20000"
-  budget_range: string;
-  venue_type: string;
-  min_guest_capacity: number;
-  max_guest_capacity: number;
-  luxury: boolean;
-  suitability: string[];
+    id: number;
+    name: string;
+    cover_img: string;
+    images: string[];
+    desc: string;
+    location: string;
+    min_price: string | number; // JSON has it as string "20000"
+    budget_range: string;
+    venue_type: string;
+    min_guest_capacity: number;
+    max_guest_capacity: number;
+    luxury: boolean;
+    suitability: string[];
 }
 
 interface FilterOptions {
-  locations: string[];
-  budget_ranges: string[];
-  venue_types: string[];
+    locations: string[];
+    budget_ranges: string[];
+    venue_types: string[];
 }
 
 const API_BASE_URL = "http://46.62.160.188:3000";
 
 const EventVenuesPage = () => {
-  const { id } = useParams(); 
-  const navigate = useNavigate();
+    const { id } = useParams();
+    const navigate = useNavigate();
 
-  // State
-  const [venues, setVenues] = useState<Venue[]>([]);
-  const [categoryName, setCategoryName] = useState("");
-  const [filterOptions, setFilterOptions] = useState<FilterOptions>({ 
-    locations: [], 
-    budget_ranges: [], 
-    venue_types: [] 
-  });
-  const [loading, setLoading] = useState(true);
-  
-  // Filters State
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
-  const [selectedBudget, setSelectedBudget] = useState("");
+    // State
+    const [venues, setVenues] = useState<Venue[]>([]);
+    const [categoryName, setCategoryName] = useState("");
+    const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+        locations: [],
+        budget_ranges: [],
+        venue_types: []
+    });
+    const [loading, setLoading] = useState(true);
 
-  // --- Fetch Filter Options ---
-  useEffect(() => {
-    const fetchFilters = async () => {
-      try {
-        const res = await fetch(`${API_BASE_URL}/event-venue/filters/options`);
-        const data = await res.json();
-        setFilterOptions(data);
-      } catch (error) {
-        console.error("Error fetching filters:", error);
-      }
-    };
-    fetchFilters();
-  }, []);
+    // Filters State
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedLocation, setSelectedLocation] = useState("");
+    const [selectedBudget, setSelectedBudget] = useState("");
 
-  // --- Fetch Venues (Corrected for Nested JSON) ---
-  useEffect(() => {
-    const fetchVenues = async () => {
-      setLoading(true);
-      try {
-        const token = sessionStorage.getItem("shineetrip_token");
-        const headers: HeadersInit = { "Content-Type": "application/json" };
-        if (token) headers["Authorization"] = `Bearer ${token}`;
+    // --- Fetch Filter Options ---
+    useEffect(() => {
+        const fetchFilters = async () => {
+            try {
+                const res = await fetch(`${API_BASE_URL}/event-venue/filters/options`);
+                const data = await res.json();
+                setFilterOptions(data);
+            } catch (error) {
+                console.error("Error fetching filters:", error);
+            }
+        };
+        fetchFilters();
+    }, []);
 
-        const url = `${API_BASE_URL}/event-type/${id}`;
-        const response = await fetch(url, { headers });
-        const data = await response.json();
+    // --- Fetch Venues (Corrected for Nested JSON) ---
+    useEffect(() => {
+        const fetchVenues = async () => {
+            setLoading(true);
+            try {
+                const token = sessionStorage.getItem("shineetrip_token");
+                const headers: HeadersInit = { "Content-Type": "application/json" };
+                if (token) headers["Authorization"] = `Bearer ${token}`;
 
-        // FIX: Extract venues from the parent object { name, desc, venues: [] }
-        setCategoryName(data.name);
-        const venuesList = data.venues || [];
-          
-        let filteredData = venuesList;
+                const url = `${API_BASE_URL}/event-type/${id}`;
+                const response = await fetch(url, { headers });
+                const data = await response.json();
 
-        // Search Filter
-        if (searchQuery) {
-            filteredData = filteredData.filter((v: Venue) => 
-                v.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                v.location.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-        }
+                // FIX: Extract venues from the parent object { name, desc, venues: [] }
+                setCategoryName(data.name);
+                const venuesList = data.venues || [];
 
-        // Location Filter
-        if (selectedLocation) {
-            filteredData = filteredData.filter((v: Venue) => v.location === selectedLocation);
-        }
+                let filteredData = venuesList;
 
-        // Budget Filter
-        if (selectedBudget) {
-            filteredData = filteredData.filter((v: Venue) => v.budget_range === selectedBudget);
-        }
+                // Search Filter
+                if (searchQuery) {
+                    filteredData = filteredData.filter((v: Venue) =>
+                        v.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        v.location.toLowerCase().includes(searchQuery.toLowerCase())
+                    );
+                }
 
-        setVenues(filteredData);
-      } catch (error) {
-        console.error("Error fetching venues:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+                // Location Filter
+                if (selectedLocation) {
+                    filteredData = filteredData.filter((v: Venue) => v.location === selectedLocation);
+                }
 
-    const timer = setTimeout(() => {
-        fetchVenues();
-    }, 500);
+                // Budget Filter
+                if (selectedBudget) {
+                    filteredData = filteredData.filter((v: Venue) => v.budget_range === selectedBudget);
+                }
 
-    return () => clearTimeout(timer);
-  }, [selectedLocation, selectedBudget, searchQuery, id]);
+                setVenues(filteredData);
+            } catch (error) {
+                console.error("Error fetching venues:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-  return (
-    <div className="min-h-screen bg-[#F9F9F9] font-opensans pb-20 pt-20">
-      
-      {/* --- SEARCH & FILTER BAR SECTION --- */}
-      <div className="py-10 px-4">
-        <div className="container mt-20 mx-auto max-w-6xl">
-           <div className="bg-white border border-gray-200 rounded-full shadow-md flex items-center p-2 max-w-6xl mx-auto h-16">
-              
-              <div className="flex items-center flex-1 px-4 pb-2 border-r border-gray-200 mt-2">
-                <Search className="text-black/100 w-6 h-6 mr-3 " />
-                <input 
-                    type="text"
-                    placeholder="Search Venues, Locations..."
-                    className="w-full outline-none text-gray-700 placeholder-gray-400 text-sm md:text-base"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
+        const timer = setTimeout(() => {
+            fetchVenues();
+        }, 500);
 
-              <div className="relative hidden md:flex items-center px-6 min-w-[200px] cursor-pointer group">
-                  <MapPin className="text-[#D2A256] w-5 h-5 mr-2" />
-                  <select 
-                    value={selectedLocation}
-                    onChange={(e) => setSelectedLocation(e.target.value)}
-                    className="appearance-none bg-transparent outline-none text-gray-700 font-medium w-full cursor-pointer z-10"
-                  >
-                      <option value="">All Locations</option>
-                      {filterOptions.locations.map((loc, idx) => (
-                          <option key={idx} value={loc}>{loc}</option>
-                      ))}
-                  </select>
-                  <ChevronDown className="absolute right-4 text-gray-400 w-4 h-4 pointer-events-none" />
-              </div>
-           </div>
-        </div>
-      </div>
+        return () => clearTimeout(timer);
+    }, [selectedLocation, selectedBudget, searchQuery, id]);
 
-      {/* --- MAIN CONTENT --- */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-12 max-w-7xl">
-        <div className="relative flex items-center justify-center mb-10">
-  {/* The Heading */}
-  <h2 className="flex items-center w-full text-center text-4xl font-bold text-[#CA9C43] tracking-wide mb-4">
-    {/* Left Line */}
-    <span className="flex-grow h-[2px] bg-[#CA9C43] opacity-30"></span>
-    
-    {/* Title Text */}
-    <span className="mx-8 shrink-0">
-      {"Select Your Perfect Venue"}
-    </span> 
-    
-    {/* Right Line */}
-    <span className="flex-grow h-[2px] bg-[#CA9C43] opacity-30"></span>
-  </h2>
-</div>
+    return (
+        <div className="min-h-screen bg-[#F9F9F9] font-opensans pb-20 pt-20">
 
-        {loading ? (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#D2A256]"></div>
-            </div>
-        ) : (
-            <>
-                {venues.length === 0 ? (
-                    <div className="text-center text-gray-500 py-10">No venues found matching your criteria.</div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                        {venues.map((venue) => (
-                            <VenueCard key={venue.id} venue={venue} />
-                        ))}
+            {/* --- SEARCH & FILTER BAR SECTION --- */}
+            <div className="py-10 px-4">
+                <div className="container mt-20 mx-auto max-w-6xl">
+                    <div className="bg-white border border-gray-200 rounded-full shadow-md flex items-center p-2 max-w-6xl mx-auto h-16">
+
+                        <div className="flex items-center flex-1 px-4 pb-2 border-r border-gray-200 mt-2">
+                            <Search className="text-black/100 w-6 h-6 mr-3 " />
+                            <input
+                                type="text"
+                                placeholder="Search Venues, Locations..."
+                                className="w-full outline-none text-gray-700 placeholder-gray-400 text-sm md:text-base"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="relative hidden md:flex items-center px-6 min-w-[200px] cursor-pointer group">
+                            <MapPin className="text-[#D2A256] w-5 h-5 mr-2" />
+                            <select
+                                value={selectedLocation}
+                                onChange={(e) => setSelectedLocation(e.target.value)}
+                                className="appearance-none bg-transparent outline-none text-gray-700 font-medium w-full cursor-pointer z-10"
+                            >
+                                <option value="">All Locations</option>
+                                {filterOptions.locations.map((loc, idx) => (
+                                    <option key={idx} value={loc}>{loc}</option>
+                                ))}
+                            </select>
+                            <ChevronDown className="absolute right-4 text-gray-400 w-4 h-4 pointer-events-none" />
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            {/* --- MAIN CONTENT --- */}
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-12 max-w-7xl">
+                <div className="relative flex items-center justify-center mb-10">
+                    {/* The Heading */}
+                    <h2 className="flex items-center w-full text-center text-4xl font-bold text-[#CA9C43] tracking-wide mb-4">
+                        {/* Left Line */}
+                        <span className="flex-grow h-[2px] bg-[#CA9C43] opacity-30"></span>
+
+                        {/* Title Text */}
+                        <span className="mx-8 shrink-0">
+                            {"Select Your Perfect Venue"}
+                        </span>
+
+                        {/* Right Line */}
+                        <span className="flex-grow h-[2px] bg-[#CA9C43] opacity-30"></span>
+                    </h2>
+                </div>
+
+                {loading ? (
+                    <div className="flex justify-center items-center h-64">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#D2A256]"></div>
+                    </div>
+                ) : (
+                    <>
+                        {venues.length === 0 ? (
+                            <div className="text-center text-gray-500 py-10">No venues found matching your criteria.</div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+                                {venues.map((venue) => (
+                                    <VenueCard key={venue.id} venue={venue} />
+                                ))}
+                            </div>
+                        )}
+                    </>
                 )}
-            </>
-        )}
-      </div>
-    </div>
-  );
+            </div>
+        </div>
+    );
 };
 
 // --- HELPER: Venue Card Component ---
 const VenueCard = ({ venue }: { venue: Venue }) => {
-    const navigate = useNavigate(); 
-    
+    const navigate = useNavigate();
+
     const formatPrice = (price: string | number) => {
         const numPrice = typeof price === 'string' ? parseInt(price) : price;
         if (numPrice >= 100000) return `₹ ${(numPrice / 100000).toFixed(1)}L`;
@@ -203,9 +203,9 @@ const VenueCard = ({ venue }: { venue: Venue }) => {
     return (
         <div className="bg-white rounded-[2rem] shadow-xl overflow-hidden border border-gray-100 flex flex-col group hover:shadow-2xl transition-all duration-300">
             <div className="relative h-64 w-full overflow-hidden">
-                <img 
-                    src={venue.cover_img || "https://via.placeholder.com/600x400?text=Venue"} 
-                    alt={venue.name} 
+                <img
+                    src={venue.cover_img || "https://via.placeholder.com/600x400?text=Venue"}
+                    alt={venue.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 {venue.luxury && (
@@ -223,18 +223,18 @@ const VenueCard = ({ venue }: { venue: Venue }) => {
                 </div>
 
                 <div className="flex items-center gap-2 mb-4">
-                     <div className="flex text-[#D2A256]">
+                    <div className="flex text-[#D2A256]">
                         {[...Array(5)].map((_, i) => <Star key={i} size={16} fill={i < 4 ? "currentColor" : "none"} className={i < 4 ? "" : "text-gray-300"} />)}
-                     </div>
-                     <span className="font-bold text-gray-800">4.5</span>
-                     <span className="text-gray-500 text-sm">(112 reviews)</span>
+                    </div>
+                    <span className="font-bold text-gray-800">4.5</span>
+                    <span className="text-gray-500 text-sm">(112 reviews)</span>
                 </div>
 
                 <div className="flex items-center text-gray-600 mb-2">
                     <MapPin size={18} className="mr-2 text-gray-400" />
                     <span className="font-medium capitalize">{venue.location}</span>
                 </div>
-                
+
                 <div className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-6">
                     {venue.venue_type} • {venue.max_guest_capacity} Guests Max
                 </div>
@@ -247,7 +247,7 @@ const VenueCard = ({ venue }: { venue: Venue }) => {
                         </p>
                     </div>
 
-                    <button 
+                    <button
                         onClick={() => navigate(`/venue-details/${venue.id}`)}
                         className="px-8 py-3 rounded-xl text-white font-bold text-sm shadow-lg transition-transform hover:scale-105 active:scale-95"
                         style={{ background: 'linear-gradient(90deg, #CA9C43 0%, #916E2B 100%)' }}

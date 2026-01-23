@@ -9,7 +9,7 @@ interface SuccessCardProps {
 const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) => {
     const navigate = useNavigate();
     const location = useLocation();
-    
+
 
     const selectionType = location.state?.type || 'flight';
 
@@ -30,7 +30,7 @@ const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) =>
         // Added font-opensans and specific print overrides to fix blank page issue
         <div className="fixed inset-0 z-[300] bg-gray-50/90 backdrop-blur-md overflow-y-auto pt-10 pb-10 flex justify-center font-opensans print:static print:block print:bg-white print:pt-0 print:h-auto print:overflow-visible">
             <div className="w-full max-w-2xl bg-transparent animate-in fade-in zoom-in duration-500 print:max-w-full print:w-full print:m-0">
-                
+
                 {/* 1. Header Section */}
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-[#D1FAE5] rounded-full mb-4 shadow-sm">
@@ -46,12 +46,12 @@ const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) =>
 
                 {/* 2. Main Detail Card */}
                 <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8 mb-6 relative overflow-hidden print:shadow-none print:border-none print:p-0">
-                    
+
                     {/* Booking ID Header */}
                     <div className="text-center mb-8">
                         {/* Updated text size to 14px */}
                         <p className="text-[14px] font-bold text-gray-400 uppercase tracking-widest flex items-center justify-center gap-1 font-opensans">
-                             Booking ID
+                            Booking ID
                         </p>
                         {/* Updated text size to 20px */}
                         <h2 className="text-[20px] font-bold text-gray-800 font-opensans">{orderData.receipt || `SHN-${orderData.id}-2026`}</h2>
@@ -137,14 +137,14 @@ const HolidayBookingSuccessCard: React.FC<SuccessCardProps> = ({ orderData }) =>
 
                 {/* 3. Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 px-2 mt-8 no-print">
-                    <button 
+                    <button
                         onClick={() => window.print()}
                         className="flex-1 bg-[#10B981] text-white py-3.5 rounded-lg font-bold text-[18px] flex items-center justify-center gap-2 hover:bg-[#059669] transition-all shadow-md active:scale-95 font-opensans"
                     >
                         <Download size={20} /> Download Invoice / PDF
                     </button>
-                    
-                    <button 
+
+                    <button
                         onClick={() => navigate('/')}
                         className="flex-1 bg-white text-gray-700 py-3.5 rounded-lg font-bold text-[18px] border border-gray-200 flex items-center justify-center gap-2 hover:bg-gray-50 transition-all shadow-sm active:scale-95 font-opensans"
                     >

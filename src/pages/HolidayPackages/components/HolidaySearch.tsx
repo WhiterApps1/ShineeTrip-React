@@ -5,24 +5,24 @@ import { LoginModal } from "../../Login/Loginpage";
 
 interface HolidaySearchProps {
   isDetailsPage?: boolean;
-  persons?: number; 
+  persons?: number;
   setPersons?: (count: number) => void;
   initialCity?: string;
   initialDate?: string;
 }
 
-export const HolidaySearch = ({ 
-  isDetailsPage = false, 
-  persons = 1, 
-  setPersons = () => {}, 
-  initialCity = "", 
-  initialDate = "" 
+export const HolidaySearch = ({
+  isDetailsPage = false,
+  persons = 1,
+  setPersons = () => { },
+  initialCity = "",
+  initialDate = ""
 }: HolidaySearchProps) => {
 
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  
+
   // States sync with URL
   const [city, setCity] = useState(initialCity || searchParams.get("city") || "");
   const [date, setDate] = useState(initialDate || searchParams.get("departureDate") || "");
@@ -31,7 +31,7 @@ export const HolidaySearch = ({
     if (initialCity) setCity(initialCity);
     if (initialDate) setDate(initialDate);
   }, [initialCity, initialDate]);
-  
+
 
   // --- AUTOCOMPLETE STATES ---
   const [availableCities, setAvailableCities] = useState<string[]>([]);
@@ -65,7 +65,7 @@ export const HolidaySearch = ({
   // 2. Filter Suggestions
   useEffect(() => {
     if (city.trim()) {
-      const filtered = availableCities.filter(c => 
+      const filtered = availableCities.filter(c =>
         c.toLowerCase().includes(city.toLowerCase().trim())
       );
       setFilteredCities(filtered);
@@ -73,7 +73,7 @@ export const HolidaySearch = ({
       setFilteredCities([]);
     }
   }, [city, availableCities]);
-  
+
 
   // 3. Click Outside logic
   useEffect(() => {
@@ -109,12 +109,11 @@ export const HolidaySearch = ({
 
   return (
     <>
-      <div className={`w-full transition-all duration-300 font-opensans ${
-        isDetailsPage ? "bg-white py-6" : "-mt-10 relative z-50"
-      }`}>
+      <div className={`w-full transition-all duration-300 font-opensans ${isDetailsPage ? "bg-white py-6" : "-mt-10 relative z-50"
+        }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-[#e9e9e9] rounded-full shadow-xl flex items-center p-4 border border-gray-100 relative">
-            
+
             {/* DESTINATION SECTION with Autocomplete */}
             <div className="flex-1 flex items-center gap-3 px-6 border-r border-gray-300 relative" ref={wrapperRef}>
               <div className="p-2 bg-orange-50 rounded-lg shrink-0">
@@ -123,12 +122,12 @@ export const HolidaySearch = ({
               <div className="flex flex-col flex-1 min-w-0">
                 {/* Changed font size to 18px and font-opensans */}
                 <span className="text-[18px] font-opensans font-bold text-gray-400 uppercase tracking-tight">Destination</span>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={city}
                   onFocus={() => setShowSuggestions(true)}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="Where to?" 
+                  placeholder="Where to?"
                   // Changed font size to 18px and font-opensans
                   className="text-[18px] font-opensans font-bold text-gray-800 focus:outline-none bg-transparent w-full"
                 />
@@ -143,7 +142,7 @@ export const HolidaySearch = ({
                   </div>
                   <ul className="max-h-60 overflow-y-auto">
                     {filteredCities.map((item, idx) => (
-                      <li 
+                      <li
                         key={idx}
                         onClick={() => {
                           setCity(item);
@@ -169,8 +168,8 @@ export const HolidaySearch = ({
               <div className="flex flex-col flex-1">
                 {/* Changed font size to 18px and font-opensans */}
                 <span className="text-[18px] font-opensans font-bold text-gray-400 uppercase tracking-tight">Departure</span>
-                <input 
-                  type="date" 
+                <input
+                  type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   // Changed font size to 18px and font-opensans
@@ -188,13 +187,13 @@ export const HolidaySearch = ({
                 {/* Changed font size to 18px and font-opensans */}
                 <span className="text-[18px] font-opensans font-bold text-gray-400 uppercase tracking-tight">Number of Persons</span>
                 <div className="flex items-center gap-4 mt-0.5">
-                  <button 
+                  <button
                     onClick={() => persons > 1 && setPersons(persons - 1)}
                     className="w-6 h-6 flex items-center justify-center rounded-full border border-gray-300 text-gray-500 hover:bg-gray-100 transition-colors"
                   >—</button>
                   {/* Changed font size to 18px and font-opensans */}
                   <span className="text-[18px] font-opensans font-black text-gray-800 w-4 text-center">{persons}</span>
-                  <button 
+                  <button
                     onClick={() => setPersons(persons + 1)}
                     className="w-6 h-6 flex items-center justify-center rounded-full border border-gray-300 text-gray-500 hover:bg-gray-100 transition-colors"
                   >+</button>
@@ -204,7 +203,7 @@ export const HolidaySearch = ({
 
             {/* SEARCH BUTTON */}
             <div className="p-1">
-              <button 
+              <button
                 onClick={handleListingSearch}
                 // Updated: bg-black -> bg-[#C9A961] and hover color adjusted
                 className="bg-[#C9A961] text-white p-4 rounded-full hover:bg-[#b39552] transition-all shadow-lg flex items-center justify-center active:scale-95"
@@ -215,7 +214,7 @@ export const HolidaySearch = ({
           </div>
         </div>
       </div>
-      
+
       <LoginModal isOpen={showLoginPopup} onClose={() => setShowLoginPopup(false)} />
     </>
   );

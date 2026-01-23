@@ -72,7 +72,7 @@ const GuestRow = ({ label, value, min, onMinus, onPlus }: { label: string; value
       </div>
     </div>
   );
-}; 
+};
 
 
 
@@ -139,39 +139,39 @@ const HotelListingPage: React.FC = () => {
     "Best Rated",
     "Lowest Price & Best Rated",
   ]; // ✅ Function to handle navigation with new search parameters
- 
- const fetchCatalogPrices = useCallback(async () => {
-  try {
-    const token = sessionStorage.getItem("shineetrip_token");
-    const customerid = sessionStorage.getItem("shineetrip_db_customer_id");
 
-    // Safety check: only call if we have a token
-    if (!token) return;
+  const fetchCatalogPrices = useCallback(async () => {
+    try {
+      const token = sessionStorage.getItem("shineetrip_token");
+      const customerid = sessionStorage.getItem("shineetrip_db_customer_id");
 
-    // Use backticks for template literals
-    const discounturl = `http://46.62.160.188:3000/catalog-price-rules?customerid=${customerid || ""}`;
+      // Safety check: only call if we have a token
+      if (!token) return;
 
-    const response = await fetch(discounturl, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+      // Use backticks for template literals
+      const discounturl = `http://46.62.160.188:3000/catalog-price-rules?customerid=${customerid || ""}`;
 
-    if (response.ok) {
-      const data = await response.json();
-      // Most APIs wrap results in a 'data' key or return the array directly
-      // Update this based on your exact API response structure
-      const rules = Array.isArray(data) ? data : (data.data || []);
-      setCatalogPrices(rules);
-    } else {
-      console.error("Failed to fetch discounts:", response.status);
+      const response = await fetch(discounturl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Most APIs wrap results in a 'data' key or return the array directly
+        // Update this based on your exact API response structure
+        const rules = Array.isArray(data) ? data : (data.data || []);
+        setCatalogPrices(rules);
+      } else {
+        console.error("Failed to fetch discounts:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching catalog prices:", error);
     }
-  } catch (error) {
-    console.error("Error fetching catalog prices:", error);
-  }
-}, []);
+  }, []);
 
   // --- EFFECT TO TRIGGER FETCH ---
   useEffect(() => {
@@ -1007,8 +1007,8 @@ const HotelListingPage: React.FC = () => {
                               handleImageSelect(index, imgIndex);
                             }}
                             className={`w-23 h-20 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${currentImageIndex === imgIndex
-                                ? "border-[#22C55E]"
-                                : "border-transparent opacity-60 hover:opacity-100"
+                              ? "border-[#22C55E]"
+                              : "border-transparent opacity-60 hover:opacity-100"
                               }`}
                           >
                             <img
@@ -1035,8 +1035,8 @@ const HotelListingPage: React.FC = () => {
                                 <Star
                                   key={i}
                                   className={`w-[20px] h-[20px] ${i < Math.round(hotel.rating)
-                                      ? "text-green-500 fill-green-500"
-                                      : "text-gray-300"
+                                    ? "text-green-500 fill-green-500"
+                                    : "text-gray-300"
                                     }`}
                                 />
                               ))}
@@ -1120,42 +1120,42 @@ const HotelListingPage: React.FC = () => {
                       <div className="lg:w-[300px] border-l border-gray-200 pl-6 flex flex-col justify-between">
                         {/* Coupons */}
                         {/* Coupons */}
-<div>
-  <h3 className="text-[18px] font-semibold text-gray-900 mb-3">
-    Offers & Discounts
-  </h3>
-  
-  {catalogPrices.length > 0 ? (
-    catalogPrices.map((rule, ruleIdx) => (
-      <div key={ruleIdx} className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-3">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full text-sm font-medium">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="#EF4444">
-              <path d="M3 12.5V7a2 2 0 0 1 2-2h5.5a2 2 0 0 1 1.4.6l7.5 7.5a2 2 0 0 1 0 2.8l-4.2 4.2a2 2 0 0 1-2.8 0l-7.5-7.5a2 2 0 0 1-.6-1.4z" />
-              <circle cx="8" cy="9" r="1.5" fill="white" />
-            </svg>
-            {rule.group?.name || "Discount"}
-          </div>
-          <span className="text-green-500 font-semibold text-sm">
-            {rule.reduction_type === "percentage" 
-              ? `${rule.reduction}% OFF` 
-              : `${rule.currency.symbol}${rule.reduction} OFF`}
-          </span>
-        </div>
+                        <div>
+                          <h3 className="text-[18px] font-semibold text-gray-900 mb-3">
+                            Offers & Discounts
+                          </h3>
 
-        <p className="text-sm text-gray-600">
-          Special offer for {rule.group?.name} members. 
-          Valid until {new Date(rule.to).toLocaleDateString()}.
-        </p>
-      </div>
-    ))
-  ) : (
-    /* Fallback if no API data yet */
-    <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-       <p className="text-sm text-gray-500 italic">No active coupons</p>
-    </div>
-  )}
-</div>
+                          {catalogPrices.length > 0 ? (
+                            catalogPrices.map((rule, ruleIdx) => (
+                              <div key={ruleIdx} className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-3">
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full text-sm font-medium">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#EF4444">
+                                      <path d="M3 12.5V7a2 2 0 0 1 2-2h5.5a2 2 0 0 1 1.4.6l7.5 7.5a2 2 0 0 1 0 2.8l-4.2 4.2a2 2 0 0 1-2.8 0l-7.5-7.5a2 2 0 0 1-.6-1.4z" />
+                                      <circle cx="8" cy="9" r="1.5" fill="white" />
+                                    </svg>
+                                    {rule.group?.name || "Discount"}
+                                  </div>
+                                  <span className="text-green-500 font-semibold text-sm">
+                                    {rule.reduction_type === "percentage"
+                                      ? `${rule.reduction}% OFF`
+                                      : `${rule.currency.symbol}${rule.reduction} OFF`}
+                                  </span>
+                                </div>
+
+                                <p className="text-sm text-gray-600">
+                                  Special offer for {rule.group?.name} members.
+                                  Valid until {new Date(rule.to).toLocaleDateString()}.
+                                </p>
+                              </div>
+                            ))
+                          ) : (
+                            /* Fallback if no API data yet */
+                            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                              <p className="text-sm text-gray-500 italic">No active coupons</p>
+                            </div>
+                          )}
+                        </div>
 
                         {/* Price */}
                         <div className="mt-6 flex flex-col items-end">

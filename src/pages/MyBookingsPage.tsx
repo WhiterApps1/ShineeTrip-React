@@ -126,15 +126,15 @@ const BookingDetailModal = ({ isOpen, onClose, data }: { isOpen: boolean, onClos
     if (!isOpen || !data) return null;
     const { order, room } = data;
 
-    console.log(room); 
+    console.log(room);
     const userName = sessionStorage.getItem('shineetrip_name') || "Guest User";
     const userEmail = sessionStorage.getItem('shineetrip_email') || "N/A";
-     const handlePrint = () => {
-    window.print();
-  };
+    const handlePrint = () => {
+        window.print();
+    };
     // 🟢 DYNAMIC PRICE CALCULATION
     const roomBasePrice = Number(room.totalAmount) || 0;
-    const totalOrderPrice =  Number(room.totalAmount) || 0;
+    const totalOrderPrice = Number(room.totalAmount) || 0;
     const taxesAndFees = totalOrderPrice - roomBasePrice;
 
     return (

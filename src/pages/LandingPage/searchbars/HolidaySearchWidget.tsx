@@ -5,21 +5,21 @@ import { LoginModal } from "../../Login/Loginpage";
 
 export const HolidaySearchWidget = () => {
   const navigate = useNavigate();
-  
+
   // Search States
   const [location, setLocation] = useState("");
   const [departureDate, setDepartureDate] = useState("");
-  const [roomType, setRoomType] = useState(""); 
+  const [roomType, setRoomType] = useState("");
   const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   // Data States
-  const [allPackages, setAllPackages] = useState<any[]>([]); 
+  const [allPackages, setAllPackages] = useState<any[]>([]);
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [filteredCities, setFilteredCities] = useState<string[]>([]);
-  
+
   // Room Type Logic States
-  const [availableRoomTypes, setAvailableRoomTypes] = useState<string[]>([]); 
-  
+  const [availableRoomTypes, setAvailableRoomTypes] = useState<string[]>([]);
+
   // UI States
   const [showCitySuggestions, setShowCitySuggestions] = useState(false);
   const [showRoomDropdown, setShowRoomDropdown] = useState(false);
@@ -38,7 +38,7 @@ export const HolidaySearchWidget = () => {
         const res = await fetch("http://46.62.160.188:3000/holiday-package?limit=100", {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
-        
+
         const result = await res.json();
         const packages = result.data || result;
 
@@ -82,7 +82,7 @@ export const HolidaySearchWidget = () => {
   useEffect(() => {
     if (location.trim()) {
       const userInput = location.toLowerCase().trim();
-      const filtered = availableCities.filter(city => 
+      const filtered = availableCities.filter(city =>
         city.toLowerCase().includes(userInput)
       );
       setFilteredCities(filtered);
@@ -116,10 +116,10 @@ export const HolidaySearchWidget = () => {
       const matchingPackages = allPackages.filter(pkg => {
         const inIncluded = pkg.included_cities?.some((c: string) => c.toLowerCase().includes(userInput));
         const inTitle = pkg.title?.toLowerCase().includes(userInput);
-        
+
         // Deep check inside itinerary for hotel locations
-        const inItinerary = pkg.itinerary?.days?.some((day: any) => 
-          day.items?.some((item: any) => 
+        const inItinerary = pkg.itinerary?.days?.some((day: any) =>
+          day.items?.some((item: any) =>
             item.type === 'hotel' && item.metadata?.location?.toLowerCase().includes(userInput)
           )
         );
@@ -174,9 +174,9 @@ export const HolidaySearchWidget = () => {
     <>
       <div className="w-full max-w-6xl mx-auto p-4 relative z-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative bg-white/10 backdrop-blur-sm p-3 rounded-[2rem]  border-white/10">
-          
+
           {/* --- 1. DESTINATION INPUT --- */}
-          <div 
+          <div
             ref={cityWrapperRef}
             onClick={() => locationInputRef.current?.focus()}
             className="group bg-white/5 rounded-2xl p-4 border border-white/10 hover:border-[#D2A256]/50 transition-all relative cursor-text h-28 flex flex-col justify-center"
@@ -184,22 +184,22 @@ export const HolidaySearchWidget = () => {
             <label className="flex items-center gap-2 text-white/70 text-[10px] font-bold tracking-widest uppercase mb-2">
               <MapPin size={14} className="text-[#D2A256]" /> TO
             </label>
-            <input 
+            <input
               ref={locationInputRef}
-              type="text" 
+              type="text"
               value={location}
               onFocus={() => setShowCitySuggestions(true)}
               onChange={(e) => {
                 setLocation(e.target.value);
                 setRoomType(""); // Reset room when city changes
               }}
-              placeholder="Search Destination..." 
+              placeholder="Search Destination..."
               className="w-full bg-transparent text-white text-xl font-bold focus:outline-none placeholder:text-white/30"
             />
             <p className="text-[10px] text-white/40 mt-1 uppercase truncate">
               {location ? "Location Selected" : "Search by city"}
             </p>
-            
+
             {showCitySuggestions && filteredCities.length > 0 && (
               <div className="absolute top-full left-0 right-0 z-[100] mt-2 rounded-2xl shadow-2xl border border-white/10 backdrop-blur-2xl bg-[#1E1E1E] overflow-hidden">
                 <div className="px-4 py-2 text-[9px] font-bold text-[#EFD08D] uppercase tracking-widest border-b border-white/5 bg-white/5">
@@ -207,7 +207,7 @@ export const HolidaySearchWidget = () => {
                 </div>
                 <ul className="max-h-60 overflow-y-auto custom-scrollbar">
                   {filteredCities.map((city, index) => (
-                    <li 
+                    <li
                       key={index}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -226,16 +226,16 @@ export const HolidaySearchWidget = () => {
           </div>
 
           {/* --- 2. DEPARTURE DATE --- */}
-          <div 
+          <div
             onClick={() => dateInputRef.current?.showPicker()}
             className="group bg-white/5 rounded-2xl p-4 border border-white/10 hover:border-[#D2A256]/50 transition-all relative cursor-pointer h-28 flex flex-col justify-center"
           >
             <label className="flex items-center gap-2 text-white/70 text-[10px] font-bold tracking-widest uppercase mb-2">
               <Calendar size={14} className="text-[#D2A256]" /> DEPARTURE DATE
             </label>
-            <input 
+            <input
               ref={dateInputRef}
-              type="date" 
+              type="date"
               value={departureDate}
               onChange={(e) => setDepartureDate(e.target.value)}
               className="w-full bg-transparent text-white text-xl font-bold focus:outline-none [color-scheme:dark] cursor-pointer"
@@ -246,7 +246,7 @@ export const HolidaySearchWidget = () => {
           </div>
 
           {/* --- 3. ROOM TYPE (DYNAMIC) --- */}
-          <div 
+          <div
             ref={roomWrapperRef}
             onClick={() => setShowRoomDropdown(!showRoomDropdown)}
             className="group bg-white/5 rounded-2xl p-4 border border-white/10 hover:border-[#D2A256]/50 transition-all relative cursor-pointer h-28 flex flex-col justify-center"
@@ -254,25 +254,25 @@ export const HolidaySearchWidget = () => {
             <label className="flex items-center gap-2 text-white/70 text-[10px] font-bold tracking-widest uppercase mb-2">
               <Users size={14} className="text-[#D2A256]" /> ROOM TYPE
             </label>
-            
+
             <div className="flex justify-between items-center">
               <span className={`text-xl font-bold uppercase ${roomType ? "text-white" : "text-white/50"}`}>
                 {roomType || "All Classes"}
               </span>
               <ChevronDown size={18} className={`text-[#D2A256] transition-transform ${showRoomDropdown ? "rotate-180" : ""}`} />
             </div>
-            
+
             <p className="text-[10px] text-white/40 mt-1 uppercase truncate">
               {availableRoomTypes.length} Classes Available
             </p>
 
             {showRoomDropdown && (
               <div className="absolute top-full left-0 right-0 z-[100] mt-2 rounded-2xl shadow-2xl border border-white/10 backdrop-blur-2xl bg-[#1E1E1E] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                 <div className="px-4 py-2 text-[9px] font-bold text-[#EFD08D] uppercase tracking-widest border-b border-white/5 bg-white/5">
+                <div className="px-4 py-2 text-[9px] font-bold text-[#EFD08D] uppercase tracking-widest border-b border-white/5 bg-white/5">
                   Select Class
                 </div>
                 <ul className="max-h-60 overflow-y-auto custom-scrollbar">
-                  <li 
+                  <li
                     onClick={() => setRoomType("")}
                     className="px-4 py-3 hover:bg-white/10 cursor-pointer text-white text-sm font-bold border-b border-white/5"
                   >
@@ -281,7 +281,7 @@ export const HolidaySearchWidget = () => {
 
                   {availableRoomTypes.length > 0 ? (
                     availableRoomTypes.map((type, index) => (
-                      <li 
+                      <li
                         key={index}
                         onClick={() => setRoomType(type)}
                         className="px-4 py-3 hover:bg-white/10 cursor-pointer text-white text-sm font-bold border-b border-white/5 last:border-0 flex justify-between items-center"
@@ -302,12 +302,12 @@ export const HolidaySearchWidget = () => {
 
           {/* SEARCH BUTTON */}
           <div className="absolute -bottom-18 left-1/2 -translate-x-1/2 z-30">
-            <button 
+            <button
               onClick={handleSearch}
               className="flex items-center gap-3 px-10 py-3.5 rounded-full text-white font-bold transition-all hover:scale-105 active:scale-95 shadow-2xl hover:shadow-[#D2A256]/40 border border-[#EFD08D]/30"
               style={{ background: 'linear-gradient(180deg, #AB7E29 0%, #D2A256 100%)' }}
             >
-              <Search size={18} /> 
+              <Search size={18} />
               <span className="tracking-wider">SEARCH PACKAGES</span>
             </button>
           </div>
