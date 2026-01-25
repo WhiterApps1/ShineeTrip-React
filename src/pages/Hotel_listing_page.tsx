@@ -334,7 +334,7 @@ const HotelListingPage: React.FC = () => {
               "Gym",
               "Restaurant",
             ],
-            price: parseFloat(roomDetails.retail_tax_price || 8999),
+            price: parseFloat(roomDetails.retail_price || 8999),
             originalPrice: parseFloat(roomDetails?.retail_tax_price || 8999),
             taxes: parseFloat(roomDetails?.taxAmount || 144),
             description: hotel.short_description || hotel.description || "",

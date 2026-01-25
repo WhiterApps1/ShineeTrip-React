@@ -88,10 +88,10 @@ const RoomCard = ({ room, hotelImages, services, onMoreInfoClick, onBookNowClick
     // -------------------------------
 
     // Price calculations
-    const basePrice = parseFloat(price.retail_tax_price);
-    const taxPrice = parseFloat(price.retail_price);
+    const basePrice = parseFloat(price.retail_price);
+    const taxPrice = parseFloat(price.retail_tax_price);
     // Assuming retail_tax_price is the tax amount itself based on typical UI patterns
-    const taxAmount = taxPrice;
+    const taxAmount = taxPrice - basePrice;
 
     // Helper function to handle booking click
     const handleBookNowClick = (e: React.MouseEvent, roomData: any) => {
@@ -198,7 +198,7 @@ const RoomCard = ({ room, hotelImages, services, onMoreInfoClick, onBookNowClick
                             <div className="text-left md:text-right mt-2 md:mt-0">
                                 <span className="text-xs text-gray-500 block mb-1">+ ₹ {taxAmount} taxes & fees per night</span>
                                 <div className="flex items-center gap-2 justify-start md:justify-end">
-                                    <span className="text-gray-400 line-through text-lg">₹ {Math.round(basePrice * 1.5).toLocaleString()}</span>
+                                    <span className="text-gray-400 line-through text-lg">₹ {Math.round(taxPrice).toLocaleString()}</span>
                                     <div className="bg-[#1AB64F] text-white py-1 px-3 w-[100px] rounded-lg text-[18px] ">
                                         ₹ {basePrice.toLocaleString()}
                                     </div>
@@ -264,7 +264,7 @@ const RoomCard = ({ room, hotelImages, services, onMoreInfoClick, onBookNowClick
                                                 INR {Math.round(basePrice).toLocaleString()}
                                             </span>
                                             <span className="text-gray-400 line-through text-xs">
-                                                INR {Math.round(basePrice * 1.5).toLocaleString()}
+                                                INR {Math.round(taxPrice).toLocaleString()}
                                             </span>
                                         </div>
 
