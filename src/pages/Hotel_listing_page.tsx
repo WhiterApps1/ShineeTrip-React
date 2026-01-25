@@ -164,7 +164,7 @@ const HotelListingPage: React.FC = () => {
         // Most APIs wrap results in a 'data' key or return the array directly
         // Update this based on your exact API response structure
         const rules = Array.isArray(data) ? data : (data.data || []);
-        setCatalogPrices(rules);
+        setCatalogPrices(rules.length > 0 ? [rules[0]] : []);
       } else {
         console.error("Failed to fetch discounts:", response.status);
       }
