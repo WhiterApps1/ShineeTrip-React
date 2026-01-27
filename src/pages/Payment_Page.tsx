@@ -342,6 +342,15 @@ const BookingPage: React.FC = () => {
                 }))
             ];
 
+             if (allGuests.length < rooms) {
+  toast.error(
+    `Please add at least ${rooms} guest${rooms > 1 ? "s" : ""} for ${rooms} room${rooms > 1 ? "s" : ""}.`
+  );
+  setIsProcessing(false);
+  return;
+} 
+
+
             const createOrderPayload = {
                 propertyId: propertyIdInt,
                 roomTypeId: parseInt(roomId),
@@ -355,8 +364,11 @@ const BookingPage: React.FC = () => {
                     bookingSource: "web-portal-checkout"
                 },
                 customerId: customerId,
-                guests: allGuests // ✅ Now matches your JSON structure perfectly
+                guests: allGuests , 
+                roomsRequired : parseInt(rooms),// ✅ Now matches your JSON structure perfectly
             };
+
+           
 
             console.log("Create Order Payload Sent:", createOrderPayload);
             console.log("Token", token);
