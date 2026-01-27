@@ -462,7 +462,7 @@ export function RoomDetailsModal({
 
 
               {/* ---------- Right: Check Availability ---------- */}
-              <div className="bg-[#F6F6F6] rounded-xl border border-gray-200 p-6 h-fit my-3">
+              <div className="bg-[#F6F6F6] rounded-xl border border-gray-200 p-8 h-fit my-3">
                 <h3 className="font-semibold text-gray-900 mb-4">
                   Add dates for Prices
                 </h3>
@@ -473,54 +473,67 @@ export function RoomDetailsModal({
                     type="date"
                     value={checkIn}
                     onChange={(e) => setCheckIn(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-4 text-sm"
                   />
                   <input
                     type="date"
                     value={checkOut}
                     onChange={(e) => setCheckOut(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-4 text-sm"
                   />
+<div className="grid grid-cols-2 gap-3">
+                    {/* Adults */}
+                    
+                       <select
+  value={roomsRequired}
+  onChange={(e) => setRoomsRequired(Number(e.target.value))}
+  className="border border-gray-300 rounded-lg px-3 py-4 text-base leading-normal"
+>
+  {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
+    <option key={n} value={n}>
+      {n} Room{n > 1 ? "s" : ""}
+    </option>
+  ))}
+</select> 
+ <select
+  value={adults}
+  onChange={(e) => setAdults(Number(e.target.value))}
+  className="border border-gray-300 rounded-lg px-3 py-4 text-base leading-normal"
+>
+  {Array.from(
+    { length: roomsRequired * 2 },
+    (_, i) => i + 1
+  ).map(n => (
+    <option key={n} value={n}>
+      {n} Adult{n > 1 ? "s" : ""}
+    </option>
+  ))}
+</select>
 
-                  <div className="grid grid-cols-3 gap-2">
-                    <select
-                      value={adults}
-                      onChange={(e) => setAdults(Number(e.target.value))}
-                      className="border border-gray-300 rounded-lg p-2 text-sm"
-                    >
-                      {[1, 2, 3].map(n => (
-                        <option key={n} value={n}>{n} Adult{n > 1 ? "s" : ""}</option>
-                      ))}
-                    </select>
+             
+  {/* Children */}
+<select
+  value={children}
+  onChange={(e) => setChildren(Number(e.target.value))}
+  className="col-span-2 border border-gray-300 rounded-lg px-3 py-4 text-base leading-normal"
+>
+  {Array.from(
+    { length: roomsRequired * 2 + 1 },
+    (_, i) => i
+  ).map(n => (
+    <option key={n} value={n}>
+      {n} Child{n !== 1 ? "ren" : ""}
+    </option>
+  ))}
+</select>
 
-                    <select
-                      value={children}
-                      onChange={(e) => setChildren(Number(e.target.value))}
-                      className="border border-gray-300 rounded-lg p-2 text-sm"
-                    >
-                      {[0, 1, 2].map(n => (
-                        <option key={n} value={n}>{n} Child{n !== 1 ? "ren" : ""}</option>
-                      ))}
-                    </select>
-
-                    {/* ✅ NEW: Rooms Required */}
-                    <select
-                      value={roomsRequired}
-                      onChange={(e) => setRoomsRequired(Number(e.target.value))}
-                      className="border border-gray-300 rounded-lg p-2 text-sm"
-                    >
-                      {[1, 2, 3, 4].map(n => (
-                        <option key={n} value={n}>
-                          {n} Room{n > 1 ? "s" : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+ 
+</div>
 
                   {/* Button triggers the logic */}
                   <button
                     onClick={handleCheckAvailability}
-                    disabled={loading || (adults + children > 3)}
+                    disabled={loading || (adults + children == 0)}
                     className="w-full bg-[#D2A256] text-white font-semibold py-3 rounded-lg transition disabled:bg-gray-400"
                   >
                     {loading ? "Confirming..." : "Book your Destination"}
