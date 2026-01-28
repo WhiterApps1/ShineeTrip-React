@@ -200,14 +200,25 @@ const OrgEventDetailsPage = () => {
                             <p className="text-sm text-gray-500">Event Organizer</p>
                         </div>
                     </div>
-                    <div className="flex gap-2">
-                         <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors">
-                            Contact
-                         </button>
-                         <button className="px-4 py-2 bg-[#2C3E50] text-white rounded-lg text-sm font-semibold hover:bg-[#1a252f] transition-colors">
-                            + Follow
-                         </button>
-                    </div>
+                   <div className="flex gap-2">
+  <button
+    onClick={() => {
+      window.location.href = `mailto:${event.h_contact}`;
+    }}
+    className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors"
+  >
+    Contact
+  </button>
+
+  <button
+    onClick={() => {
+      window.open(event.h_follow, "_blank", "noopener,noreferrer");
+    }}
+    className="px-4 py-2 bg-[#2C3E50] text-white rounded-lg text-sm font-semibold hover:bg-[#1a252f] transition-colors"
+  >
+    + Follow
+  </button>
+</div>
                 </div>
             </div>
 
