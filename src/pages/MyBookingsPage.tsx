@@ -121,7 +121,9 @@ const ProfileNavItem: React.FC<{ icon: React.ElementType, label: string, active?
         <span className="font-medium text-sm">{label}</span>
     </button>
 );
-
+ const handlePrint = () => {
+        window.print();
+    };
 const BookingDetailModal = ({ isOpen, onClose, data }: { isOpen: boolean, onClose: () => void, data: { order: Order, room: OrderRoomDetail } | null }) => {
     if (!isOpen || !data) return null;
     const { order, room } = data;
@@ -129,9 +131,6 @@ const BookingDetailModal = ({ isOpen, onClose, data }: { isOpen: boolean, onClos
     console.log(room);
     const userName = sessionStorage.getItem('shineetrip_name') || "Guest User";
     const userEmail = sessionStorage.getItem('shineetrip_email') || "N/A";
-    const handlePrint = () => {
-        window.print();
-    };
     // 🟢 DYNAMIC PRICE CALCULATION
     const roomBasePrice = Number(room.totalAmount) || 0;
     const totalOrderPrice = Number(room.totalAmount) || 0;
@@ -484,6 +483,8 @@ const MyBookingsPage: React.FC = () => {
     // 1. Naye state (jahan selectedBooking pehle se hai)
     const [isPackageModalOpen, setIsPackageModalOpen] = useState(false);
     const [selectedPackageOrder, setSelectedPackageOrder] = useState<any>(null);
+    const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+const [selectedEventBooking, setSelectedEventBooking] = useState<any>(null);
 
     // 2. Open function
     const openPackageDetails = (order: any) => {
@@ -491,6 +492,10 @@ const MyBookingsPage: React.FC = () => {
         setIsPackageModalOpen(true);
     };
 
+      const openEventDetails = (booking: any) => {
+    setSelectedEventBooking(booking);
+    setIsEventModalOpen(true);
+};
     const customerDbId = sessionStorage.getItem('shineetrip_db_customer_id');
     const token = sessionStorage.getItem('shineetrip_token');
     const API_BASE = 'http://46.62.160.188:3000';
@@ -855,7 +860,7 @@ const filteredEventOrders = useMemo(() => {
 
             <div className="pt-4 flex gap-3">
               <button
-                onClick={() => navigate(`/org-event-detail/${event.id}`)}
+                onClick={() => openEventDetails(eventBooking)}
                 className="flex-1 border border-gray-400 px-4 py-2 rounded-lg text-sm font-semibold"
               >
                View Ticket
@@ -892,6 +897,15 @@ const filteredEventOrders = useMemo(() => {
                 onClose={() => setIsPackageModalOpen(false)}
                 order={selectedPackageOrder}
             />
+
+            <EventDetailModal
+  isOpen={isEventModalOpen}
+  onClose={() => {
+    setIsEventModalOpen(false);
+    setSelectedEventBooking(null);
+  }}
+  booking={selectedEventBooking}
+/>
 
             {selectedInvoice && (
                 <div className="fixed inset-0 z-[200] bg-white overflow-auto print-only-invoice">
@@ -962,6 +976,117 @@ const PackageDetailModal = ({ isOpen, onClose, order }: { isOpen: boolean, onClo
             </div>
         </div>
     );
+};
+
+
+
+
+const EventDetailModal = ({
+  isOpen,
+  onClose,
+  booking,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  booking: any;
+}) => {
+  if (!isOpen || !booking) return null;
+
+  const event = booking.event;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+      <div className="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in duration-200">
+
+        {/* Header */}
+        <div className="bg-[#263238] p-6 text-white flex justify-between items-start">
+          <div>
+            <p className="text-yellow-400 text-[10px] font-bold uppercase tracking-widest mb-1">
+              Event Confirmation
+            </p>
+            <h2 className="text-2xl font-black">
+              Booking ID: #{booking.id}
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-white/10 rounded-full transition-all"
+          >
+            <XCircle className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto bg-gray-50/30">
+
+          {/* Event Info */}
+          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex gap-4">
+            <img
+              src={event?.cover_img}
+              className="w-24 h-24 rounded-2xl object-cover"
+              alt="event"
+            />
+            <div>
+              <h3 className="font-black text-xl text-gray-900">
+                {event?.title}
+              </h3>
+              <p className="text-sm text-gray-500 mt-1 flex items-center gap-1">
+                <MapPin size={14} /> {event?.addr}
+              </p>
+            </div>
+          </div>
+
+          {/* Date & Tickets */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+              <p className="text-[10px] text-gray-400 font-bold uppercase">
+                Event Date
+              </p>
+              <p className="text-sm font-black text-gray-800 mt-1">
+                {formatDayAndDate(event?.date_time)}
+              </p>
+            </div>
+
+            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+              <p className="text-[10px] text-gray-400 font-bold uppercase">
+                Tickets
+              </p>
+              <p className="text-sm font-black text-gray-800 mt-1">
+                {booking.ticket_qty} Tickets
+              </p>
+            </div>
+          </div>
+
+          {/* Payment Info */}
+          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+            <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3">
+              Billing Summary
+            </h4>
+
+            <div className="flex justify-between items-center pt-3 border-t border-dashed">
+              <span className="font-bold text-gray-800 text-lg">
+                Amount Paid
+              </span>
+              <span className="text-2xl font-black text-green-600">
+                {booking.currency} {booking.total_amount?.toLocaleString()}
+              </span>
+            </div>
+
+            <p className="mt-2 text-xs text-gray-500 font-bold uppercase">
+              Payment Method: {booking.payment_method}
+            </p>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-6 bg-white border-t border-gray-100">
+          <button onClick={() => handlePrint()} className="w-full bg-[#D2A256] text-white py-4 rounded-2xl text-sm font-black hover:bg-[#b88d45] transition-all shadow-lg uppercase tracking-widest">
+            Print Your Ticket 
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default MyBookingsPage;
