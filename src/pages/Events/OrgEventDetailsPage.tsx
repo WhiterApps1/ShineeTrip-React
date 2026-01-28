@@ -52,7 +52,8 @@ const OrgEventDetailsPage = () => {
         const response = await fetch(`${API_BASE_URL}/org-event/${id}`, { headers });
         if (!response.ok) throw new Error("Failed to fetch");
         
-        const data = await response.json();
+          const data = await response.json();
+          console.log(data);
         setEvent(data);
       } catch (error) {
         console.error("Error:", error);
@@ -160,14 +161,25 @@ const OrgEventDetailsPage = () => {
                     <span className="font-medium leading-relaxed">{event.addr}</span>
                 </div>
                 <div className="w-full h-48 bg-gray-200 rounded-2xl overflow-hidden border border-gray-300 relative">
-                    <img 
-                        src="https://upload.wikimedia.org/wikipedia/commons/e/ec/Static_map.png" 
-                        alt="Map Location" 
-                        className="w-full h-full object-cover opacity-80"
-                    />
+        <iframe
+  key={`${event.lat}-${event.long}`}
+  title="map"
+  className="w-full h-full rounded-2xl border-0"
+  loading="lazy"
+  allowFullScreen
+  src={`https://www.openstreetmap.org/export/embed.html?bbox=${
+    Number(event.long) - 0.01
+  },${
+    Number(event.lat) - 0.01
+  },${
+    Number(event.long) + 0.01
+  },${
+    Number(event.lat) + 0.01
+  }&layer=mapnik&marker=${Number(event.lat)},${Number(event.long)}&zoom=15`}
+/>
                     <div className="absolute inset-0 flex items-center justify-center">
                         <div className="bg-white p-2 rounded-full shadow-lg">
-                            <MapPin className="text-red-500 fill-current" size={32} />
+                           
                         </div>
                     </div>
                 </div>

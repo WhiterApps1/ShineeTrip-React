@@ -141,6 +141,7 @@ const PreOrganizedEventsPage = () => {
         });
       }
     });
+    console.log(allEvents);
     return Array.from(map.values());
   }, [allEvents]);
 
