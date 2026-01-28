@@ -67,7 +67,7 @@ const EventBookingModal = ({ isOpen, onClose, event }: EventBookingModalProps) =
     setErrorMsg("");
     try {
       const token = sessionStorage.getItem("shineetrip_token");
-      const userIdStr = sessionStorage.getItem("shineetrip_uid"); 
+      const userIdStr = sessionStorage.getItem("shineetrip_db_customer_id"); 
       
       // Fallback ID for testing if UID is missing (Replace 5 with actual logic)
       const userId = userIdStr ? parseInt(userIdStr) : 5; 
@@ -88,7 +88,7 @@ const EventBookingModal = ({ isOpen, onClose, event }: EventBookingModalProps) =
       });
 
       const data = await res.json();
-      
+      console.log(data); 
       if (!res.ok) throw new Error(data.message || "Failed to lock tickets");
       
       setBookingData(data); // Store Booking ID
