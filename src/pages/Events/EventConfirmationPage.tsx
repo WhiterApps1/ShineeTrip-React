@@ -5,7 +5,7 @@ import { Check, Clock, FileText, Phone, UserCheck } from "lucide-react";
 const EventConfirmationPage = () => {
     const { enquiryId } = useParams();
     const navigate = useNavigate();
-
+    
     // Format ID to look like the design (e.g., EVT-2025-12847)
     // Assuming enquiryId is just a number from DB, we format it.
     const currentYear = new Date().getFullYear();

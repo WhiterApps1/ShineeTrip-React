@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { X, Minus, Plus, ChevronRight, Lock, Loader2, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import EventBookingSuccessCard from "./EventSuccessCard";
 
 declare global {
   interface Window {
@@ -29,7 +30,8 @@ const EventBookingModal = ({
   selectedTicket,
 }: EventBookingModalProps) => {
   const navigate = useNavigate();
-
+  const [showSuccess, setShowSuccess] = useState(false);
+const [confirmedBooking, setConfirmedBooking] = useState<any>(null);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -66,6 +68,15 @@ const EventBookingModal = ({
   }, []);
 
   if (!isOpen) return null;
+
+  // ✅ Show success card after payment confirmation
+  if (showSuccess && confirmedBooking) {
+    return (
+      <EventBookingSuccessCard
+        bookingData={confirmedBooking}
+      />
+    );
+  }
 
   /* ===================== FIXED LOCK API ===================== */
 
@@ -185,9 +196,14 @@ const EventBookingModal = ({
       });
 
       if (!res.ok) throw new Error();
+      
+      if (res.ok) {
+  const confirmed = await res.json(); // backend final booking
 
-      onClose();
-      navigate("/mybooking");
+  setConfirmedBooking(confirmed);
+  setShowSuccess(true);   // ✅ OPEN SUCCESS CARD
+}
+    
     } catch {
       setErrorMsg("Payment successful but verification failed");
     } finally {
@@ -199,6 +215,7 @@ const EventBookingModal = ({
 
   // Step 1: Select Tickets
   const renderStep1 = () => (
+    
     <div className="animate-in slide-in-from-right duration-300">
       <div className="flex justify-between items-center mb-6 border-b pb-4">
         <h2 className="text-xl font-bold text-gray-800">Select Tickets</h2>
