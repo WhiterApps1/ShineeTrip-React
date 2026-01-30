@@ -75,15 +75,15 @@ export const SummarySection = ({ days, summary }: SummarySectionProps) => {
       {/* 1. Top Filter Chips */}
       <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm p-6 mb-8">
         <div className="flex flex-wrap gap-3">
-          <span className="bg-[#F3F3F3] text-[#444] px-5 py-2.5 rounded-full text-[16px] font-opensans font-bold tracking-wider uppercase">
+          <span className="bg-[#F3F3F3] text-[#444] px-5 py-2.5 rounded-full text-[17px] font-opensans font-semibold tracking-wider uppercase">
             {summary?.totalDays || days.length} DAY PLAN
           </span>
 
-          <span className="bg-[#F3F3F3] text-[#444] px-5 py-2.5 rounded-full text-[16px] font-opensans font-bold tracking-wider uppercase">
+          <span className="bg-[#F3F3F3] text-[#444] px-5 py-2.5 rounded-full text-[17px] font-opensans font-semibold tracking-wider uppercase">
             {totalActivities || 0} ACTIVITIES INCLUDED
           </span>
 
-          <span className="bg-[#F3F3F3] text-[#444] px-5 py-2.5 rounded-full text-[16px] font-opensans font-bold tracking-wider uppercase">
+          <span className="bg-[#F3F3F3] text-[#444] px-5 py-2.5 rounded-full text-[17px] font-opensans font-semibold tracking-wider uppercase">
             {totalMeals || 0} MEALS PLANNED
           </span>
         </div>
