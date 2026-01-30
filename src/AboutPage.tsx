@@ -29,7 +29,7 @@ const AboutPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 ">
       {/* Header */}
       <header className="bg-slate-800 text-white py-3 px-6">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -54,12 +54,12 @@ const AboutPage = () => {
       <div className="max-w-7xl mx-auto py-8 px-6">
         <div className="grid grid-cols-12 gap-8">
           {/* Sidebar */}
-         <div className="col-span-3">
+         <div className="col-span-3 pt-[60px]">
   <Card className="border rounded-2xl">
     <CardContent className="p-0">
 
       {/* Header */}
-      <div className="px-5 py-4 border-b">
+      <div className="px-5  border-b ">
         <h2 className="text-lg font-bold text-gray-900">Profile</h2>
       </div>
 
@@ -86,7 +86,7 @@ const AboutPage = () => {
 </div>
 
           {/* Main Content Area */}
-          <div className="col-span-9">
+          <div className="col-span-9 pt-[60px]">
             {/* About Section */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-6">About Shinee Trips</h1>
