@@ -991,8 +991,7 @@ const filteredEventOrders = useMemo(() => {
           {bookingType === 'package' && (
             <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-4">
               <div className="flex items-center gap-2 mb-4">
-                <CheckCircle className="w-4 h-4 text-green-500" />
-                <span className="text-sm font-bold text-gray-700">{order.status}</span>
+                <BookingStatusPill status={order.status} />
                 <span className="text-gray-400 text-sm">• ID: #{order.id}</span>
               </div>
 
