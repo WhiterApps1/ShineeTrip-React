@@ -64,6 +64,23 @@ export function RoomDetailsModal({
     reviewCount || 0,
   );
 
+
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+const [lightboxIndex, setLightboxIndex] = useState(0);
+
+const openLightbox = (index: number) => {
+  setLightboxIndex(index);
+  setIsLightboxOpen(true);
+};
+
+const nextLightboxImage = () => {
+  setLightboxIndex((prev) => (prev === safeRoomImages.length - 1 ? 0 : prev + 1));
+};
+
+const prevLightboxImage = () => {
+  setLightboxIndex((prev) => (prev === 0 ? safeRoomImages.length - 1 : prev - 1));
+};
+
   const thumbnailContainerRef = useRef<HTMLDivElement | null>(null);
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -237,7 +254,48 @@ export function RoomDetailsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full sm:max-w-[900px] max-h-[90vh] overflow-hidden p-0 bg-[#FDFDFD] rounded-lg shadow-2xl">
+      {/* Lightbox Overlay */}
+{isLightboxOpen && (
+  <div className="fixed inset-0 z-[10000] bg-black/95 flex flex-col items-center justify-center p-4">
+    {/* Close Button */}
+    <button 
+      onClick={() => setIsLightboxOpen(false)}
+      className="absolute top-6 right-6 text-white hover:text-gray-300 transition-colors z-[10001]"
+    >
+      <X className="w-10 h-10" />
+    </button>
+
+    {/* Navigation Arrows */}
+    <button 
+      onClick={prevLightboxImage}
+      className="absolute left-6 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all"
+    >
+      <ChevronLeft className="w-8 h-8" />
+    </button>
+
+    <button 
+      onClick={nextLightboxImage}
+      className="absolute right-6 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all"
+    >
+      <ChevronRight className="w-8 h-8" />
+    </button>
+
+    {/* Main Image Container */}
+    <div className="w-full max-w-5xl h-[80vh] flex items-center justify-center">
+      <img 
+        src={safeRoomImages[lightboxIndex]} 
+        className="max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-all duration-300"
+        alt={`Lightbox ${lightboxIndex}`}
+      />
+    </div>
+
+    {/* Image Counter Indicator */}
+    <div className="mt-6 text-white/70 font-medium tracking-widest uppercase text-xs">
+      Image {lightboxIndex + 1} of {safeRoomImages.length}
+    </div>
+  </div>
+)}
+      <DialogContent className="w-full sm:max-w-[1400px] max-h-[90vh] overflow-hidden p-0 bg-[#FDFDFD] rounded-lg shadow-2xl z-[90] ">
         {/* Header */}
         <div className="flex items-center justify-between px-8 py-6 border-b border-gray-200 bg-white sticky top-0 z-50">
           <div>
@@ -253,17 +311,39 @@ export function RoomDetailsModal({
 
         <div className="overflow-y-auto" style={{ maxHeight: "calc(90vh - 80px)" }}>
           {/* Gallery */}
-          <div className="p-6">
-            <div className="relative rounded-lg overflow-hidden h-[420px] bg-black">
-              <img src={safeRoomImages[currentImageIndex]} alt="Room View" className="w-full h-full object-cover transition-all duration-300" />
-              {safeRoomImages.length > 1 && (
-                <>
-                  <button onClick={goToPrevious} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-3 rounded-full shadow-md"><ChevronLeft className="w-5 h-5 text-gray-800" /></button>
-                  <button onClick={goToNext} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-3 rounded-full shadow-md"><ChevronRight className="w-5 h-5 text-gray-800" /></button>
-                </>
-              )}
-            </div>
+        {/* Gallery: Non-Uniform Grid Layout */}
+{/* Gallery: Non-Uniform Grid */}
+<div className="p-6">
+  <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-3 h-[400px] md:h-[550px]">
+    {/* Main Large Image */}
+    <div 
+      className="md:col-span-2 md:row-span-2 relative rounded-2xl overflow-hidden cursor-pointer group"
+      onClick={() => openLightbox(0)}
+    >
+      <img src={safeRoomImages[0]} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Main" />
+    </div>
+
+    {/* Small Images */}
+    {[1, 2, 3 , 4].map((idx) => (
+      <div 
+        key={idx}
+        className="hidden md:block relative rounded-2xl overflow-hidden cursor-pointer group"
+        onClick={() => openLightbox(idx)}
+      >
+        <img 
+          src={safeRoomImages[idx] || safeRoomImages[0]} 
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+          alt={`View ${idx}`} 
+        />
+        {idx === 3 && safeRoomImages.length > 4 && (
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white font-bold text-lg">
+            +{safeRoomImages.length - 4} More
           </div>
+        )}
+      </div>
+    ))}
+  </div>
+</div>
 
           <div className="flex flex-col gap-3 w-full">
             {short_desc && <div className="bg-white px-6 py-2 w-[95%] mx-auto"><p className="text-gray-700 text-[15px]">{short_desc}</p></div>}
@@ -332,108 +412,99 @@ export function RoomDetailsModal({
             </div>
 
             {/* ✅ RESTAURANTS */}
-            {hotelFullData?.restaurants?.length > 0 && (
-              <div className="bg-white p-6 w-[95%] mx-auto border-t">
-                <div className="flex items-center gap-2 mb-6">
-                    <Utensils className="w-6 h-6 text-[#D2A256]" />
-                    <h3 className="text-xl font-bold text-gray-900">Dining & Restaurants</h3>
-                </div>
-                <div className="space-y-8">
-                  {hotelFullData.restaurants.map((rest: any) => (
-                    <div key={rest.id} className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm">
-                      <div className="grid grid-cols-1 md:grid-cols-12">
-                        <div className="md:col-span-5 h-64 md:h-auto relative">
-                          <img src={rest.cover_img} alt={rest.name} className="w-full h-full object-cover" />
-                        </div>
-                        <div className="md:col-span-7 p-6 md:p-8">
-                          <div className="flex justify-between items-start">
-                             <div>
-                                <h4 className="text-2xl font-bold text-gray-900 mb-1">{rest.name}</h4>
-                                <p className="text-[#D2A256] font-medium mb-4">{rest.cuisine} • {rest.theme}</p>
-                             </div>
-                             {rest.alcoholServed && (
-                                <span className="flex items-center gap-1 text-xs font-bold bg-amber-50 text-amber-700 px-3 py-1 rounded-md border border-amber-100">
-                                    <Wine className="w-3.5 h-3.5" /> Bar Available
-                                </span>
-                             )}
-                          </div>
-                          
-                          <p className="text-gray-600 text-sm mb-6 leading-relaxed">{rest.description}</p>
-                          
-                          <div className="grid grid-cols-2 gap-4 border-t pt-6">
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-sm text-gray-700 font-semibold"><Clock className="w-4 h-4" /> Timings</div>
-                                <p className="text-xs text-gray-500">{rest.openingTime} to {rest.closingTime}</p>
-                            </div>
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-sm text-gray-700 font-semibold"><MapPin className="w-4 h-4" /> Ambience</div>
-                                <p className="text-xs text-gray-500">{rest.ambienceAndSeating}</p>
-                            </div>
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-sm text-gray-700 font-semibold"><Coffee className="w-4 h-4" /> Buffet</div>
-                                <p className="text-xs text-gray-500">{rest.buffetAvailable ? "Available" : "A La Carte Only"}</p>
-                            </div>
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-sm text-gray-700 font-semibold"><Info className="w-4 h-4" /> Note</div>
-                                <p className="text-xs text-gray-500">{rest.additionalNotes || "N/A"}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+           {/* ✅ RESTAURANTS - 2x2 GRID */}
+{hotelFullData?.restaurants?.length > 0 && (
+  <div className="bg-white p-6 w-[95%] mx-auto border-t">
+    <div className="flex items-center gap-2 mb-6">
+      <Utensils className="w-6 h-6 text-[#D2A256]" />
+      <h3 className="text-xl font-bold text-gray-900">Dining & Restaurants</h3>
+    </div>
+    {/* Updated to grid-cols-2 */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {hotelFullData.restaurants.map((rest: any) => (
+        <div key={rest.id} className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm flex flex-col">
+          <div className="h-64 relative shrink-0">
+            <img src={rest.cover_img} alt={rest.name} className="w-full h-full object-cover" />
+            {rest.alcoholServed && (
+              <span className="absolute top-4 right-4 flex items-center gap-1 text-xs font-bold bg-white/90 text-amber-700 px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm">
+                <Wine className="w-3.5 h-3.5" /> Bar Available
+              </span>
             )}
+          </div>
+          <div className="p-6 flex flex-col flex-1">
+            <div className="mb-4">
+              <h4 className="text-2xl font-bold text-gray-900 mb-1">{rest.name}</h4>
+              <p className="text-[#D2A256] font-medium text-sm">{rest.cuisine} • {rest.theme}</p>
+            </div>
+            <p className="text-gray-600 text-sm mb-6 leading-relaxed flex-1">{rest.description}</p>
+            <div className="grid grid-cols-2 gap-y-4 gap-x-2 border-t pt-6">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-wider"><Clock className="w-3.5 h-3.5" /> Timings</div>
+                <p className="text-xs font-bold text-gray-800">{rest.openingTime} - {rest.closingTime}</p>
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-wider"><MapPin className="w-3.5 h-3.5" /> Ambience</div>
+                <p className="text-xs font-bold text-gray-800">{rest.ambienceAndSeating}</p>
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-wider"><Coffee className="w-3.5 h-3.5" /> Buffet</div>
+                <p className="text-xs font-bold text-gray-800">{rest.buffetAvailable ? "Available" : "A La Carte"}</p>
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-wider"><Info className="w-3.5 h-3.5" /> Note</div>
+                <p className="text-xs font-bold text-gray-800 line-clamp-2">{rest.additionalNotes || "N/A"}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
             {/* ✅ SPAS - UPDATED SIZE TO MATCH RESTAURANT */}
-            {hotelFullData?.spas?.length > 0 && (
-              <div className="bg-white p-6 w-[95%] mx-auto border-t mb-12">
-                <div className="flex items-center gap-2 mb-6">
-                    <Sparkles className="w-6 h-6 text-[#D2A256]" />
-                    <h3 className="text-xl font-bold text-gray-900">Spa & Wellness</h3>
-                </div>
-                <div className="space-y-8">
-                  {hotelFullData.spas.map((spa: any) => (
-                    <div key={spa.id} className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm">
-                      <div className="grid grid-cols-1 md:grid-cols-12">
-                        {/* Matched md:col-span-5 to restaurant image size */}
-                        <div className="md:col-span-5 h-64 md:h-auto relative">
-                          <img src={spa.cover_img} alt={spa.name} className="w-full h-full object-cover" />
-                        </div>
-                        {/* Matched md:col-span-7 for consistency */}
-                        <div className="md:col-span-7 p-6 md:p-8">
-                          <h4 className="text-2xl font-bold text-gray-900 mb-2">{spa.name}</h4>
-                          <p className="text-gray-600 text-sm mb-4 italic leading-relaxed">{spa.description}</p>
-                          
-                          <div className="flex items-center gap-4 mb-6">
-                             <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 bg-gray-50 px-3 py-1 rounded-lg">
-                                <Clock className="w-3.5 h-3.5" /> {spa.openingTime} - {spa.closingTime}
-                             </div>
-                             {spa.multiTherapyAvailable && (
-                                <div className="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">
-                                    Multi-Therapy Center
-                                </div>
-                             )}
-                          </div>
-
-                          <div>
-                             <p className="text-sm font-bold text-gray-800 mb-3 uppercase tracking-tighter">Signature Treatments</p>
-                             <div className="flex flex-wrap gap-2">
-                                {spa.treatments?.map((t: string, i: number) => (
-                                  <span key={i} className="text-xs bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-full shadow-sm hover:border-[#D2A256] transition cursor-default">
-                                    {t}
-                                  </span>
-                                ))}
-                             </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+          {/* ✅ SPAS - 2x2 GRID */}
+{hotelFullData?.spas?.length > 0 && (
+  <div className="bg-white p-6 w-[95%] mx-auto border-t mb-12">
+    <div className="flex items-center gap-2 mb-6">
+      <Sparkles className="w-6 h-6 text-[#D2A256]" />
+      <h3 className="text-xl font-bold text-gray-900">Spa & Wellness</h3>
+    </div>
+    {/* Updated to grid-cols-2 */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {hotelFullData.spas.map((spa: any) => (
+        <div key={spa.id} className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm flex flex-col">
+          <div className="h-64 relative shrink-0">
+            <img src={spa.cover_img} alt={spa.name} className="w-full h-full object-cover" />
+            {spa.multiTherapyAvailable && (
+              <span className="absolute top-4 right-4 bg-blue-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+                Multi-Therapy Center
+              </span>
             )}
+          </div>
+          <div className="p-6 flex flex-col flex-1">
+            <h4 className="text-2xl font-bold text-gray-900 mb-2">{spa.name}</h4>
+            <p className="text-gray-600 text-sm mb-4 italic leading-relaxed flex-1">{spa.description}</p>
+            <div className="flex items-center gap-4 mb-6 bg-gray-50 p-3 rounded-lg">
+              <Clock className="w-4 h-4 text-[#D2A256]" />
+              <span className="text-xs font-bold text-gray-700">{spa.openingTime} to {spa.closingTime}</span>
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Signature Treatments</p>
+              <div className="flex flex-wrap gap-2">
+                {spa.treatments?.map((t: string, i: number) => (
+                  <span key={i} className="text-[10px] font-bold bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-lg shadow-sm">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
           </div>
         </div>
