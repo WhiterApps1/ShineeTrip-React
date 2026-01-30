@@ -321,7 +321,7 @@ const closeLightbox = (e: React.MouseEvent) => {
     </div>
   </div>
 )}
-      <DialogContent className="w-full sm:max-w-[1400px] max-h-[90vh] overflow-hidden p-0 bg-[#FDFDFD] rounded-lg shadow-2xl z-[90] ">
+      <DialogContent className="w-full sm:max-w-[1400px] max-h-[95vh] overflow-hidden p-0 bg-[#FDFDFD] rounded-lg shadow-2xl z-[90] ">
         {/* Header */}
         <div className="flex items-center justify-between px-8 py-6 border-b border-gray-200 bg-white sticky top-0 z-50">
           <div>
