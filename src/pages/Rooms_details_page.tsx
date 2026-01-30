@@ -65,21 +65,7 @@ export function RoomDetailsModal({
   );
 
 
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-const [lightboxIndex, setLightboxIndex] = useState(0);
-
-const openLightbox = (index: number) => {
-  setLightboxIndex(index);
-  setIsLightboxOpen(true);
-};
-
-const nextLightboxImage = () => {
-  setLightboxIndex((prev) => (prev === safeRoomImages.length - 1 ? 0 : prev + 1));
-};
-
-const prevLightboxImage = () => {
-  setLightboxIndex((prev) => (prev === 0 ? safeRoomImages.length - 1 : prev - 1));
-};
+ 
 
   const thumbnailContainerRef = useRef<HTMLDivElement | null>(null);
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -161,6 +147,45 @@ const prevLightboxImage = () => {
       fetchRating();
     }
   }, [isOpen, propertyId]);
+
+
+const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+const [lightboxIndex, setLightboxIndex] = useState(0);
+
+// Function to open the lightbox
+const handleOpenLightbox = (index: number) => {
+  setLightboxIndex(index);
+  setIsLightboxOpen(true);
+};
+
+// Keyboard Navigation
+useEffect(() => {
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (!isLightboxOpen) return;
+    if (e.key === "ArrowRight") setLightboxIndex((prev) => (prev === safeRoomImages.length - 1 ? 0 : prev + 1));
+    if (e.key === "ArrowLeft") setLightboxIndex((prev) => (prev === 0 ? safeRoomImages.length - 1 : prev - 1));
+    if (e.key === "Escape") setIsLightboxOpen(false);
+  };
+
+  window.addEventListener("keydown", handleKeyDown);
+  return () => window.removeEventListener("keydown", handleKeyDown);
+}, [isLightboxOpen, safeRoomImages.length]);
+
+const nextLightboxImage = (e: React.MouseEvent) => {
+  e.stopPropagation();
+  setLightboxIndex((prev) => (prev === safeRoomImages.length - 1 ? 0 : prev + 1));
+};
+
+const prevLightboxImage = (e: React.MouseEvent) => {
+  e.stopPropagation();
+  setLightboxIndex((prev) => (prev === 0 ? safeRoomImages.length - 1 : prev - 1));
+};
+
+const closeLightbox = (e: React.MouseEvent) => {
+  e.stopPropagation(); 
+  setIsLightboxOpen(false);
+};
+
 
   useEffect(() => {
     if (isOpen) setCurrentImageIndex(0);
@@ -255,43 +280,44 @@ const prevLightboxImage = () => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       {/* Lightbox Overlay */}
+{/* Lightbox Overlay */}
 {isLightboxOpen && (
-  <div className="fixed inset-0 z-[10000] bg-black/95 flex flex-col items-center justify-center p-4">
-    {/* Close Button */}
+  <div 
+    className="fixed inset-0 z-[10000] bg-black/95 flex flex-col items-center justify-center p-4"
+    onClick={closeLightbox}
+  >
     <button 
-      onClick={() => setIsLightboxOpen(false)}
-      className="absolute top-6 right-6 text-white hover:text-gray-300 transition-colors z-[10001]"
+      onClick={closeLightbox}
+      className="absolute top-6 right-6 text-white hover:bg-white/20 p-3 rounded-full transition-all z-[10001]"
     >
-      <X className="w-10 h-10" />
-    </button>
-
-    {/* Navigation Arrows */}
-    <button 
-      onClick={prevLightboxImage}
-      className="absolute left-6 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all"
-    >
-      <ChevronLeft className="w-8 h-8" />
+      <X className="w-8 h-8 md:w-10 md:h-10" />
     </button>
 
     <button 
-      onClick={nextLightboxImage}
-      className="absolute right-6 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all"
+      onClick={(e) => prevLightboxImage(e)}
+      className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all z-[10001]"
     >
-      <ChevronRight className="w-8 h-8" />
+      <ChevronLeft className="w-8 h-8 md:w-12 md:h-12" />
     </button>
 
-    {/* Main Image Container */}
-    <div className="w-full max-w-5xl h-[80vh] flex items-center justify-center">
+    <button 
+      onClick={(e) => nextLightboxImage(e)}
+      className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all z-[10001]"
+    >
+      <ChevronRight className="w-8 h-8 md:w-12 md:h-12" />
+    </button>
+
+    <div className="w-full max-w-5xl h-[70vh] md:h-[80vh] flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
       <img 
+        key={lightboxIndex}
         src={safeRoomImages[lightboxIndex]} 
-        className="max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-all duration-300"
-        alt={`Lightbox ${lightboxIndex}`}
+        className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+        alt="Lightbox"
       />
     </div>
 
-    {/* Image Counter Indicator */}
-    <div className="mt-6 text-white/70 font-medium tracking-widest uppercase text-xs">
-      Image {lightboxIndex + 1} of {safeRoomImages.length}
+    <div className="mt-8 text-white/80 font-bold uppercase text-sm tracking-widest bg-white/10 px-6 py-2 rounded-full">
+      {lightboxIndex + 1} / {safeRoomImages.length}
     </div>
   </div>
 )}
@@ -318,7 +344,7 @@ const prevLightboxImage = () => {
     {/* Main Large Image */}
     <div 
       className="md:col-span-2 md:row-span-2 relative rounded-2xl overflow-hidden cursor-pointer group"
-      onClick={() => openLightbox(0)}
+      onClick={() => handleOpenLightbox(0)}
     >
       <img src={safeRoomImages[0]} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Main" />
     </div>
@@ -328,7 +354,7 @@ const prevLightboxImage = () => {
       <div 
         key={idx}
         className="hidden md:block relative rounded-2xl overflow-hidden cursor-pointer group"
-        onClick={() => openLightbox(idx)}
+        onClick={() => handleOpenLightbox(idx)}
       >
         <img 
           src={safeRoomImages[idx] || safeRoomImages[0]} 
@@ -414,10 +440,10 @@ const prevLightboxImage = () => {
             {/* ✅ RESTAURANTS */}
            {/* ✅ RESTAURANTS - 2x2 GRID */}
 {hotelFullData?.restaurants?.length > 0 && (
-  <div className="bg-white p-6 w-[95%] mx-auto border-t">
-    <div className="flex items-center gap-2 mb-6">
+  <div className="bg-white p-8 w-[90%] mx-auto border-t">
+    <div className="flex items-center gap-4 mb-6">
       <Utensils className="w-6 h-6 text-[#D2A256]" />
-      <h3 className="text-xl font-bold text-gray-900">Dining & Restaurants</h3>
+      <h3 className="text-2xl font-bold text-gray-900">Dining & Restaurants</h3>
     </div>
     {/* Updated to grid-cols-2 */}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -426,7 +452,7 @@ const prevLightboxImage = () => {
           <div className="h-64 relative shrink-0">
             <img src={rest.cover_img} alt={rest.name} className="w-full h-full object-cover" />
             {rest.alcoholServed && (
-              <span className="absolute top-4 right-4 flex items-center gap-1 text-xs font-bold bg-white/90 text-amber-700 px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm">
+              <span className="absolute top-4 right-4 flex items-center gap-1 text-s font-bold bg-white/90 text-amber-700 px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm">
                 <Wine className="w-3.5 h-3.5" /> Bar Available
               </span>
             )}
@@ -434,25 +460,25 @@ const prevLightboxImage = () => {
           <div className="p-6 flex flex-col flex-1">
             <div className="mb-4">
               <h4 className="text-2xl font-bold text-gray-900 mb-1">{rest.name}</h4>
-              <p className="text-[#D2A256] font-medium text-sm">{rest.cuisine} • {rest.theme}</p>
+              <p className="text-[#D2A256] font-medium text-md">{rest.cuisine} • {rest.theme}</p>
             </div>
             <p className="text-gray-600 text-sm mb-6 leading-relaxed flex-1">{rest.description}</p>
             <div className="grid grid-cols-2 gap-y-4 gap-x-2 border-t pt-6">
               <div className="space-y-1">
-                <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-wider"><Clock className="w-3.5 h-3.5" /> Timings</div>
-                <p className="text-xs font-bold text-gray-800">{rest.openingTime} - {rest.closingTime}</p>
+                <div className="flex items-center gap-2 text-s font-semibold text-gray-400 uppercase tracking-wider"><Clock className="w-3.5 h-3.5" /> Timings</div>
+                <p className="text-s font-semibold text-gray-800">{rest.openingTime} - {rest.closingTime}</p>
               </div>
               <div className="space-y-1">
-                <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-wider"><MapPin className="w-3.5 h-3.5" /> Ambience</div>
-                <p className="text-xs font-bold text-gray-800">{rest.ambienceAndSeating}</p>
+                <div className="flex items-center gap-2 text-s font-semibold text-gray-400 uppercase tracking-wider"><MapPin className="w-3.5 h-3.5" /> Ambience</div>
+                <p className="text-s font-semibold text-gray-800">{rest.ambienceAndSeating}</p>
               </div>
               <div className="space-y-1">
-                <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-wider"><Coffee className="w-3.5 h-3.5" /> Buffet</div>
-                <p className="text-xs font-bold text-gray-800">{rest.buffetAvailable ? "Available" : "A La Carte"}</p>
+                <div className="flex items-center gap-2 text-s font-semibold text-gray-400 uppercase tracking-wider"><Coffee className="w-3.5 h-3.5" /> Buffet</div>
+                <p className="text-s font-semibold text-gray-800">{rest.buffetAvailable ? "Available" : "A La Carte"}</p>
               </div>
               <div className="space-y-1">
-                <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 uppercase tracking-wider"><Info className="w-3.5 h-3.5" /> Note</div>
-                <p className="text-xs font-bold text-gray-800 line-clamp-2">{rest.additionalNotes || "N/A"}</p>
+                <div className="flex items-center gap-2 text-s font-semibold text-gray-400 uppercase tracking-wider"><Info className="w-3.5 h-3.5" /> Note</div>
+                <p className="text-s font-semibold text-gray-800 line-clamp-2">{rest.additionalNotes || "N/A"}</p>
               </div>
             </div>
           </div>
@@ -465,10 +491,10 @@ const prevLightboxImage = () => {
             {/* ✅ SPAS - UPDATED SIZE TO MATCH RESTAURANT */}
           {/* ✅ SPAS - 2x2 GRID */}
 {hotelFullData?.spas?.length > 0 && (
-  <div className="bg-white p-6 w-[95%] mx-auto border-t mb-12">
+  <div className="bg-white p-8 w-[90%] mx-auto border-t mb-12">
     <div className="flex items-center gap-2 mb-6">
       <Sparkles className="w-6 h-6 text-[#D2A256]" />
-      <h3 className="text-xl font-bold text-gray-900">Spa & Wellness</h3>
+      <h3 className="text-2xl font-bold text-gray-900">Spa & Wellness</h3>
     </div>
     {/* Updated to grid-cols-2 */}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -477,23 +503,23 @@ const prevLightboxImage = () => {
           <div className="h-64 relative shrink-0">
             <img src={spa.cover_img} alt={spa.name} className="w-full h-full object-cover" />
             {spa.multiTherapyAvailable && (
-              <span className="absolute top-4 right-4 bg-blue-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+              <span className="absolute top-4 right-4 bg-green-700/30 text-white text-[12px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
                 Multi-Therapy Center
               </span>
             )}
           </div>
           <div className="p-6 flex flex-col flex-1">
             <h4 className="text-2xl font-bold text-gray-900 mb-2">{spa.name}</h4>
-            <p className="text-gray-600 text-sm mb-4 italic leading-relaxed flex-1">{spa.description}</p>
+            <p className="text-gray-600 text-s mb-4 italic leading-relaxed flex-1">{spa.description}</p>
             <div className="flex items-center gap-4 mb-6 bg-gray-50 p-3 rounded-lg">
               <Clock className="w-4 h-4 text-[#D2A256]" />
-              <span className="text-xs font-bold text-gray-700">{spa.openingTime} to {spa.closingTime}</span>
+              <span className="text-s font-semibold text-gray-700">{spa.openingTime} to {spa.closingTime}</span>
             </div>
             <div>
               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Signature Treatments</p>
               <div className="flex flex-wrap gap-2">
                 {spa.treatments?.map((t: string, i: number) => (
-                  <span key={i} className="text-[10px] font-bold bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-lg shadow-sm">
+                  <span key={i} className="text-[11px] font-bold bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-lg shadow-sm">
                     {t}
                   </span>
                 ))}
