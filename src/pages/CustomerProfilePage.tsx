@@ -68,6 +68,7 @@ const CustomerProfilePage: React.FC = () => {
   const [formState, setFormState] = useState<any>({});
   const [error, setError] = useState<string | null>(null);
   const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [showAllReviews, setShowAllReviews] = useState(false);
 
   const customerDbId = sessionStorage.getItem('shineetrip_db_customer_id');
   const token = sessionStorage.getItem('shineetrip_token');
@@ -365,7 +366,14 @@ const CustomerProfilePage: React.FC = () => {
 
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
     {customer.reviews && customer.reviews.length > 0 ? (
-      customer.reviews.map((review) => (
+      [...customer.reviews]
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() -
+            new Date(a.createdAt).getTime()
+        )
+        .slice(0, showAllReviews ? customer.reviews.length : 3)
+        .map((review) => (
         <div
           key={review.id}
           className="bg-white border rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
@@ -431,9 +439,12 @@ const CustomerProfilePage: React.FC = () => {
     )}
   </div>
 
-  {customer.reviews && customer.reviews.length > 2 && (
-    <button className="mt-8 bg-black text-white px-8 py-3 rounded-full font-semibold hover:bg-gray-800 transition-colors">
-      Show all reviews
+  {customer.reviews && customer.reviews.length > 3 && (
+    <button
+      onClick={() => setShowAllReviews(prev => !prev)}
+      className="mt-8 bg-black text-white px-8 py-3 rounded-full font-semibold hover:bg-gray-800 transition-colors"
+    >
+      {showAllReviews ? 'Show less reviews' : 'Show all reviews'}
     </button>
   )}
 </section>
