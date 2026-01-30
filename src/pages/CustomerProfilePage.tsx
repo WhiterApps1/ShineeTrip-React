@@ -359,6 +359,7 @@ const CustomerProfilePage: React.FC = () => {
 
           {/* ================= REVIEWS ================= */}
         {/* ================= REVIEWS ================= */}
+{/* ================= REVIEWS ================= */}
 <section>
   <h2 className="text-2xl font-extrabold mb-6">Reviews ({customer.reviews?.length || 0})</h2>
 
@@ -370,17 +371,23 @@ const CustomerProfilePage: React.FC = () => {
           className="bg-white border rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
         >
           <div>
-            <div className="flex items-center gap-3 mb-4">
-              <img
-                src={customer.profile_image || avatar(customer.first_name)}
-                className="w-10 h-10 rounded-full object-cover"
-                alt="Reviewer"
-              />
-              <div>
-                <p className="font-bold text-sm text-gray-900">
+            {/* Top Section: Image on Left, Title/Date on Right */}
+            <div className="flex gap-4 mb-4">
+              {/* Review Image (Left) */}
+              <div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden border border-gray-100">
+                <img 
+                  src={(review.images && review.images.length > 0) ? review.images[0] : "https://placehold.co/100x100?text=No+Image"} 
+                  className="w-full h-full object-cover" 
+                  alt="Review stay"
+                />
+              </div>
+
+              {/* Title & Date (Right) */}
+              <div className="flex flex-col justify-center">
+                <h4 className="font-bold text-gray-900 leading-tight line-clamp-2">
                   {review.summary}
-                </p>
-                <p className="text-xs text-gray-500">
+                </h4>
+                <p className="text-xs text-gray-400 mt-1">
                   {new Date(review.createdAt).toLocaleDateString('en-IN', {
                     month: 'long',
                     year: 'numeric',
@@ -389,21 +396,15 @@ const CustomerProfilePage: React.FC = () => {
               </div>
             </div>
 
-            {review.images && review.images.length > 0 && (
-              <div className="mb-4 rounded-xl overflow-hidden h-32 w-full">
-                <img 
-                  src={review.images[0]} 
-                  className="w-full h-full object-cover" 
-                  alt="Review stay"
-                />
-              </div>
-            )}
-
-            <p className="text-sm text-gray-700 leading-relaxed line-clamp-4 italic">
-              "{review.comment}"
-            </p>
+            {/* Bottom Section: Comment (Below) */}
+            <div className="mt-2">
+              <p className="text-sm text-gray-600 leading-relaxed italic line-clamp-3">
+                "{review.comment}"
+              </p>
+            </div>
           </div>
 
+          {/* Rating Footer */}
           <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-50">
             <div className="flex gap-0.5">
               {[...Array(5)].map((_, i) => (
@@ -425,13 +426,13 @@ const CustomerProfilePage: React.FC = () => {
       ))
     ) : (
       <div className="col-span-full py-12 text-center bg-white border rounded-2xl border-dashed">
-        <p className="text-gray-400">No reviews submitted yet.</p>
+        <p className="text-gray-400 font-medium">No reviews submitted yet.</p>
       </div>
     )}
   </div>
 
-  {customer.reviews && customer.reviews.length > 0 && (
-    <button className="mt-8 bg-black text-white px-8 py-3 rounded-full font-semibold">
+  {customer.reviews && customer.reviews.length > 2 && (
+    <button className="mt-8 bg-black text-white px-8 py-3 rounded-full font-semibold hover:bg-gray-800 transition-colors">
       Show all reviews
     </button>
   )}
