@@ -447,56 +447,109 @@ export function RoomDetailsModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+   <Dialog open={isOpen} onOpenChange={() => {}}>
+  {/* --- UPDATED LIGHTBOX SECTION --- */}
+    <DialogContent
+      onInteractOutside={(e) => e.preventDefault()}
+      className="w-full sm:max-w-[90%] max-h-[95vh] overflow-hidden p-0 bg-[#FDFDFD] rounded-lg shadow-2xl z-[90]"
+    >
+      {/* 1. LIGHTBOX OVERLAY - Now inside the Dialog context to stay on top */}
       {isLightboxOpen && (
-        <div className="fixed inset-0 z-[10000] bg-black/95 flex flex-col items-center justify-center p-4" onClick={() => setIsLightboxOpen(false)}>
-          <button onClick={() => setIsLightboxOpen(false)} className="absolute top-6 right-6 text-white hover:bg-white/20 p-3 rounded-full z-[10001]">
-            <X className="w-8 h-8 md:w-10 md:h-10" />
+        <div 
+          className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center"
+          onClick={() => setIsLightboxOpen(false)}
+        >
+          {/* Close Button */}
+          <button 
+            onClick={(e) => { e.stopPropagation(); setIsLightboxOpen(false); }}
+            className="absolute top-6 right-6 text-white hover:bg-white/20 p-3 rounded-full z-[10001]"
+          >
+            <X className="w-10 h-10" />
           </button>
-          <button onClick={(e) => { e.stopPropagation(); setLightboxIndex(prev => prev === 0 ? safeRoomImages.length - 1 : prev - 1); }} className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white z-[10001]">
-            <ChevronLeft className="w-8 h-8 md:w-12 md:h-12" />
-          </button>
-          <button onClick={(e) => { e.stopPropagation(); setLightboxIndex(prev => prev === safeRoomImages.length - 1 ? 0 : prev + 1); }} className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white z-[10001]">
-            <ChevronRight className="w-8 h-8 md:w-12 md:h-12" />
-          </button>
-          <div className="w-full max-w-5xl h-[70vh] md:h-[80vh] flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
-            <img key={lightboxIndex} src={safeRoomImages[lightboxIndex]} className="max-w-full max-h-full object-contain rounded-lg shadow-2xl" alt="Lightbox" />
+
+          {/* Navigation Controls */}
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 md:px-10 w-full pointer-events-none">
+            <button 
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                setLightboxIndex(prev => (prev === 0 ? safeRoomImages.length - 1 : prev - 1)); 
+              }} 
+              className="p-4 bg-white/10 hover:bg-white/20 rounded-full text-white pointer-events-auto transition-all"
+            >
+              <ChevronLeft className="w-10 h-10" />
+            </button>
+
+            <button 
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                setLightboxIndex(prev => (prev === safeRoomImages.length - 1 ? 0 : prev + 1)); 
+              }} 
+              className="p-4 bg-white/10 hover:bg-white/20 rounded-full text-white pointer-events-auto transition-all"
+            >
+              <ChevronRight className="w-10 h-10" />
+            </button>
           </div>
-          <div className="mt-8 text-white/80 font-bold uppercase text-sm tracking-widest bg-white/10 px-6 py-2 rounded-full">
+
+          {/* Active Image */}
+          <div className="w-full h-full flex items-center justify-center p-4" onClick={(e) => e.stopPropagation()}>
+            <img 
+              key={lightboxIndex}
+              src={safeRoomImages[lightboxIndex]} 
+              className="max-w-full max-h-[85vh] object-contain shadow-2xl transition-all duration-300" 
+              alt="Room view" 
+            />
+          </div>
+
+          {/* Counter */}
+          <div className="absolute bottom-10 bg-white/10 backdrop-blur-md px-6 py-2 rounded-full text-white font-bold tracking-widest">
             {lightboxIndex + 1} / {safeRoomImages.length}
           </div>
         </div>
       )}
 
-      <DialogContent className="w-full sm:max-w-[90%] max-h-[95vh] overflow-hidden p-0 bg-[#FDFDFD] rounded-lg shadow-2xl z-[90]">
-        <div className="flex items-center justify-between px-20 py-6 border-b border-gray-200 bg-white sticky top-0 z-50">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">{roomData?.room_type || roomName}</h2>
-            <div className="flex items-center gap-4 mt-2">
-              <div className="flex items-center gap-1 text-sm text-gray-600"><Maximize2 className="w-4 h-4" /><span>200 sq.ft.</span></div>
-              {bedType && <div className="flex items-center gap-1 text-sm text-gray-600"><Bed className="w-4 h-4" /><span>{bedType}</span></div>}
-              {occupancy && <div className="flex items-center gap-1 text-sm text-gray-600"><Users className="w-4 h-4" /><span>Max {occupancy} guests</span></div>}
-            </div>
+      {/* 2. THE MAIN MODAL HEADER */}
+      <div className="flex items-center justify-between px-10 md:px-20 py-6 border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">{roomData?.room_type || roomName}</h2>
+          <div className="flex items-center gap-4 mt-2">
+            <div className="flex items-center gap-1 text-sm text-gray-600"><Maximize2 className="w-4 h-4" /><span>200 sq.ft.</span></div>
+            <div className="flex items-center gap-1 text-sm text-gray-600"><Bed className="w-4 h-4" /><span>{bedType}</span></div>
+            <div className="flex items-center gap-1 text-sm text-gray-600"><Users className="w-4 h-4" /><span>Max {occupancy} guests</span></div>
           </div>
-          <button className="p-2 border rounded-lg transition-colors flex justify-center gap-2 items-center"><Flag className="w-5 h-5 " /><span>Report this hotel</span></button>
         </div>
+        <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full"><X className="w-6 h-6"/></button>
+      </div>
 
-        <div className="overflow-y-auto" style={{ maxHeight: "calc(90vh - 80px)", scrollbarWidth: 'none' }}>
-          <div className="py-4 px-20">
-            <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-3 h-[400px] md:h-[550px]">
-              <div className="md:col-span-2 md:row-span-2 relative rounded-2xl overflow-hidden cursor-pointer group" onClick={() => handleOpenLightbox(0)}>
-                <img src={safeRoomImages[0]} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Main" />
-              </div>
-              {[1, 2, 3, 4].map((idx) => (
-                <div key={idx} className="hidden md:block relative rounded-2xl overflow-hidden cursor-pointer group" onClick={() => handleOpenLightbox(idx)}>
-                  <img src={safeRoomImages[idx] || safeRoomImages[0]} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt={`View ${idx}`} />
-                  {idx === 3 && safeRoomImages.length > 4 && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white font-bold text-lg">+{safeRoomImages.length - 4} More</div>
-                  )}
-                </div>
-              ))}
+      {/* 3. SCROLLABLE CONTENT */}
+      <div className="overflow-y-auto" style={{ maxHeight: "calc(95vh - 100px)", scrollbarWidth: 'none' }}>
+        <div className="py-4 px-10 md:px-20">
+          <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-3 h-[400px] md:h-[550px]">
+            {/* Main Hero Image */}
+            <div className="md:col-span-2 md:row-span-2 relative rounded-2xl overflow-hidden cursor-pointer group" onClick={() => handleOpenLightbox(0)}>
+              <img src={safeRoomImages[0]} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Main" />
             </div>
+            
+            {/* Thumbnail Grid */}
+            {[1, 2, 3, 4].map((idx) => (
+              <div 
+                key={idx} 
+                className={`relative rounded-2xl overflow-hidden cursor-pointer group ${idx > 2 ? 'hidden md:block' : ''}`} 
+                onClick={() => handleOpenLightbox(idx)}
+              >
+                <img 
+                  src={safeRoomImages[idx] || safeRoomImages[0]} 
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                  alt={`View ${idx}`} 
+                />
+                {idx === 4 && safeRoomImages.length > 5 && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold text-xl">
+                    +{safeRoomImages.length - 5} More
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
+        </div>
 
           <div className="flex flex-col gap-3">
             {short_desc && <div className="bg-white px-20 py-2"><p className="text-gray-700 text-[15px]">{short_desc}</p></div>}
