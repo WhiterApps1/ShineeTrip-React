@@ -565,29 +565,36 @@ export default function RoomBookingPage() {
     </div>
 
     {/* NEARBY ATTRACTIONS */}
-    <div>
-      <h4 className="font-semibold text-gray-900 mb-3">
-        Nearby Attractions
-      </h4>
+{/* NEARBY ATTRACTIONS */}
+<div className="flex flex-col">
+  <h4 className="text-[16px] font-bold text-gray-900 tracking-wide mb-4 uppercase">
+    Nearby Attractions
+  </h4>
 
-      {hotelData?.nearbyAttractions?.length > 0 ? (
-        <ul className="list-disc pl-5 space-y-2 text-gray-700 text-sm">
-          {hotelData.nearbyAttractions.map(
-            (place: string, index: number) => (
-              <li key={index}>{place}</li>
-            )
-          )}
-        </ul>
-      ) : (
-        <p className="text-gray-500 text-sm">
-          No nearby attractions available.
-        </p>
+  {hotelData?.nearbyAttractions?.length > 0 ? (
+    <ul className="space-y-3">
+      {hotelData.nearbyAttractions.map(
+        (place: string, index: number) => (
+          <li
+            key={index}
+            className="flex items-start gap-3 text-gray-700 text-[15px] font-medium"
+          >
+            <MapPin className="w-4 h-4 text-[#D2A256] mt-[2px]" />
+            <span>{place}</span>
+          </li>
+        )
       )}
-    </div>
+    </ul>
+  ) : (
+    <p className="text-gray-500 text-sm">
+      No nearby attractions available.
+    </p>
+  )}
+</div>
   </div>
 
   {/* FOOTER CONTACT INFO */}
-  <div className="mt-6 pt-4 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-gray-700">
+ <div className="mt-6 pt-4 px-4 pb-4 rounded-lg border-1px border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-gray-700 bg-blue-50/60">
     <div>
       <span className="font-semibold">Email:</span>{" "}
       {hotelData.email || "N/A"}
