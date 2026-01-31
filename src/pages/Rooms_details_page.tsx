@@ -1,6 +1,6 @@
 "use client";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -32,7 +32,293 @@ interface RoomDetailsModalProps {
   rating?: number;
   reviewCount?: number;
 }
+const RestaurantCard = ({ rest }: { rest: any }) => {
+  const [localGallery, setLocalGallery] = useState(() => {
+    const images = [rest.cover_img, ...(rest.gallery || [])].filter(Boolean);
+    return images;
+  });
 
+  const [isCarouselOpen, setIsCarouselOpen] = useState(false);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+
+  const handleSwap = (index: number) => {
+    const newGallery = [...localGallery];
+    const selectedImage = newGallery[index];
+    const currentHero = newGallery[0];
+    newGallery[0] = selectedImage;
+    newGallery[index] = currentHero;
+    setLocalGallery(newGallery);
+  };
+
+  const openCarousel = (e: React.MouseEvent, index: number) => {
+    e.stopPropagation();
+    setCarouselIndex(index);
+    setIsCarouselOpen(true);
+  };
+
+  const sideThumbnails = localGallery.slice(1, 3);
+  const totalImages = localGallery.length;
+
+  return (
+    <div className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm flex flex-col h-full transition-shadow hover:shadow-md">
+      
+      {/* --- GRID SECTION --- */}
+      <div className="grid grid-cols-3 grid-rows-2 gap-1 h-72 shrink-0 bg-gray-100">
+        <div className="col-span-2 row-span-2 relative overflow-hidden">
+          <img src={localGallery[0]} className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" alt="Hero" />
+          {rest.alcoholServed && (
+            <span className="absolute top-3 left-3 flex items-center gap-1 text-[10px] font-bold bg-white/90 text-amber-700 px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm">
+              <Wine className="w-3 h-3" /> Bar Available
+            </span>
+          )}
+        </div>
+
+        {sideThumbnails.map((img, idx) => {
+          const actualIndex = idx + 1;
+          const isLastSlot = actualIndex === 2;
+          const showViewMore = isLastSlot && totalImages > 3;
+
+          return (
+            <div key={actualIndex} onClick={() => handleSwap(actualIndex)} className="relative cursor-pointer overflow-hidden border-l border-b border-white group">
+              <img src={img} className="w-full h-full object-cover transition-opacity group-hover:opacity-90" alt="thumbnail" />
+              {showViewMore && (
+                <div onClick={(e) => openCarousel(e, actualIndex)} className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white transition-all hover:bg-black/75">
+                  <Maximize2 className="w-6 h-6 mb-1" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">+{totalImages - 3} More</span>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* --- INFO SECTION (Kept as requested) --- */}
+      <div className="p-6 flex flex-col flex-1">
+        <div className="mb-4">
+          <h4 className="text-2xl font-bold text-gray-900 mb-1">{rest.name}</h4>
+          <p className="text-[#D2A256] font-medium text-md">{rest.cuisine} • {rest.theme}</p>
+        </div>
+        <p className="text-gray-600 text-sm mb-6 leading-relaxed flex-1">{rest.description}</p>
+        <div className="grid grid-cols-2 gap-y-4 gap-x-2 border-t pt-6">
+          <div className="space-y-1"><div className="flex items-center gap-2 text-s font-semibold text-gray-400 uppercase tracking-wider"><Clock className="w-3.5 h-3.5" /> Timings</div><p className="text-s font-semibold text-gray-800">{rest.openingTime} - {rest.closingTime}</p></div>
+          <div className="space-y-1"><div className="flex items-center gap-2 text-s font-semibold text-gray-400 uppercase tracking-wider"><MapPin className="w-3.5 h-3.5" /> Ambience</div><p className="text-s font-semibold text-gray-800">{rest.ambienceAndSeating}</p></div>
+          <div className="space-y-1"><div className="flex items-center gap-2 text-s font-semibold text-gray-400 uppercase tracking-wider"><Coffee className="w-3.5 h-3.5" /> Buffet</div><p className="text-s font-semibold text-gray-800">{rest.buffetAvailable ? "Available" : "A La Carte"}</p></div>
+          <div className="space-y-1"><div className="flex items-center gap-2 text-s font-semibold text-gray-400 uppercase tracking-wider"><Info className="w-3.5 h-3.5" /> Note</div><p className="text-s font-semibold text-gray-800 line-clamp-2">{rest.additionalNotes || "N/A"}</p></div>
+        </div>
+      </div>
+
+      {/* --- FULL PAGE CAROUSEL MODAL --- */}
+      <Dialog open={isCarouselOpen} onOpenChange={setIsCarouselOpen}>
+        <DialogContent className="max-w-none w-screen h-screen m-0 p-0 bg-black/95 border-none rounded-none z-[10000] flex items-center justify-center">
+          {/* Close Button */}
+          <button 
+            onClick={() => setIsCarouselOpen(false)} 
+            className="absolute top-8 right-8 p-3 bg-white/10 text-white rounded-full hover:bg-white/20 transition-all z-[10001]"
+          >
+            <X className="w-8 h-8" />
+          </button>
+
+          {/* Navigation - Left */}
+          <button 
+            onClick={() => setCarouselIndex(prev => prev === 0 ? localGallery.length - 1 : prev - 1)} 
+            className="absolute left-8 p-5 text-white/50 hover:text-white transition-all z-[10001]"
+          >
+            <ChevronLeft className="w-12 h-12" />
+          </button>
+
+          {/* Image Container */}
+          <div className="w-full h-full flex items-center justify-center p-4 md:p-12 select-none">
+            <img 
+              src={localGallery[carouselIndex]} 
+              className="max-h-full max-w-full object-contain shadow-2xl transition-all duration-500" 
+              alt="Full view" 
+            />
+          </div>
+
+          {/* Navigation - Right */}
+          <button 
+            onClick={() => setCarouselIndex(prev => prev === localGallery.length - 1 ? 0 : prev + 1)} 
+            className="absolute right-8 p-5 text-white/50 hover:text-white transition-all z-[10001]"
+          >
+            <ChevronRight className="w-12 h-12" />
+          </button>
+
+          {/* Counter Overlay */}
+          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-md border border-white/20 px-6 py-2 rounded-full text-white text-sm font-medium tracking-widest uppercase">
+            {carouselIndex + 1} / {totalImages}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+// --- SUB-COMPONENT: SPA CARD WITH GALLERY ---
+const SpaCard = ({ spa }: { spa: any }) => {
+  // 1. Initialize local gallery with all images
+  const [localGallery, setLocalGallery] = useState(() => {
+    const images = [spa.cover_img, ...(spa.gallery || [])].filter(Boolean);
+    return images;
+  });
+
+  const [isCarouselOpen, setIsCarouselOpen] = useState(false);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+
+  // SWAP LOGIC: Swaps index 0 (Hero) with the clicked thumbnail
+  const handleSwap = (index: number) => {
+    const newGallery = [...localGallery];
+    const selectedImage = newGallery[index];
+    const currentHero = newGallery[0];
+
+    newGallery[0] = selectedImage;
+    newGallery[index] = currentHero;
+    
+    setLocalGallery(newGallery);
+  };
+
+  const openCarousel = (e: React.MouseEvent, index: number) => {
+    e.stopPropagation(); // Prevent swap
+    setCarouselIndex(index);
+    setIsCarouselOpen(true);
+  };
+
+  // Grid Logic: Hero takes 2/3 width, Sidebar takes 1/3 with 2 rows
+  const sideThumbnails = localGallery.slice(1, 3);
+  const totalImages = localGallery.length;
+
+  return (
+    <div className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm flex flex-col h-full transition-shadow hover:shadow-md">
+      
+      {/* --- CINEMATIC SWAP GRID --- */}
+      <div className="grid grid-cols-3 grid-rows-2 gap-1 h-72 shrink-0 bg-gray-100">
+        
+        {/* Main Hero (Index 0) */}
+        <div className="col-span-2 row-span-2 relative overflow-hidden bg-gray-200">
+          <img 
+            src={localGallery[0]} 
+            className="w-full h-full object-cover transition-all duration-700 ease-in-out" 
+            alt="Main Spa View"
+          />
+          {spa.multiTherapyAvailable && (
+            <span className="absolute top-4 left-4 bg-green-700/40 text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider backdrop-blur-md border border-white/20">
+              Multi-Therapy Center
+            </span>
+          )}
+        </div>
+
+        {/* Sidebar Thumbnails (Indices 1 & 2) */}
+        {sideThumbnails.map((img, idx) => {
+          const actualIndex = idx + 1;
+          const isLastSlot = actualIndex === 2;
+          const showViewMore = isLastSlot && totalImages > 3;
+
+          return (
+            <div
+              key={actualIndex}
+              onClick={() => handleSwap(actualIndex)}
+              className="relative cursor-pointer overflow-hidden border-l border-b border-white group"
+            >
+              <img src={img} className="w-full h-full object-cover transition-opacity group-hover:opacity-90" alt="spa-thumb" />
+              
+              {showViewMore && (
+                <div 
+                  onClick={(e) => openCarousel(e, actualIndex)}
+                  className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white transition-all hover:bg-black/75"
+                >
+                  <Maximize2 className="w-6 h-6 mb-1" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">
+                    +{totalImages - 3} More
+                  </span>
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {/* Empty slot placeholder */}
+        {totalImages === 1 && (
+          <div className="col-span-1 row-span-2 bg-gray-50 flex items-center justify-center border-l border-white">
+             <Sparkles className="w-8 h-8 text-gray-200 opacity-20" />
+          </div>
+        )}
+      </div>
+
+      {/* --- INFO SECTION --- */}
+      <div className="p-6 flex flex-col flex-1">
+        <h4 className="text-2xl font-bold text-gray-900 mb-2">{spa.name}</h4>
+        <p className="text-gray-600 text-s mb-4 italic leading-relaxed flex-1">
+          {spa.description}
+        </p>
+
+        <div className="flex items-center gap-4 mb-6 bg-gray-50 p-3 rounded-lg">
+          <Clock className="w-4 h-4 text-[#D2A256]" />
+          <span className="text-s font-semibold text-gray-700">
+            {spa.openingTime} to {spa.closingTime}
+          </span>
+        </div>
+
+        <div>
+          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
+            Signature Treatments
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {spa.treatments?.map((t: string, i: number) => (
+              <span 
+                key={i} 
+                className="text-[11px] font-bold bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-lg shadow-sm"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* --- FULL PAGE CAROUSEL MODAL --- */}
+      <Dialog open={isCarouselOpen} onOpenChange={setIsCarouselOpen}>
+        <DialogContent className="max-w-none w-screen h-screen m-0 p-0 bg-black/95 border-none rounded-none z-[10000] flex items-center justify-center">
+          {/* Close Button */}
+          <button 
+            onClick={() => setIsCarouselOpen(false)} 
+            className="absolute top-8 right-8 p-3 bg-white/10 text-white rounded-full hover:bg-white/20 transition-all z-[10001]"
+          >
+            <X className="w-8 h-8" />
+          </button>
+
+          {/* Navigation - Left */}
+          <button 
+            onClick={() => setCarouselIndex(prev => prev === 0 ? localGallery.length - 1 : prev - 1)} 
+            className="absolute left-8 p-5 text-white/50 hover:text-white transition-all z-[10001]"
+          >
+            <ChevronLeft className="w-12 h-12" />
+          </button>
+
+          {/* Main Image View */}
+          <div className="w-full h-full flex items-center justify-center p-4 md:p-12">
+            <img 
+              src={localGallery[carouselIndex]} 
+              className="max-h-full max-w-full object-contain shadow-2xl transition-all duration-500" 
+              alt="Full Spa view" 
+            />
+          </div>
+
+          {/* Navigation - Right */}
+          <button 
+            onClick={() => setCarouselIndex(prev => prev === localGallery.length - 1 ? 0 : prev + 1)} 
+            className="absolute right-8 p-5 text-white/50 hover:text-white transition-all z-[10001]"
+          >
+            <ChevronRight className="w-12 h-12" />
+          </button>
+
+          {/* Counter Badge */}
+          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-md border border-white/20 px-6 py-2 rounded-full text-white text-sm font-medium tracking-widest uppercase">
+            {carouselIndex + 1} / {totalImages}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+// --- MAIN COMPONENT ---
 export function RoomDetailsModal({
   isOpen,
   onClose,
@@ -42,8 +328,6 @@ export function RoomDetailsModal({
   rating = 0,
   reviewCount = 0,
 }: RoomDetailsModalProps) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -52,67 +336,44 @@ export function RoomDetailsModal({
   const [adults, setAdults] = useState(parseInt(searchParams.get("adults") || "1"));
   const [children, setChildren] = useState(parseInt(searchParams.get("children") || "0"));
   const [loading, setLoading] = useState(false);
-  const [roomsRequired, setRoomsRequired] = useState(
-    parseInt(searchParams.get("rooms") || "1")
-  );
+  const [roomsRequired, setRoomsRequired] = useState(parseInt(searchParams.get("rooms") || "1"));
 
   const [dynamicAmenities, setDynamicAmenities] = useState<string[]>([]);
   const [hotelFullData, setHotelFullData] = useState<any>(null);
-
   const [dynamicRating, setDynamicRating] = useState<number>(rating || 0);
-  const [dynamicReviewCount, setDynamicReviewCount] = useState<number>(
-    reviewCount || 0,
-  );
+  const [dynamicReviewCount, setDynamicReviewCount] = useState<number>(reviewCount || 0);
 
-
-
-
-  const thumbnailContainerRef = useRef<HTMLDivElement | null>(null);
-  const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const description = roomData?.description;
   const short_desc = roomData?.short_description;
-  const safeRoomImages =
-    roomData?.images?.length > 0
-      ? roomData.images.map((img: any) => img.image)
-      : roomImages.length > 0
-        ? roomImages
-        : ["https://placehold.co/600x400?text=No+Image"];
+  const safeRoomImages = roomData?.images?.length > 0
+    ? roomData.images.map((img: any) => img.image)
+    : roomImages.length > 0 ? roomImages : ["https://placehold.co/600x400?text=No+Image"];
 
-  const occupancy =
-    roomData?.occupancyConfiguration?.max_occ || roomData?.max_guests;
+  const occupancy = roomData?.occupancyConfiguration?.max_occ || roomData?.max_guests;
   const bedType = roomData?.bedTypes?.[0]?.bed_type_name || "Royal Bed";
   const propertyId = searchParams.get("propertyId");
 
   useEffect(() => {
     if (!isOpen || !propertyId) return;
-
     const fetchPropertyDetails = async () => {
       try {
         const token = sessionStorage.getItem("shineetrip_token");
-        const res = await fetch(
-          `http://46.62.160.188:3000/properties/${propertyId}`,
-          {
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-          }
-        );
-
+        const res = await fetch(`http://46.62.160.188:3000/properties/${propertyId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
         if (!res.ok) return;
         const response = await res.json();
         const data = response?.data || response;
         setHotelFullData(data);
-
         const features = data?.selectedFeatures || [];
-        const amenitiesList = features.map((f: any) => f?.name).filter(Boolean);
-
-        setDynamicAmenities(
-          amenitiesList.length > 0 ? amenitiesList : ["Air Conditioning", "WiFi", "TV"]
-        );
-      } catch (error) {
-        console.error("Property fetch error:", error);
-      }
+        setDynamicAmenities(features.map((f: any) => f?.name).filter(Boolean).length > 0 
+          ? features.map((f: any) => f?.name).filter(Boolean) 
+          : ["Air Conditioning", "WiFi", "TV"]);
+      } catch (error) { console.error("Property fetch error:", error); }
     };
-
     fetchPropertyDetails();
   }, [isOpen, propertyId]);
 
@@ -121,86 +382,26 @@ export function RoomDetailsModal({
       const fetchRating = async () => {
         try {
           const token = sessionStorage.getItem("shineetrip_token");
-          const res = await fetch(
-            `http://46.62.160.188:3000/ratings/property/${propertyId}`,
-            { headers: token ? { Authorization: `Bearer ${token}` } : {} }
-          );
-
+          const res = await fetch(`http://46.62.160.188:3000/ratings/property/${propertyId}`, {
+            headers: token ? { Authorization: `Bearer ${token}` } : {}
+          });
           if (res.ok) {
             const reviewsData = await res.json();
             if (Array.isArray(reviewsData) && reviewsData.length > 0) {
-              const totalStars = reviewsData.reduce(
-                (sum: number, r: any) => sum + (Number(r.overallRating) || 0),
-                0
-              );
+              const totalStars = reviewsData.reduce((sum: number, r: any) => sum + (Number(r.overallRating) || 0), 0);
               setDynamicRating(totalStars / reviewsData.length);
               setDynamicReviewCount(reviewsData.length);
-            } else {
-              setDynamicRating(0);
-              setDynamicReviewCount(0);
-            }
+            } else { setDynamicRating(0); setDynamicReviewCount(0); }
           }
-        } catch (err) {
-          console.warn("Rating fetch failed:", err);
-        }
+        } catch (err) { console.warn("Rating fetch failed:", err); }
       };
       fetchRating();
     }
   }, [isOpen, propertyId]);
 
-
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [lightboxIndex, setLightboxIndex] = useState(0);
-
-  // Function to open the lightbox
   const handleOpenLightbox = (index: number) => {
     setLightboxIndex(index);
     setIsLightboxOpen(true);
-  };
-
-  // Keyboard Navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isLightboxOpen) return;
-      if (e.key === "ArrowRight") setLightboxIndex((prev) => (prev === safeRoomImages.length - 1 ? 0 : prev + 1));
-      if (e.key === "ArrowLeft") setLightboxIndex((prev) => (prev === 0 ? safeRoomImages.length - 1 : prev - 1));
-      if (e.key === "Escape") setIsLightboxOpen(false);
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isLightboxOpen, safeRoomImages.length]);
-
-  const nextLightboxImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setLightboxIndex((prev) => (prev === safeRoomImages.length - 1 ? 0 : prev + 1));
-  };
-
-  const prevLightboxImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setLightboxIndex((prev) => (prev === 0 ? safeRoomImages.length - 1 : prev - 1));
-  };
-
-  const closeLightbox = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsLightboxOpen(false);
-  };
-
-
-  useEffect(() => {
-    if (isOpen) setCurrentImageIndex(0);
-  }, [isOpen]);
-
-  const goToPrevious = () => {
-    setCurrentImageIndex((prev) =>
-      prev === 0 ? safeRoomImages.length - 1 : prev - 1
-    );
-  };
-
-  const goToNext = () => {
-    setCurrentImageIndex((prev) =>
-      prev === safeRoomImages.length - 1 ? 0 : prev + 1
-    );
   };
 
   const handleCheckAvailability = async () => {
@@ -209,58 +410,26 @@ export function RoomDetailsModal({
       alert("Please login again. Customer session expired.");
       return;
     }
-
     const customerId = Number(customerIdRaw);
     setLoading(true);
     try {
-      const payload = {
-        propertyId: Number(propertyId),
-        roomTypeId: Number(roomData?.id),
-        adults,
-        children,
-        roomsRequired,
-        checkIn,
-        checkOut,
-        customerId
-      };
-
+      const payload = { propertyId: Number(propertyId), roomTypeId: Number(roomData?.id), adults, children, roomsRequired, checkIn, checkOut, customerId };
       const res = await fetch("http://46.62.160.188:3000/order/check-availability", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("shineetrip_token")}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${sessionStorage.getItem("shineetrip_token")}` },
         body: JSON.stringify(payload),
       });
-
       const responseData = await res.json();
       if (res.ok) {
         const queryParams = new URLSearchParams({
-          location: searchParams.get("location") || "",
-          checkIn,
-          checkOut,
-          adults: adults.toString(),
-          children: children.toString(),
-          rooms: responseData.roomsRequired || "1",
-          propertyId: propertyId || "",
-          roomId: roomData?.id?.toString() || "",
-          roomName: roomData?.room_type || roomName,
-          retailPrice: responseData?.pricePerNight || "0",
-          taxPrice: responseData?.taxTotal || "0",
-          grandTotal: responseData?.grandTotal || "0"
+          location: searchParams.get("location") || "", checkIn, checkOut, adults: adults.toString(),
+          children: children.toString(), rooms: responseData.roomsRequired || "1", propertyId: propertyId || "",
+          roomId: roomData?.id?.toString() || "", roomName: roomData?.room_type || roomName,
+          retailPrice: responseData?.pricePerNight || "0", taxPrice: responseData?.taxTotal || "0", grandTotal: responseData?.grandTotal || "0"
         });
-
-        navigate(`/booking?${queryParams.toString()}`, {
-          state: { availabilityResponse: responseData }
-        });
-      } else {
-        alert(responseData.message || "Availability check failed");
-      }
-    } catch (error) {
-      console.error("API Error:", error);
-    } finally {
-      setLoading(false);
-    }
+        navigate(`/booking?${queryParams.toString()}`, { state: { availabilityResponse: responseData } });
+      } else { alert(responseData.message || "Availability check failed"); }
+    } catch (error) { console.error("API Error:", error); } finally { setLoading(false); }
   };
 
   const renderStars = (ratingValue: number) => {
@@ -279,50 +448,27 @@ export function RoomDetailsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      {/* Lightbox Overlay */}
-      {/* Lightbox Overlay */}
       {isLightboxOpen && (
-        <div
-          className="fixed inset-0 z-[10000] bg-black/95 flex flex-col items-center justify-center p-4"
-          onClick={closeLightbox}
-        >
-          <button
-            onClick={closeLightbox}
-            className="absolute top-6 right-6 text-white hover:bg-white/20 p-3 rounded-full transition-all z-[10001]"
-          >
+        <div className="fixed inset-0 z-[10000] bg-black/95 flex flex-col items-center justify-center p-4" onClick={() => setIsLightboxOpen(false)}>
+          <button onClick={() => setIsLightboxOpen(false)} className="absolute top-6 right-6 text-white hover:bg-white/20 p-3 rounded-full z-[10001]">
             <X className="w-8 h-8 md:w-10 md:h-10" />
           </button>
-
-          <button
-            onClick={(e) => prevLightboxImage(e)}
-            className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all z-[10001]"
-          >
+          <button onClick={(e) => { e.stopPropagation(); setLightboxIndex(prev => prev === 0 ? safeRoomImages.length - 1 : prev - 1); }} className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white z-[10001]">
             <ChevronLeft className="w-8 h-8 md:w-12 md:h-12" />
           </button>
-
-          <button
-            onClick={(e) => nextLightboxImage(e)}
-            className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all z-[10001]"
-          >
+          <button onClick={(e) => { e.stopPropagation(); setLightboxIndex(prev => prev === safeRoomImages.length - 1 ? 0 : prev + 1); }} className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 p-4 bg-white/10 hover:bg-white/20 rounded-full text-white z-[10001]">
             <ChevronRight className="w-8 h-8 md:w-12 md:h-12" />
           </button>
-
           <div className="w-full max-w-5xl h-[70vh] md:h-[80vh] flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
-            <img
-              key={lightboxIndex}
-              src={safeRoomImages[lightboxIndex]}
-              className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-              alt="Lightbox"
-            />
+            <img key={lightboxIndex} src={safeRoomImages[lightboxIndex]} className="max-w-full max-h-full object-contain rounded-lg shadow-2xl" alt="Lightbox" />
           </div>
-
           <div className="mt-8 text-white/80 font-bold uppercase text-sm tracking-widest bg-white/10 px-6 py-2 rounded-full">
             {lightboxIndex + 1} / {safeRoomImages.length}
           </div>
         </div>
       )}
-      <DialogContent className="w-full sm:max-w-[90%] max-h-[95vh] overflow-hidden p-0 bg-[#FDFDFD] rounded-lg shadow-2xl z-[90] ">
-        {/* Header */}
+
+      <DialogContent className="w-full sm:max-w-[90%] max-h-[95vh] overflow-hidden p-0 bg-[#FDFDFD] rounded-lg shadow-2xl z-[90]">
         <div className="flex items-center justify-between px-20 py-6 border-b border-gray-200 bg-white sticky top-0 z-50">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">{roomData?.room_type || roomName}</h2>
@@ -335,47 +481,25 @@ export function RoomDetailsModal({
           <button className="p-2 border rounded-lg transition-colors flex justify-center gap-2 items-center"><Flag className="w-5 h-5 " /><span>Report this hotel</span></button>
         </div>
 
-        <div className="overflow-y-auto" style={{ maxHeight: "calc(90vh - 80px)"  , msOverflowStyle: 'none',  /* IE and Edge */
-    scrollbarWidth: 'none'} }>
-          {/* Gallery */}
-          {/* Gallery: Non-Uniform Grid Layout */}
-          {/* Gallery: Non-Uniform Grid */}
-          <div className="py-4 px-20 ">
+        <div className="overflow-y-auto" style={{ maxHeight: "calc(90vh - 80px)", scrollbarWidth: 'none' }}>
+          <div className="py-4 px-20">
             <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-3 h-[400px] md:h-[550px]">
-              {/* Main Large Image */}
-              <div
-                className="md:col-span-2 md:row-span-2 relative rounded-2xl overflow-hidden cursor-pointer group"
-                onClick={() => handleOpenLightbox(0)}
-              >
+              <div className="md:col-span-2 md:row-span-2 relative rounded-2xl overflow-hidden cursor-pointer group" onClick={() => handleOpenLightbox(0)}>
                 <img src={safeRoomImages[0]} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Main" />
               </div>
-
-              {/* Small Images */}
               {[1, 2, 3, 4].map((idx) => (
-                <div
-                  key={idx}
-                  className="hidden md:block relative rounded-2xl overflow-hidden cursor-pointer group"
-                  onClick={() => handleOpenLightbox(idx)}
-                >
-                  <img
-                    src={safeRoomImages[idx] || safeRoomImages[0]}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    alt={`View ${idx}`}
-                  />
+                <div key={idx} className="hidden md:block relative rounded-2xl overflow-hidden cursor-pointer group" onClick={() => handleOpenLightbox(idx)}>
+                  <img src={safeRoomImages[idx] || safeRoomImages[0]} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt={`View ${idx}`} />
                   {idx === 3 && safeRoomImages.length > 4 && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white font-bold text-lg">
-                      +{safeRoomImages.length - 4} More
-                    </div>
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white font-bold text-lg">+{safeRoomImages.length - 4} More</div>
                   )}
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 w-[905]">
-            {short_desc && <div className="bg-white px-8 py-2 w-[90%] mx-auto"><p className="text-gray-700 text-[15px]">{short_desc}</p></div>}
-
-            {/* Rating */}
+          <div className="flex flex-col gap-3">
+            {short_desc && <div className="bg-white px-20 py-2"><p className="text-gray-700 text-[15px]">{short_desc}</p></div>}
             <div className="rounded-xl border bg-[#F6F6F6] border-gray-200 p-6 w-[90%] mx-auto">
               <div className="flex items-center justify-between">
                 <div>
@@ -386,13 +510,11 @@ export function RoomDetailsModal({
                   </div>
                 </div>
                 <div className="flex items-center gap-2 border border-green-500 rounded-lg px-3 py-2">
-                  <span className="text-sm text-green-600 font-medium">Guest</span>
-                  <span className="text-sm font-semibold text-green-600">Verified</span>
+                  <span className="text-sm text-green-600 font-medium">Guest</span><span className="text-sm font-semibold text-green-600">Verified</span>
                 </div>
               </div>
             </div>
 
-            {/* Availability Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-[90%] mx-auto border-t border-b">
               <div className="lg:col-span-2 space-y-6">
                 <div className="bg-white p-6">
@@ -400,7 +522,6 @@ export function RoomDetailsModal({
                   <div className="text-gray-700 leading-relaxed text-sm md:text-base prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: description || "" }} />
                 </div>
               </div>
-
               <div className="bg-[#F6F6F6] rounded-xl border border-gray-200 p-8 h-fit my-3">
                 <h3 className="font-semibold text-gray-900 mb-4">Add dates for Prices</h3>
                 <div className="space-y-3">
@@ -411,128 +532,55 @@ export function RoomDetailsModal({
                       {Array.from({ length: 10 }, (_, i) => i + 1).map(n => <option key={n} value={n}>{n} Room{n > 1 ? "s" : ""}</option>)}
                     </select>
                     <select value={adults} onChange={(e) => setAdults(Number(e.target.value))} className="border border-gray-300 rounded-lg px-3 py-4 text-base">
-                      {Array.from({ length: roomsRequired * 2 }, (_, i) => i + 1).map(n => <option key={n} value={n}>{n} Adult{n > 1 ? "s" : ""}</option>)}
+                      {Array.from({ length: 16 }, (_, i) => i + 1).map(n => <option key={n} value={n}>{n} Adult{n > 1 ? "s" : ""}</option>)}
                     </select>
                     <select value={children} onChange={(e) => setChildren(Number(e.target.value))} className="col-span-2 border border-gray-300 rounded-lg px-3 py-4 text-base">
-                      {Array.from({ length: roomsRequired * 2 + 1 }, (_, i) => i).map(n => <option key={n} value={n}>{n} Child{n !== 1 ? "ren" : ""}</option>)}
+                      {Array.from({ length: 11 }, (_, i) => i).map(n => <option key={n} value={n}>{n} Child{n !== 1 ? "ren" : ""}</option>)}
                     </select>
                   </div>
-                  <button onClick={handleCheckAvailability} disabled={loading || (adults + children == 0)} className="w-full bg-[#D2A256] text-white font-semibold py-3 rounded-lg transition disabled:bg-gray-400">
+                  <button onClick={handleCheckAvailability} disabled={loading || (adults + children === 0)} className="w-full bg-[#D2A256] text-white font-semibold py-3 rounded-lg transition disabled:bg-gray-400">
                     {loading ? "Confirming..." : "Book your Destination"}
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* ✅ AMENITIES SECTION */}
             <div className="bg-white p-8 w-[90%] mx-auto">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">What this place offers</h3>
               {dynamicAmenities.length > 0 && (
                 <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
                   {dynamicAmenities.map((amenity, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg px-4 py-3 bg-white text-sm text-gray-700 flex items-center justify-center hover:shadow-sm transition">
-                      {amenity}
-                    </div>
+                    <div key={index} className="border border-gray-200 rounded-lg px-4 py-3 bg-white text-sm text-gray-700 flex items-center justify-center hover:shadow-sm transition">{amenity}</div>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* ✅ RESTAURANTS */}
-            {/* ✅ RESTAURANTS - 2x2 GRID */}
+            {/* ✅ RESTAURANTS SECTION */}
             {hotelFullData?.restaurants?.length > 0 && (
               <div className="bg-white p-8 w-[90%] mx-auto border-t">
                 <div className="flex items-center gap-4 mb-6">
                   <Utensils className="w-6 h-6 text-[#D2A256]" />
                   <h3 className="text-2xl font-bold text-gray-900">Dining & Restaurants</h3>
                 </div>
-                {/* Updated to grid-cols-2 */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {hotelFullData.restaurants.map((rest: any) => (
-                    <div key={rest.id} className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm flex flex-col">
-                      <div className="h-64 relative shrink-0">
-                        <img src={rest.cover_img} alt={rest.name} className="w-full h-full object-cover" />
-                        {rest.alcoholServed && (
-                          <span className="absolute top-4 right-4 flex items-center gap-1 text-s font-bold bg-white/90 text-amber-700 px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm">
-                            <Wine className="w-3.5 h-3.5" /> Bar Available
-                          </span>
-                        )}
-                      </div>
-                      <div className="p-6 flex flex-col flex-1">
-                        <div className="mb-4">
-                          <h4 className="text-2xl font-bold text-gray-900 mb-1">{rest.name}</h4>
-                          <p className="text-[#D2A256] font-medium text-md">{rest.cuisine} • {rest.theme}</p>
-                        </div>
-                        <p className="text-gray-600 text-sm mb-6 leading-relaxed flex-1">{rest.description}</p>
-                        <div className="grid grid-cols-2 gap-y-4 gap-x-2 border-t pt-6">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2 text-s font-semibold text-gray-400 uppercase tracking-wider"><Clock className="w-3.5 h-3.5" /> Timings</div>
-                            <p className="text-s font-semibold text-gray-800">{rest.openingTime} - {rest.closingTime}</p>
-                          </div>
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2 text-s font-semibold text-gray-400 uppercase tracking-wider"><MapPin className="w-3.5 h-3.5" /> Ambience</div>
-                            <p className="text-s font-semibold text-gray-800">{rest.ambienceAndSeating}</p>
-                          </div>
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2 text-s font-semibold text-gray-400 uppercase tracking-wider"><Coffee className="w-3.5 h-3.5" /> Buffet</div>
-                            <p className="text-s font-semibold text-gray-800">{rest.buffetAvailable ? "Available" : "A La Carte"}</p>
-                          </div>
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2 text-s font-semibold text-gray-400 uppercase tracking-wider"><Info className="w-3.5 h-3.5" /> Note</div>
-                            <p className="text-s font-semibold text-gray-800 line-clamp-2">{rest.additionalNotes || "N/A"}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                  {hotelFullData.restaurants.map((rest: any) => <RestaurantCard key={rest.id} rest={rest} />)}
                 </div>
               </div>
             )}
 
-            {/* ✅ SPAS - UPDATED SIZE TO MATCH RESTAURANT */}
-            {/* ✅ SPAS - 2x2 GRID */}
+            {/* ✅ SPAS SECTION */}
             {hotelFullData?.spas?.length > 0 && (
               <div className="bg-white p-8 w-[90%] mx-auto border-t mb-12">
                 <div className="flex items-center gap-2 mb-6">
                   <Sparkles className="w-6 h-6 text-[#D2A256]" />
                   <h3 className="text-2xl font-bold text-gray-900">Spa & Wellness</h3>
                 </div>
-                {/* Updated to grid-cols-2 */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {hotelFullData.spas.map((spa: any) => (
-                    <div key={spa.id} className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm flex flex-col">
-                      <div className="h-64 relative shrink-0">
-                        <img src={spa.cover_img} alt={spa.name} className="w-full h-full object-cover" />
-                        {spa.multiTherapyAvailable && (
-                          <span className="absolute top-4 right-4 bg-green-700/30 text-white text-[12px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
-                            Multi-Therapy Center
-                          </span>
-                        )}
-                      </div>
-                      <div className="p-6 flex flex-col flex-1">
-                        <h4 className="text-2xl font-bold text-gray-900 mb-2">{spa.name}</h4>
-                        <p className="text-gray-600 text-s mb-4 italic leading-relaxed flex-1">{spa.description}</p>
-                        <div className="flex items-center gap-4 mb-6 bg-gray-50 p-3 rounded-lg">
-                          <Clock className="w-4 h-4 text-[#D2A256]" />
-                          <span className="text-s font-semibold text-gray-700">{spa.openingTime} to {spa.closingTime}</span>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Signature Treatments</p>
-                          <div className="flex flex-wrap gap-2">
-                            {spa.treatments?.map((t: string, i: number) => (
-                              <span key={i} className="text-[11px] font-bold bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-lg shadow-sm">
-                                {t}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                  {hotelFullData.spas.map((spa: any) => <SpaCard key={spa.id} spa={spa} />)}
                 </div>
               </div>
             )}
-
           </div>
         </div>
       </DialogContent>
